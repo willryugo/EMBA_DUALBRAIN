@@ -206,6 +206,24 @@ function StepHook({
   );
 }
 
+const SOURCE_ICON: Record<string, string> = {
+  paper: "📄",
+  book: "📚",
+  case: "🎓",
+  theory: "💡",
+  lecture: "🏫",
+  event: "📰",
+};
+
+const SOURCE_LABEL: Record<string, string> = {
+  paper: "논문",
+  book: "도서",
+  case: "케이스",
+  theory: "이론",
+  lecture: "강의",
+  event: "사례",
+};
+
 function StepConcept({
   card,
   color,
@@ -225,6 +243,20 @@ function StepConcept({
         <div className="case-title">{card.case_title}</div>
         <p className="case-body">{card.case_body}</p>
       </div>
+      {card.sources && card.sources.length > 0 && (
+        <div className="sources">
+          <div className="sources-tag">SOURCES · 원천</div>
+          <ul className="sources-list">
+            {card.sources.map((s, i) => (
+              <li key={i} className="source-item">
+                <span className="src-icon" aria-hidden="true">{SOURCE_ICON[s.type] || "•"}</span>
+                <span className="src-type">{SOURCE_LABEL[s.type] || s.type}</span>
+                <span className="src-label">{s.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <button className="nextcue" onClick={onNext}>
         그래서 내일 회의에서 뭘 할까 <span>→</span>
       </button>

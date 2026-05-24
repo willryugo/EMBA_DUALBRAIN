@@ -31,6 +31,20 @@ export type Industry =
   | "전문서비스·컨설팅"
   | "범용(전 산업)";
 
+export type SourceType =
+  | "paper"     // 학술 논문
+  | "book"      // 단행본
+  | "case"      // HBS·HKS 등 케이스
+  | "theory"    // 이론·프레임 (저자명 + 연도)
+  | "lecture"   // EMBA 강의안 (NAS 원본)
+  | "event";    // 실제 회사·사건
+
+export interface SourceRef {
+  type: SourceType;
+  label: string;       // 표시용 한 줄 (저자·연도·매체·회사명 등)
+  year?: number;       // 정렬·필터용
+}
+
 export interface Card {
   id: string;
   course: Course;
@@ -49,6 +63,7 @@ export interface Card {
   case_body: string;
   domain: Domain[];
   industry: Industry[];
+  sources?: SourceRef[];   // 학술/수업/실무 원천 — STEP 3 하단에 노출
   author: string;
   created_at: string;
   updated_at?: string;

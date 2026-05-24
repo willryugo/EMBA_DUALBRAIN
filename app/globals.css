@@ -464,6 +464,15 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 .step-hook .nextcue{margin-top:24px}
 
 .step-concept .concept-name{font-family:var(--serif);font-weight:900;font-size:clamp(26px,3.2vw,36px);line-height:1.18;letter-spacing:-.014em;color:var(--ink);margin-bottom:14px}
+
+/* 원천 (sources) — STEP 3 case 박스 아래 */
+.sources{margin-bottom:22px;padding:16px 18px;background:var(--bg);border-left:3px solid var(--ink-faint)}
+.sources-tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.22em;color:var(--ink-faint);margin-bottom:10px}
+.sources-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+.source-item{display:flex;align-items:baseline;gap:8px;font-size:13px;line-height:1.5;color:var(--ink-soft)}
+.src-icon{flex:none;font-size:13px;line-height:1}
+.src-type{flex:none;font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--c);text-transform:uppercase;padding:1px 6px;border:1px solid var(--c);border-radius:2px;line-height:1.3}
+.src-label{flex:1;min-width:0;color:var(--ink);font-weight:500}
 .step-concept .concept-name::before{content:"";display:block;width:42px;height:3px;background:var(--c);margin-bottom:14px}
 .step-concept .concept-insight{font-size:16px;line-height:1.7;color:var(--ink);margin-bottom:24px;max-width:60ch}
 .case{background:color-mix(in srgb, var(--c) 8%, var(--paper));border:1px solid var(--c);padding:20px 22px;margin-bottom:24px;position:relative}
