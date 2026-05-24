@@ -317,14 +317,15 @@ function StepOntology({
   onClose: () => void;
 }) {
   const related = useMemo(() => relatedCards(card, cards), [card, cards]);
-  const W = 560;
-  const H = 360;
+  // viewBox 확장 — 라벨이 잘리지 않도록 좌우/상하 패딩 확보
+  const W = 760;
+  const H = 420;
   const cx = W / 2;
   const cy = H / 2;
   const positions = related.map((r, i) => {
     const angle =
       -Math.PI / 2 + (i - (related.length - 1) / 2) * (Math.PI / 3.2);
-    const r0 = Math.min(W, H) * 0.36;
+    const r0 = Math.min(W, H) * 0.32;
     return { x: cx + Math.cos(angle) * r0, y: cy + Math.sin(angle) * r0, ...r };
   });
   return (
@@ -383,13 +384,13 @@ function StepOntology({
           </g>
           {positions.map((p) => {
             const col = COURSE_COLOR[p.c.course] || "#16150F";
-            // hook을 14자 이내로 잘라서 노드 옆에 표시 — 어느 노드가 어떤 카드인지 즉시 보이게
-            const labelText = p.c.hook.length > 14 ? p.c.hook.slice(0, 14) + "…" : p.c.hook;
+            // hook을 11자 이내로 잘라서 노드 옆에 표시 — viewBox 안에 안전하게 들어가도록
+            const labelText = p.c.hook.length > 11 ? p.c.hook.slice(0, 11) + "…" : p.c.hook;
             // 왼쪽 절반 노드는 왼쪽 정렬, 오른쪽 절반은 오른쪽 정렬, 위쪽은 위로
             const isRight = p.x > cx;
             const isTop = p.y < cy;
-            const labelDx = isRight ? 22 : -22;
-            const labelDy = isTop ? -22 : 24;
+            const labelDx = isRight ? 20 : -20;
+            const labelDy = isTop ? -20 : 26;
             const anchor: "start" | "end" | "middle" = isRight ? "start" : "end";
             return (
               <g
