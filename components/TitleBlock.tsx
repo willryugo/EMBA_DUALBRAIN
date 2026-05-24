@@ -1,4 +1,8 @@
 import { DBMark } from "./DBMark";
+import members from "@/data/members.json";
+
+const COHORT_SIZE = members.length;
+const COHORT_INDUSTRIES = new Set(members.map((m) => m.industry)).size;
 
 interface Props {
   todayLabel: string;
@@ -57,12 +61,12 @@ export function TitleBlock({ todayLabel, totalCards }: Props) {
           <span>과목 · ONTOLOGY</span>
         </div>
         <div className="s">
-          <b>5</b>
-          <span>스텝 솔루션 카드</span>
+          <b>{COHORT_SIZE}</b>
+          <span>원우 · 작성자</span>
         </div>
         <div className="s">
-          <b>52</b>
-          <span>원우 · 작성자</span>
+          <b>{COHORT_INDUSTRIES}</b>
+          <span>산업군</span>
         </div>
       </div>
     </section>
