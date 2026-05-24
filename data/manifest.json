@@ -1,0 +1,54 @@
+{
+  "courses": [
+    "Business Economics",
+    "Business Analytics",
+    "Managing People & Org",
+    "Business Ethics",
+    "Management Science",
+    "Marketing Management",
+    "Financial Accounting"
+  ],
+  "course_short": {
+    "Business Economics": "경제",
+    "Business Analytics": "애널리틱스",
+    "Managing People & Org": "조직",
+    "Business Ethics": "윤리",
+    "Management Science": "경영과학",
+    "Marketing Management": "마케팅",
+    "Financial Accounting": "회계"
+  },
+  "course_color": {
+    "Business Economics": "#B87A1F",
+    "Business Analytics": "#2D6FB0",
+    "Managing People & Org": "#C24A28",
+    "Business Ethics": "#6E458A",
+    "Management Science": "#13735B",
+    "Marketing Management": "#A8336E",
+    "Financial Accounting": "#3A6E45"
+  },
+  "domains": [
+    "전략",
+    "마케팅",
+    "운영·SCM",
+    "재무·회계",
+    "조직·HR",
+    "데이터·AI",
+    "윤리·거버넌스"
+  ],
+  "industries": [
+    "전자·반도체·하드웨어",
+    "소비재·식품·F&B·유통",
+    "IT·소프트웨어·플랫폼",
+    "제조·산업재·소재",
+    "제약·바이오·헬스케어",
+    "미디어·콘텐츠·게임·광고",
+    "패션·뷰티·라이프스타일",
+    "여행·관광·레저·문화",
+    "금융·핀테크",
+    "건설·부동산",
+    "물류·운송·SCM",
+    "전문서비스·컨설팅",
+    "범용(전 산업)"
+  ],
+  "universal": "범용(전 산업)"
+}
