@@ -1,21 +1,25 @@
 "use client";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { DBMark } from "./DBMark";
 
 interface Props {
-  view: "home" | "graph";
-  onView: (v: "home" | "graph") => void;
-  onSavedClick: () => void;
+  // home에서만 그래프 토글 표시
+  onGraphToggle?: () => void;
+  graphOpen?: boolean;
   savedCount: number;
   todayLabel: string;
 }
 
 export function Masthead({
-  view,
-  onView,
-  onSavedClick,
+  onGraphToggle,
+  graphOpen,
   savedCount,
   todayLabel,
 }: Props) {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
+  const isLibrary = pathname === "/library";
   return (
     <header className="masthead">
       <div className="wrap masthead-inner">
@@ -26,19 +30,20 @@ export function Masthead({
           </div>
         </div>
         <nav>
-          <button
-            className={view === "home" ? "on" : ""}
-            onClick={() => onView("home")}
-          >
+          <Link href="/" className={isHome && !graphOpen ? "on" : ""}>
             매거진
-          </button>
-          <button
-            className={view === "graph" ? "on" : ""}
-            onClick={() => onView("graph")}
-          >
-            온톨로지
-          </button>
-          <button onClick={onSavedClick}>내 솔루션 ({savedCount})</button>
+          </Link>
+          {isHome && onGraphToggle && (
+            <button
+              className={graphOpen ? "on" : ""}
+              onClick={onGraphToggle}
+            >
+              온톨로지
+            </button>
+          )}
+          <Link href="/library" className={isLibrary ? "on" : ""}>
+            내 솔루션 ({savedCount})
+          </Link>
           <a href="/mobile" className="nav-mobile" title="모바일 프리뷰">
             모바일 ↗
           </a>

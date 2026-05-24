@@ -187,13 +187,8 @@ export function DualBrainApp() {
   return (
     <>
       <Masthead
-        view={view}
-        onView={setView}
-        onSavedClick={() => {
-          setF("savedOnly", true);
-          setView("home");
-          setTimeout(() => window.scrollTo({ top: 520, behavior: "smooth" }), 100);
-        }}
+        onGraphToggle={() => setView(view === "graph" ? "home" : "graph")}
+        graphOpen={view === "graph"}
         savedCount={savedIds.length}
         todayLabel={today}
       />
