@@ -4,6 +4,7 @@ import type { Card } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
 import { relatedCards } from "@/lib/related";
 import { store } from "@/lib/storage";
+import { logEvent } from "@/lib/events";
 import { DBMark } from "./DBMark";
 
 const STEP_LABELS = [
@@ -42,6 +43,28 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
   useEffect(() => {
     setStep(0);
   }, [cardId]);
+
+  // 카드 오픈 시점·최대 step·총 체류시간 추적
+  const openedAtRef = useRef<number>(0);
+  const maxStepRef = useRef(0);
+  useEffect(() => {
+    openedAtRef.current = Date.now();
+    maxStepRef.current = 0;
+    if (cardId) logEvent("card_open", { card_id: cardId });
+    return () => {
+      if (cardId && openedAtRef.current > 0) {
+        logEvent("card_dwell", {
+          card_id: cardId,
+          total_ms: Date.now() - openedAtRef.current,
+          max_step_reached: maxStepRef.current,
+        });
+      }
+    };
+  }, [cardId]);
+
+  useEffect(() => {
+    if (step > maxStepRef.current) maxStepRef.current = step;
+  }, [step]);
 
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
@@ -428,7 +451,14 @@ function StepOntology({
               <g
                 key={p.c.id}
                 className="onto-node"
-                onClick={() => onOpen(p.c.id)}
+                onClick={() => {
+                  logEvent("connected_brain_click", {
+                    from_id: card.id,
+                    to_id: p.c.id,
+                    via: "graph",
+                  });
+                  onOpen(p.c.id);
+                }}
                 style={{ cursor: "pointer" }}
               >
                 <circle
@@ -477,7 +507,14 @@ function StepOntology({
             <button
               key={r.c.id}
               className="rel"
-              onClick={() => onOpen(r.c.id)}
+              onClick={() => {
+                logEvent("connected_brain_click", {
+                  from_id: card.id,
+                  to_id: r.c.id,
+                  via: "list",
+                });
+                onOpen(r.c.id);
+              }}
             >
               <div className="rel-num" style={{ color: col }}>
                 {String(i + 1).padStart(2, "0")}

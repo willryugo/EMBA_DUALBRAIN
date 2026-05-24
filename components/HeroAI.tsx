@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Card, Industry, OwnerPainCategory } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
 import { recommendCards, type RecommendResult } from "@/lib/recommend";
+import { logEvent } from "@/lib/events";
 
 interface Props {
   cards: Card[];
@@ -35,6 +36,11 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
       const r = recommendCards(q, cards, myIndustries);
       setResult(r);
       setLoading(false);
+      logEvent("question_asked", {
+        query_text: q,
+        matched_card_ids: r.ids,
+        fallback_used: true,
+      });
       setTimeout(() => {
         document
           .querySelector(".airesult")

@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { COURSES, COURSE_SHORT, DOMAINS, INDUSTRIES } from "@/lib/manifest";
 import type { FilterState } from "@/lib/types";
+import { logEvent } from "@/lib/events";
 
 type Key = "course" | "domain" | "industry";
 
@@ -129,6 +130,20 @@ interface SearchProps {
 }
 
 export function SearchBar({ state, setState, savedCount }: SearchProps) {
+  // 검색어가 안정된 (2초 이상 입력 없음) 시점에 search_performed 1회 발화
+  const lastLoggedRef = useRef<string>("");
+  useEffect(() => {
+    const q = state.search.trim();
+    if (q.length < 2 || q === lastLoggedRef.current) return;
+    const t = setTimeout(() => {
+      if (state.search.trim() === q && q !== lastLoggedRef.current) {
+        logEvent("search_performed", { keyword: q });
+        lastLoggedRef.current = q;
+      }
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [state.search]);
+
   return (
     <div className="search-bar">
       <div className="ico">
