@@ -496,8 +496,11 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 .save.on{background:var(--ink);color:var(--accent)}
 
 .step-onto{gap:0}
-.onto-headline{font-family:var(--serif);font-weight:900;font-size:clamp(22px,2.6vw,28px);line-height:1.28;letter-spacing:-.012em;color:var(--ink);margin-bottom:24px}
+.onto-headline-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:24px}
+.onto-headline-mark{flex:none;margin-top:6px;opacity:.85}
+.onto-headline{font-family:var(--serif);font-weight:900;font-size:clamp(22px,2.6vw,28px);line-height:1.28;letter-spacing:-.012em;color:var(--ink);flex:1;min-width:0}
 .onto-headline span{font-style:italic;color:var(--ink-soft);font-weight:700}
+@media(max-width:720px){.onto-headline-row{gap:10px}.onto-headline-mark{margin-top:4px;transform:scale(.85);transform-origin:left top}}
 .constellation{background:color-mix(in srgb, var(--c) 4%, var(--paper));border:1px solid var(--line-2);margin-bottom:20px}
 .constellation svg{width:100%;display:block}
 .onto-node:hover circle:first-child{fill:#FFFCF6;stroke-width:3}

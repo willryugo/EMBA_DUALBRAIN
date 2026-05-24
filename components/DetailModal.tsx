@@ -4,13 +4,14 @@ import type { Card } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
 import { relatedCards } from "@/lib/related";
 import { store } from "@/lib/storage";
+import { DBMark } from "./DBMark";
 
 const STEP_LABELS = [
   "문제 인식",
   "후킹 카드",
   "쉬운 이해",
   "30초 결정",
-  "연결된 뇌",
+  "연결된 듀얼브레인",
 ];
 
 interface Props {
@@ -328,11 +329,14 @@ function StepOntology({
   });
   return (
     <div className="step-content step-onto" style={{ ["--c" as string]: color } as React.CSSProperties}>
-      <div className="eyebrow eyebrow-step">ONTOLOGY · 05 다시, 두 번째 뇌</div>
-      <div className="onto-headline">
-        이 한 장은 끝이 아니다.
-        <br />
-        <span>다음 카드가, 너의 두 번째 뇌를 닫는다.</span>
+      <div className="eyebrow eyebrow-step">ONTOLOGY · 05 연결된 듀얼브레인</div>
+      <div className="onto-headline-row">
+        <DBMark size={44} className="onto-headline-mark" />
+        <div className="onto-headline">
+          이 한 장은 끝이 아니다.
+          <br />
+          <span>다음 카드가, 너의 두 번째 뇌를 닫는다.</span>
+        </div>
       </div>
       <div className="constellation">
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
@@ -379,6 +383,14 @@ function StepOntology({
           </g>
           {positions.map((p) => {
             const col = COURSE_COLOR[p.c.course] || "#16150F";
+            // hook을 14자 이내로 잘라서 노드 옆에 표시 — 어느 노드가 어떤 카드인지 즉시 보이게
+            const labelText = p.c.hook.length > 14 ? p.c.hook.slice(0, 14) + "…" : p.c.hook;
+            // 왼쪽 절반 노드는 왼쪽 정렬, 오른쪽 절반은 오른쪽 정렬, 위쪽은 위로
+            const isRight = p.x > cx;
+            const isTop = p.y < cy;
+            const labelDx = isRight ? 22 : -22;
+            const labelDy = isTop ? -22 : 24;
+            const anchor: "start" | "end" | "middle" = isRight ? "start" : "end";
             return (
               <g
                 key={p.c.id}
@@ -395,6 +407,31 @@ function StepOntology({
                   strokeWidth="2"
                 />
                 <circle cx={p.x} cy={p.y} r="6" fill={col} />
+                <text
+                  x={p.x + labelDx}
+                  y={p.y + labelDy}
+                  textAnchor={anchor}
+                  fontFamily="Noto Serif KR, serif"
+                  fontSize="13"
+                  fontWeight="700"
+                  fill="#16150F"
+                  style={{ pointerEvents: "none" }}
+                >
+                  {labelText}
+                </text>
+                <text
+                  x={p.x + labelDx}
+                  y={p.y + labelDy + 14}
+                  textAnchor={anchor}
+                  fontFamily="JetBrains Mono, monospace"
+                  fontSize="10"
+                  fontWeight="600"
+                  fill={col}
+                  letterSpacing="0.5"
+                  style={{ pointerEvents: "none" }}
+                >
+                  {COURSE_SHORT[p.c.course]}
+                </text>
               </g>
             );
           })}
