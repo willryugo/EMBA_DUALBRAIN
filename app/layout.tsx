@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { GlobalGates } from "@/components/GlobalGates";
 
 export const metadata: Metadata = {
   title: "듀얼브레인 — EMBA 17기의 두 번째 뇌",
@@ -38,6 +39,7 @@ export default function RootLayout({
       </head>
       <body>
         <div id="app">{children}</div>
+        <GlobalGates />
       </body>
     </html>
   );
