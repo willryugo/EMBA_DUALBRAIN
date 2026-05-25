@@ -47,8 +47,9 @@ export function TitleBlock({ todayLabel, totalCards }: Props) {
         <b>회의 30분 전, 다시 꺼내 쓴다.</b>
         <span className="deck-em-wrap">
           <br />
-          휘발될 한 학기가 한 줄의 결정으로 남는 단 한 권 — 분석과 직관,{" "}
-          <span className="deck-em">두 개의 뇌</span>가 만나는 곳.
+          한 학기 학습의 쓰나미가, 결국 한 줄의 결정으로 남는 곳.
+          <br />
+          분석과 직관, <span className="deck-em">두 개의 뇌</span>가 만나는 곳.
         </span>
       </p>
       <div className="stats">

@@ -50,7 +50,7 @@ function WelcomeForm() {
         <h1 className="welcome-title">
           환영합니다.
           <br />
-          <span className="ital">너의 두 번째 뇌로.</span>
+          <span className="ital">당신의 두 번째 뇌로.</span>
         </h1>
         <p className="welcome-deck">
           학술국이 공유한 단어를 입력하면 들어갑니다.

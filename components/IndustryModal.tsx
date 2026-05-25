@@ -27,11 +27,11 @@ export function IndustryModal({ onClose }: Props) {
           <DBMark size={48} />
         </div>
         <div className="im-eyebrow">FIRST VISIT · 산업 선택</div>
-        <h2 className="im-title">너의 산업은?</h2>
+        <h2 className="im-title">어느 산업에 계신가요?</h2>
         <p className="im-deck">
-          '내 산업만' 필터가 자동으로 켜지고, 추천이 더 정확해진다.
+          '내 산업만' 필터가 자동으로 켜지고, 추천이 더 정확해집니다.
           <br />
-          개인 정보는 안 받는다 — 산업만. 나중에 Tweaks에서 바꿀 수 있다.
+          개인 정보는 받지 않습니다 — 산업만. 나중에 Tweaks에서 바꿀 수 있어요.
         </p>
         <div className="im-chips">
           {choices.map((i) => (

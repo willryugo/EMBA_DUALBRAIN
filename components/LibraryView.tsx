@@ -63,10 +63,10 @@ export function LibraryView() {
             <div className="vol">
               <b>LIBRARY · 내 솔루션</b>
               <span className="dot"></span>
-              <span>섹터별로 모아놓은 너의 두 번째 뇌</span>
+              <span>섹터별로 모아놓은 당신의 두 번째 뇌</span>
             </div>
             <h1 className="lib-title">
-              회의 30분 전, <span className="ital">너의 손이 닿는 곳에.</span>
+              회의 30분 전, <span className="ital">당신의 손이 닿는 곳에.</span>
             </h1>
             <p className="lib-deck">
               {totalSaved === 0

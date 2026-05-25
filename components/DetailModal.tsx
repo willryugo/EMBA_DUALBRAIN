@@ -391,7 +391,7 @@ function StepOntology({
         <div className="onto-headline">
           이 한 장은 끝이 아니다.
           <br />
-          <span>다음 카드가, 너의 두 번째 뇌를 닫는다.</span>
+          <span>다음 카드가, 당신의 두 번째 뇌를 닫는다.</span>
         </div>
       </div>
       <div className="constellation">

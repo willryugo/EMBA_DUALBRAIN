@@ -70,7 +70,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
         ref={taRef}
         value={val}
         onChange={(e) => setVal(e.target.value)}
-        placeholder="네 회의의 진짜 문제를 한 줄로 써봐. 두 번째 뇌가 12장 인사이트 중 가장 가까운 3장을 골라줄게."
+        placeholder="당신의 회의의 진짜 문제를 한 줄로 써보세요. 두 번째 뇌가 81장 인사이트 중 가장 가까운 3장을 추천드립니다."
         rows={1}
         onKeyDown={(e) => {
           if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
