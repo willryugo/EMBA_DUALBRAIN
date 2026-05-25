@@ -372,15 +372,17 @@ function StepOntology({
   onClose: () => void;
 }) {
   const related = useMemo(() => relatedCards(card, cards), [card, cards]);
-  // viewBox 확장 — 라벨이 잘리지 않도록 좌우/상하 패딩 확보
-  const W = 760;
-  const H = 420;
+  // viewBox 확장 — 풀제목 라벨(foreignObject)이 안전히 들어가도록 좌우 여백 확보
+  const W = 960;
+  const H = 480;
   const cx = W / 2;
   const cy = H / 2;
+  const LBL_W = 180;   // 라벨 박스 너비 (제목 줄바꿈 한계)
+  const LBL_H = 64;    // 라벨 박스 높이 (제목 2줄 + 과목 1줄)
   const positions = related.map((r, i) => {
     const angle =
       -Math.PI / 2 + (i - (related.length - 1) / 2) * (Math.PI / 3.2);
-    const r0 = Math.min(W, H) * 0.32;
+    const r0 = Math.min(W, H) * 0.30;
     return { x: cx + Math.cos(angle) * r0, y: cy + Math.sin(angle) * r0, ...r };
   });
   return (
@@ -439,14 +441,11 @@ function StepOntology({
           </g>
           {positions.map((p) => {
             const col = COURSE_COLOR[p.c.course] || "#16150F";
-            // hook을 11자 이내로 잘라서 노드 옆에 표시 — viewBox 안에 안전하게 들어가도록
-            const labelText = p.c.hook.length > 11 ? p.c.hook.slice(0, 11) + "…" : p.c.hook;
-            // 왼쪽 절반 노드는 왼쪽 정렬, 오른쪽 절반은 오른쪽 정렬, 위쪽은 위로
-            const isRight = p.x > cx;
+            // 라벨 위치 — 노드 기준 오른쪽/왼쪽/위/아래로 LBL_W·LBL_H 박스 배치.
+            const isRight = p.x >= cx;
             const isTop = p.y < cy;
-            const labelDx = isRight ? 20 : -20;
-            const labelDy = isTop ? -20 : 26;
-            const anchor: "start" | "end" | "middle" = isRight ? "start" : "end";
+            const lblX = isRight ? p.x + 20 : p.x - LBL_W - 20;
+            const lblY = isTop ? p.y - LBL_H - 8 : p.y + 14;
             return (
               <g
                 key={p.c.id}
@@ -470,31 +469,40 @@ function StepOntology({
                   strokeWidth="2"
                 />
                 <circle cx={p.x} cy={p.y} r="6" fill={col} />
-                <text
-                  x={p.x + labelDx}
-                  y={p.y + labelDy}
-                  textAnchor={anchor}
-                  fontFamily="Noto Serif KR, serif"
-                  fontSize="13"
-                  fontWeight="700"
-                  fill="#16150F"
-                  style={{ pointerEvents: "none" }}
+                <foreignObject
+                  x={lblX}
+                  y={lblY}
+                  width={LBL_W}
+                  height={LBL_H}
+                  style={{ overflow: "visible", pointerEvents: "none" }}
                 >
-                  {labelText}
-                </text>
-                <text
-                  x={p.x + labelDx}
-                  y={p.y + labelDy + 14}
-                  textAnchor={anchor}
-                  fontFamily="JetBrains Mono, monospace"
-                  fontSize="10"
-                  fontWeight="600"
-                  fill={col}
-                  letterSpacing="0.5"
-                  style={{ pointerEvents: "none" }}
-                >
-                  {COURSE_SHORT[p.c.course]}
-                </text>
+                  <div
+                    style={{
+                      textAlign: isRight ? "left" : "right",
+                      wordBreak: "keep-all",
+                      lineHeight: 1.25,
+                      color: "#16150F",
+                      fontFamily: "var(--serif, 'Noto Serif KR', serif)",
+                      fontWeight: 700,
+                      fontSize: 13,
+                    }}
+                  >
+                    <div>{p.c.hook}</div>
+                    <div
+                      style={{
+                        marginTop: 3,
+                        fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
+                        fontSize: 10,
+                        fontWeight: 600,
+                        letterSpacing: 0.6,
+                        color: col,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {COURSE_SHORT[p.c.course]}
+                    </div>
+                  </div>
+                </foreignObject>
               </g>
             );
           })}
