@@ -1,58 +1,268 @@
-import type { Card, Industry } from "./types";
+import type { Card, Domain, Industry } from "./types";
 import { UNIVERSAL } from "./manifest";
 
 export interface RecommendResult {
-  ids: string[];
-  reason: string;
+  ids: string[];               // 핵심 추천 3장
+  reason: string;              // 왜 이 3장을 골랐는지 (확장 경로 포함)
+  expansions: string[];        // "승진" → 펼쳐진 관련 개념들
+  relatedIds: string[];        // 4~8위 — "혹시 이런 카드도?" 칩으로 노출
+  inferredDomain?: Domain;     // 쿼리에서 추론한 도메인 (UI 뱃지용)
 }
 
-// Phase 1: 키워드 매칭 기반 fallback 추천. Phase 2에서 /api/ask로 교체 예정.
+// ────────────────────────────────────────────────────────────────────
+// 한국어 비즈니스/경영 개념 동의어·관련어 사전.
+// 사용자가 "승진"만 쳐도 → 인사평가·리더십·약한연결 카드까지 끌어오기 위함.
+// Phase 2(임베딩)에서 더 부드러워질 예정이지만, Phase 1 키워드 매칭의 한계를 메운다.
+// ────────────────────────────────────────────────────────────────────
+const CONCEPT_MAP: Record<string, string[]> = {
+  // 조직·HR
+  "승진": ["인사평가", "성과평가", "후계자", "발탁", "리더십", "약한 연결", "네트워크", "고성과", "권한", "발령"],
+  "발탁": ["승진", "후계자", "인사", "발령"],
+  "인사": ["인사평가", "성과평가", "면담", "승진", "채용", "조직", "HR"],
+  "이직": ["퇴사", "유출", "이탈", "리텐션", "유지", "터노버", "사직"],
+  "퇴사": ["이직", "유출", "리텐션", "사직", "이탈"],
+  "리텐션": ["유지", "이직", "퇴사", "이탈"],
+  "채용": ["영입", "스카우트", "헤드헌팅", "신규", "외부 영입", "내부 승진"],
+  "영입": ["채용", "스카우트", "외부", "이적"],
+  "성과급": ["보상", "인센티브", "연봉", "공정성", "동기"],
+  "보상": ["성과급", "인센티브", "연봉", "급여"],
+  "동기": ["동기부여", "사기", "허즈버그", "위생요인", "동기요인", "인정", "성취"],
+  "동기부여": ["동기", "사기", "허즈버그", "인정", "성취"],
+  "사기": ["동기", "동기부여", "분위기", "조직문화", "morale"],
+  "조직문화": ["문화", "에토스", "분위기", "팀워크", "협력", "톤"],
+  "리더십": ["영향력", "권한", "지휘", "리더", "임원", "팔로워십"],
+  "팔로워십": ["리더십", "영향력", "조직"],
+  "평가": ["인사평가", "성과평가", "360", "면담", "피드백"],
+  "면담": ["피드백", "평가", "1on1", "원온원", "코칭"],
+  "피드백": ["면담", "평가", "코칭", "솔직함"],
+  "갈등": ["충돌", "마찰", "분쟁", "파벌", "정치"],
+  "정치": ["사내정치", "권력", "파벌", "라인"],
+  "권한위임": ["임파워먼트", "위임", "자율", "마이크로매니징"],
+  "마이크로매니징": ["권한위임", "위임", "통제"],
+  "다양성": ["편견", "무의식", "blind", "공정"],
+  "편견": ["다양성", "무의식", "bias", "공정"],
+
+  // 마케팅
+  "가격": ["프라이싱", "할인", "프로모션", "탄력성", "마진", "pricing"],
+  "할인": ["프로모션", "가격", "이벤트", "세일", "탄력성"],
+  "프로모션": ["할인", "가격", "이벤트", "캠페인"],
+  "광고": ["마케팅", "프로모션", "캠페인", "브랜딩"],
+  "브랜드": ["브랜딩", "포지셔닝", "아이덴티티", "이미지", "에쿼티"],
+  "포지셔닝": ["STP", "세분화", "타겟팅", "브랜드", "차별화"],
+  "타겟팅": ["세분화", "STP", "포지셔닝", "고객", "타겟"],
+  "세분화": ["STP", "타겟팅", "포지셔닝", "클러스터링", "segmentation"],
+  "고객": ["타겟", "사용자", "유저", "소비자", "구매자", "고객여정"],
+  "이탈": ["churn", "리텐션", "이직", "퇴사"],
+
+  // 재무·회계
+  "현금": ["현금흐름", "유동성", "CF", "운전자본", "캐시플로", "cash"],
+  "현금흐름": ["현금", "유동성", "CF", "운전자본"],
+  "매출": ["탑라인", "revenue", "성장", "매출액", "리벤뉴", "top line"],
+  "이익": ["수익", "마진", "영업이익", "순이익", "bottom line"],
+  "운전자본": ["working capital", "CCC", "재고", "매출채권", "회전일수"],
+  "비용": ["원가", "코스트", "비용절감", "비용구조"],
+  "재무제표": ["BS", "PL", "CF", "손익", "재무", "회계"],
+  "감사": ["회계", "내부통제", "윤리", "내부고발", "컴플라이언스"],
+
+  // 운영·SCM
+  "재고": ["재고관리", "newsvendor", "신문판매원", "수요예측", "발주", "inventory"],
+  "수요": ["수요예측", "수요계획", "발주", "재고", "forecast"],
+  "공급망": ["SCM", "공급사슬", "리드타임", "조달", "supply chain"],
+  "예측": ["forecast", "예측모델", "수요예측"],
+  "리드타임": ["공급망", "조달", "SCM"],
+  "발주": ["수요예측", "재고", "신문판매원", "MOQ"],
+
+  // 데이터·AI
+  "AI": ["인공지능", "머신러닝", "딥러닝", "예측모델", "ML"],
+  "인공지능": ["AI", "머신러닝", "딥러닝", "ML"],
+  "데이터": ["분석", "애널리틱스", "인사이트", "지표", "metrics"],
+  "분석": ["애널리틱스", "데이터", "지표", "리포팅"],
+  "지표": ["KPI", "메트릭", "데이터", "측정"],
+
+  // 윤리·거버넌스
+  "윤리": ["컴플라이언스", "준법", "지배구조", "내부고발", "투명성"],
+  "내부고발": ["whistleblowing", "윤리", "보호", "신고", "투명성"],
+  "지배구조": ["거버넌스", "이사회", "윤리", "투명성"],
+
+  // C레벨 일반
+  "회의": ["임원회의", "이사회", "보고", "프레젠테이션"],
+  "보고": ["임원보고", "리포팅", "프레젠테이션", "회의"],
+  "결정": ["의사결정", "선택", "트레이드오프", "판단"],
+  "의사결정": ["결정", "선택", "트레이드오프"],
+  "성장": ["매출성장", "확장", "스케일업", "톱라인"],
+  "위기": ["위기관리", "리스크", "이슈", "사건"],
+  "리스크": ["위기", "위험", "리스크관리", "헷지"],
+  "전략": ["포지셔닝", "차별화", "경쟁우위", "비전"],
+  "혁신": ["innovation", "디스럽션", "신사업", "R&D"],
+};
+
+// 도메인 추론 힌트 — 쿼리가 어느 도메인에 속하는지 점수로 판단.
+const DOMAIN_HINTS: Record<Domain, string[]> = {
+  "전략": ["전략", "포지셔닝", "경쟁", "차별화", "성장", "비전", "M&A"],
+  "마케팅": ["마케팅", "광고", "브랜드", "가격", "고객", "STP", "타겟", "세분화", "포지셔닝", "프로모션"],
+  "운영·SCM": ["운영", "재고", "공급망", "물류", "발주", "신문판매원", "리드타임", "조달", "생산"],
+  "재무·회계": ["재무", "회계", "현금", "매출", "이익", "운전자본", "예산", "재무제표", "감사", "원가", "BS", "PL", "CF"],
+  "조직·HR": ["조직", "HR", "인사", "승진", "이직", "퇴사", "채용", "리더십", "동기", "사기", "성과급", "면담", "갈등", "문화", "팀", "평가", "다양성", "편견"],
+  "데이터·AI": ["데이터", "분석", "AI", "예측", "머신러닝", "지표", "KPI", "딥러닝"],
+  "윤리·거버넌스": ["윤리", "준법", "컴플라이언스", "지배구조", "내부고발", "투명성", "감사"],
+};
+
+// ────────────────────────────────────────────────────────────────────
+// Helpers
+// ────────────────────────────────────────────────────────────────────
+
+// 한글 IME가 NFD(자모 분리)로 입력할 때 .includes() 실패 방지.
+function norm(s: string): string {
+  return s.normalize("NFC").toLowerCase();
+}
+
+interface Expansion {
+  tokens: string[];      // 매칭에 쓸 모든 토큰 (원본 + 확장)
+  expansions: string[];  // 사용자에게 보여줄 "이렇게 확장했어" 목록
+}
+
+function expand(query: string): Expansion {
+  const baseTokens = query
+    .split(/[\s.,?!·…\-\/]+/)
+    .filter((t) => t.length >= 2)
+    .map(norm);
+  const expansions = new Set<string>();
+
+  baseTokens.forEach((t) => {
+    Object.entries(CONCEPT_MAP).forEach(([key, syns]) => {
+      const nkey = norm(key);
+      const matched =
+        t.includes(nkey) ||
+        nkey.includes(t) ||
+        syns.some((s) => {
+          const ns = norm(s);
+          return ns === t || t.includes(ns) || ns.includes(t);
+        });
+      if (matched) {
+        expansions.add(key);
+        syns.forEach((s) => expansions.add(s));
+      }
+    });
+  });
+
+  const all = new Set<string>([...baseTokens, ...Array.from(expansions).map(norm)]);
+  return {
+    tokens: Array.from(all),
+    expansions: Array.from(expansions),
+  };
+}
+
+function inferDomain(query: string): Domain | undefined {
+  const q = norm(query);
+  let bestDom: Domain | undefined;
+  let bestScore = 0;
+  (Object.entries(DOMAIN_HINTS) as [Domain, string[]][]).forEach(([dom, hints]) => {
+    const score = hints.reduce((acc, h) => (q.includes(norm(h)) ? acc + 1 : acc), 0);
+    if (score > bestScore) {
+      bestScore = score;
+      bestDom = dom;
+    }
+  });
+  return bestDom;
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Main
+// ────────────────────────────────────────────────────────────────────
 export function recommendCards(
   problem: string,
   cards: Card[],
   myIndustries: Industry[] = []
 ): RecommendResult {
-  const q = problem.toLowerCase();
-  const tokens = q.split(/[\s.,?!·]+/).filter((t) => t.length >= 2);
+  const { tokens, expansions } = expand(problem);
+  const inferredDomain = inferDomain(problem);
 
   const scored = cards.map((c) => {
-    const text = [
-      c.hook,
-      c.concept,
-      c.insight,
-      c.application,
-      c.problem_scene,
-      c.decision,
-      c.quote,
-      ...(c.checklist || []),
-      c.case_title,
-      c.case_body,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+    // 필드별 가중치 — 제목·요지가 본문보다 중요.
+    const fields: { text: string | undefined; w: number }[] = [
+      { text: c.hook, w: 4 },
+      { text: c.concept, w: 3 },
+      { text: c.insight, w: 2 },
+      { text: c.application, w: 2 },
+      { text: c.decision, w: 2 },
+      { text: c.problem_scene, w: 1.5 },
+      { text: c.case_title, w: 1.5 },
+      { text: c.quote, w: 1 },
+      { text: (c.checklist || []).join(" "), w: 1 },
+      { text: c.case_body, w: 0.5 },
+    ];
 
     let s = 0;
-    tokens.forEach((t) => {
-      if (text.includes(t)) s += 1;
+    fields.forEach(({ text, w }) => {
+      if (!text) return;
+      const t = norm(text);
+      tokens.forEach((tok) => {
+        if (t.includes(tok)) s += w;
+      });
     });
 
-    // 내 산업 가중치 — 카드가 내 산업과 겹치면 추가 점수
+    // 도메인 가중치 — 추론된 도메인과 카드 도메인이 일치하면 +3
+    if (inferredDomain && (c.domain || []).includes(inferredDomain)) {
+      s += 3;
+    }
+
+    // 내 산업 가중치 — 핵심. 같은 산업이면 +2, 범용 카드는 +0.5(어디서나 통하니까).
     if (myIndustries.length > 0) {
-      const overlap = (c.industry || []).filter(
+      const iOverlap = (c.industry || []).filter(
         (i) => i !== UNIVERSAL && myIndustries.includes(i)
       ).length;
-      s += overlap * 1.5;
+      s += iOverlap * 2;
+      if ((c.industry || []).includes(UNIVERSAL)) s += 0.5;
     }
 
     return { id: c.id, s };
   });
 
   scored.sort((a, b) => b.s - a.s);
+  const matched = scored.filter((x) => x.s > 0);
+  const top = (matched.length > 0 ? matched : scored).slice(0, 3);
+  const related = (matched.length > 3 ? matched : scored).slice(3, 8);
+
+  // 이유 작성
+  const reason = buildReason({
+    raw: problem.trim(),
+    expansions,
+    inferredDomain,
+    myIndustries,
+    matched: top[0]?.s ?? 0,
+  });
 
   return {
-    ids: scored.slice(0, 3).map((x) => x.id),
-    reason:
-      "키워드와 내 산업 가중치로 가장 가까운 카드 3장을 골랐어. Phase 2에서 Claude로 의미 매칭이 강화될 예정.",
+    ids: top.map((x) => x.id),
+    reason,
+    expansions: expansions.slice(0, 6),
+    relatedIds: related.map((x) => x.id),
+    inferredDomain,
   };
+}
+
+function buildReason(args: {
+  raw: string;
+  expansions: string[];
+  inferredDomain?: Domain;
+  myIndustries: Industry[];
+  matched: number;
+}): string {
+  const { raw, expansions, inferredDomain, myIndustries, matched } = args;
+
+  if (matched === 0) {
+    return `'${raw}'와 직접 매칭되는 카드가 적어요. 도메인·산업 가중치로 후보를 추렸으니, 좀 더 구체적으로 적어주시면 정확해집니다.`;
+  }
+
+  const parts: string[] = [];
+  if (expansions.length > 0) {
+    const sample = expansions.slice(0, 3).join(" · ");
+    parts.push(`'${raw}'를 관련 개념(${sample})까지 확장`);
+  } else {
+    parts.push(`키워드 '${raw}'`);
+  }
+  if (inferredDomain) parts.push(`도메인 '${inferredDomain}' 가중`);
+  if (myIndustries.length > 0) parts.push(`내 산업(${myIndustries[0]}) 가중`);
+
+  return parts.join(" + ") + "으로 가장 가까운 3장을 골랐습니다.";
 }

@@ -128,6 +128,24 @@ img,svg{display:block;max-width:100%}
 .airesult .ai-card .ac{font-size:11.5px;font-weight:600;color:var(--c,var(--ink-soft));letter-spacing:.06em;text-transform:uppercase;margin-top:auto}
 @media(max-width:720px){.airesult .cards{grid-template-columns:1fr;gap:10px}}
 
+/* 확장 칩 (도메인 + 관련 개념) */
+.ai-expand{display:flex;flex-wrap:wrap;gap:6px;margin:-6px 0 14px}
+.ai-exp-chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--ink-soft);background:var(--bg);border:1px solid var(--line-2);padding:4px 9px;border-radius:999px;letter-spacing:.02em}
+.ai-exp-chip .ai-exp-k{font-family:var(--mono);font-size:9.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.12em;border-right:1px solid var(--line-2);padding-right:6px;margin-right:2px}
+.ai-exp-chip.dom{color:var(--ink);background:var(--paper);border-color:var(--line-3)}
+
+/* "혹시 이런 카드도?" 관련 카드 칩 스트립 */
+.ai-related{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line)}
+.ai-related-head{font-family:var(--serif);font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ai-related-sub{font-family:var(--sans);font-size:10.5px;font-weight:600;color:var(--ink-faint);letter-spacing:.04em;text-transform:uppercase}
+.ai-related-chips{display:flex;flex-direction:column;gap:6px}
+.ai-related-chip{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid var(--line);text-align:left;transition:.15s;border-radius:2px}
+.ai-related-chip:hover{border-color:var(--c,var(--ink));background:var(--paper);transform:translateX(2px)}
+.ai-related-chip .arc-dot{width:6px;height:6px;border-radius:50%;background:var(--c,var(--ink-faint))}
+.ai-related-chip .arc-hook{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.35;word-break:keep-all}
+.ai-related-chip .arc-meta{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--c,var(--ink-faint));letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+@media(max-width:720px){.ai-related-chip{grid-template-columns:auto 1fr;gap:8px;padding:8px 10px}.ai-related-chip .arc-meta{display:none}}
+
 /* ───── C-Suite Desk (pain section) ───── */
 .pain-section{margin-top:26px;padding-top:24px;border-top:1.5px solid var(--ink)}
 .pain-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}

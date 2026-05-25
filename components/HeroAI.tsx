@@ -60,6 +60,12 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
         .filter((c): c is Card => Boolean(c))
     : [];
 
+  const relatedCards = result
+    ? result.relatedIds
+        .map((id) => cards.find((c) => c.id === id))
+        .filter((c): c is Card => Boolean(c))
+    : [];
+
   return (
     <div className="aibox">
       <div className="l1">회의 30분 전. 손이 떨릴 때.</div>
@@ -150,6 +156,23 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
           <div className="reason">
             <b>두 번째 뇌:</b> {result.reason}
           </div>
+
+          {(result.expansions.length > 0 || result.inferredDomain) && (
+            <div className="ai-expand">
+              {result.inferredDomain && (
+                <span className="ai-exp-chip dom">
+                  <span className="ai-exp-k">도메인</span>
+                  {result.inferredDomain}
+                </span>
+              )}
+              {result.expansions.map((e) => (
+                <span key={e} className="ai-exp-chip">
+                  {e}
+                </span>
+              ))}
+            </div>
+          )}
+
           <div className="cards">
             {recCards.map((c, i) => {
               const col = COURSE_COLOR[c.course];
@@ -169,6 +192,37 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
               );
             })}
           </div>
+
+          {relatedCards.length > 0 && (
+            <div className="ai-related">
+              <div className="ai-related-head">
+                혹시 이런 카드도?{" "}
+                <span className="ai-related-sub">
+                  {myIndustries[0]
+                    ? `${myIndustries[0]} 가중치 반영`
+                    : "관련도 순"}
+                </span>
+              </div>
+              <div className="ai-related-chips">
+                {relatedCards.map((c) => {
+                  const col = COURSE_COLOR[c.course];
+                  return (
+                    <button
+                      key={c.id}
+                      className="ai-related-chip"
+                      style={{ ["--c" as string]: col } as React.CSSProperties}
+                      onClick={() => onOpen(c.id)}
+                      title={`${COURSE_SHORT[c.course]} · ${c.concept}`}
+                    >
+                      <span className="arc-dot" />
+                      <span className="arc-hook">{c.hook}</span>
+                      <span className="arc-meta">{COURSE_SHORT[c.course]}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
