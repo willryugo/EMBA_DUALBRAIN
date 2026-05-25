@@ -31,3 +31,6 @@ pnpm-debug.log*
 
 # typescript
 *.tsbuildinfo
+
+# scripts에서 cards.json으로부터 추출하는 일시 메타
+scripts/cards_meta.json

@@ -1,5 +1,11 @@
 import type { Card, Domain, Industry } from "./types";
 import { UNIVERSAL } from "./manifest";
+import aliasesJson from "@/data/aliases.json";
+
+// 오프라인 사전 계산된 카드별 검색 별칭.
+// 구조: { "card-id": ["별칭1", "별칭2", ...], "_meta": {...} }
+// _meta 키는 매칭에서 제외.
+const ALIASES = aliasesJson as Record<string, unknown>;
 
 export interface RecommendResult {
   ids: string[];               // 핵심 추천 3장
@@ -178,10 +184,17 @@ export function recommendCards(
   const inferredDomain = inferDomain(problem);
 
   const scored = cards.map((c) => {
-    // 필드별 가중치 — 제목·요지가 본문보다 중요.
+    // 오프라인 별칭 — 사용자의 비유적/구어체 질문이 이 별칭과 매칭되도록.
+    const aliasRaw = ALIASES[c.id];
+    const aliasText = Array.isArray(aliasRaw)
+      ? (aliasRaw as string[]).join(" ")
+      : "";
+
+    // 필드별 가중치 — 제목·요지·별칭이 본문보다 중요.
     const fields: { text: string | undefined; w: number }[] = [
       { text: c.hook, w: 4 },
       { text: c.concept, w: 3 },
+      { text: aliasText, w: 3 },          // ★ 오프라인 사전 계산 별칭 (의미 매칭의 핵심)
       { text: c.insight, w: 2 },
       { text: c.application, w: 2 },
       { text: c.decision, w: 2 },
