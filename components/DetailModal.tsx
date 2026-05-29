@@ -1,10 +1,17 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Card } from "@/lib/types";
+import type { Card, Industry } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
 import { relatedCards } from "@/lib/related";
 import { store } from "@/lib/storage";
 import { logEvent } from "@/lib/events";
+import {
+  getProbe,
+  resolveLeafAdvice,
+  leafIndustries,
+  type CardProbe,
+  type ProbeLeaf,
+} from "@/lib/probe";
 import { DBMark } from "./DBMark";
 
 const STEP_LABELS = [
@@ -346,6 +353,7 @@ function StepDecision({
           ))}
         </ul>
       </div>
+      <ProbeFlow card={card} color={color} />
       <div className="row-actions">
         <button className={"save " + (saved ? "on" : "")} onClick={onSave}>
           {saved ? "★ 내 솔루션 카드" : "☆ 또 보기 · 솔루션 카드로 저장"}
@@ -354,6 +362,169 @@ function StepDecision({
           이 개념과 연결된 카드 보기 <span>→</span>
         </button>
       </div>
+    </div>
+  );
+}
+
+// ── 3단계 분기 진단(5-Why 축약형) ─────────────────────────────
+// 같은 카드로 시작해도, 두 질문 + 내 산업에 따라 최종 처방이 달라진다.
+function ProbeFlow({ card, color }: { card: Card; color: string }) {
+  const probe = useMemo<CardProbe | null>(() => getProbe(card.id), [card.id]);
+  const myIndustries = useMemo<Industry[]>(
+    () => (store.get<Industry[]>("emba17_my_industries") || []) as Industry[],
+    []
+  );
+  // 진행 상태: "idle"(시작 전) → nodeId(2단계 질문) → "leaf:<id>"(결과)
+  const [state, setState] = useState<string>("idle");
+  const [trail, setTrail] = useState<string[]>([]); // 선택 라벨 자취
+  const [overrideInd, setOverrideInd] = useState<string | null>(null);
+  const [started, setStarted] = useState(false);
+
+  if (!probe) return null;
+
+  const reset = () => {
+    setState("idle");
+    setTrail([]);
+    setOverrideInd(null);
+    setStarted(false);
+  };
+
+  // 결과 화면
+  if (state.startsWith("leaf:")) {
+    const leafId = state.slice(5);
+    const leaf: ProbeLeaf | undefined = probe.leaves[leafId];
+    if (!leaf) return null;
+    const auto = resolveLeafAdvice(leaf, myIndustries);
+    const shownInd = overrideInd ?? auto.matchedIndustry;
+    const shownText =
+      overrideInd && leaf.byIndustry[overrideInd]
+        ? leaf.byIndustry[overrideInd]
+        : auto.text;
+    const others = leafIndustries(leaf);
+    return (
+      <div
+        className="probe-block"
+        style={{ ["--c" as string]: color } as React.CSSProperties}
+      >
+        <div className="probe-lab">🔍 산업별 심화 진단 · 결과</div>
+        <div className="probe-trail">
+          {trail.map((t, i) => (
+            <span key={i} className="ptrail-chip">
+              {t}
+            </span>
+          ))}
+        </div>
+        <div className="probe-verdict">{leaf.verdict}</div>
+        <p className="probe-common">{leaf.common}</p>
+        <div className="probe-advice">
+          <div className="padv-head">
+            {shownInd ? (
+              <>
+                <span className="padv-tag">내 산업 처방</span>
+                <span className="padv-ind">{shownInd}</span>
+              </>
+            ) : (
+              <span className="padv-tag">기본 처방 (산업 미설정)</span>
+            )}
+          </div>
+          <p className="padv-text">{shownText}</p>
+          {!auto.matchedIndustry && !overrideInd && (
+            <div className="padv-hint">
+              ⚙ Tweaks에서 내 산업을 설정하면 더 맞춤형 처방이 나옵니다.
+            </div>
+          )}
+        </div>
+        {others.length > 1 && (
+          <div className="probe-others">
+            <div className="poth-lab">다른 산업이라면? — 같은 진단, 다른 처방</div>
+            <div className="poth-chips">
+              {others.map((ind) => (
+                <button
+                  key={ind}
+                  className={"poth-chip " + (ind === shownInd ? "on" : "")}
+                  onClick={() => setOverrideInd(ind)}
+                >
+                  {ind}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <button className="probe-reset" onClick={reset}>
+          ↺ 다시 진단하기
+        </button>
+      </div>
+    );
+  }
+
+  // 시작 전 (인트로 + 시작 버튼)
+  if (!started) {
+    return (
+      <div
+        className="probe-block intro"
+        style={{ ["--c" as string]: color } as React.CSSProperties}
+      >
+        <div className="probe-lab">🔍 산업별 심화 진단</div>
+        <p className="probe-intro">{probe.intro}</p>
+        <button
+          className="probe-start"
+          onClick={() => {
+            setStarted(true);
+            setState("root");
+            logEvent("probe_start", { card_id: card.id });
+          }}
+        >
+          스무고개로 내 상황 좁히기 <span>→</span>
+        </button>
+      </div>
+    );
+  }
+
+  // 질문 화면 (root = Stage1, 그 외 = Stage2)
+  const question = state === "root" ? probe.root : probe.nodes[state];
+  if (!question) return null;
+  const stageNum = state === "root" ? 1 : 2;
+  return (
+    <div
+      className="probe-block"
+      style={{ ["--c" as string]: color } as React.CSSProperties}
+    >
+      <div className="probe-lab">
+        🔍 산업별 심화 진단 · {stageNum}/2 단계
+      </div>
+      {trail.length > 0 && (
+        <div className="probe-trail">
+          {trail.map((t, i) => (
+            <span key={i} className="ptrail-chip">
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+      <div className="probe-q">{question.q}</div>
+      <div className="probe-opts">
+        {question.options.map((opt, i) => (
+          <button
+            key={i}
+            className="probe-opt"
+            onClick={() => {
+              setTrail((t) => [...t, opt.label]);
+              if (opt.leaf) {
+                setState("leaf:" + opt.leaf);
+                logEvent("probe_leaf", { card_id: card.id, leaf: opt.leaf });
+              } else if (opt.next) {
+                setState(opt.next);
+              }
+            }}
+          >
+            <span className="popt-txt">{opt.label}</span>
+            <span className="popt-arr">→</span>
+          </button>
+        ))}
+      </div>
+      <button className="probe-reset ghost" onClick={reset}>
+        처음으로
+      </button>
     </div>
   );
 }

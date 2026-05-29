@@ -567,6 +567,42 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 .save:hover{background:var(--ink);color:#FFFCF6}
 .save.on{background:var(--ink);color:var(--accent)}
 
+/* ── 3단계 분기 진단 (5-Why 축약형) ── */
+.probe-block{margin-top:16px;padding:16px 16px 14px;border:1.5px solid var(--c);border-radius:2px;background:color-mix(in srgb, var(--c) 5%, var(--paper))}
+.probe-block.intro{background:color-mix(in srgb, var(--c) 7%, var(--paper))}
+.probe-lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--c);font-weight:700;margin-bottom:10px}
+.probe-intro{font-size:13.5px;line-height:1.6;color:var(--ink-soft);margin-bottom:14px}
+.probe-start{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700;color:#FFFCF6;background:var(--c);border:none;padding:11px 18px;cursor:pointer;transition:.13s}
+.probe-start:hover{filter:brightness(1.08)}
+.probe-start span{transition:.13s}
+.probe-start:hover span{transform:translateX(3px)}
+.probe-trail{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.ptrail-chip{font-size:11px;font-weight:600;color:var(--ink-soft);background:color-mix(in srgb, var(--c) 12%, var(--paper));border:1px solid color-mix(in srgb, var(--c) 30%, transparent);padding:3px 9px;border-radius:11px}
+.probe-q{font-size:15.5px;font-weight:700;line-height:1.5;color:var(--ink);margin-bottom:13px}
+.probe-opts{display:flex;flex-direction:column;gap:8px}
+.probe-opt{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;font-size:14px;line-height:1.45;color:var(--ink);background:var(--paper);border:1.5px solid var(--line-2);padding:13px 15px;cursor:pointer;transition:.13s}
+.probe-opt:hover{border-color:var(--c);background:color-mix(in srgb, var(--c) 7%, var(--paper))}
+.popt-arr{color:var(--c);font-weight:700;flex:none;transition:.13s}
+.probe-opt:hover .popt-arr{transform:translateX(3px)}
+.probe-verdict{font-size:15px;font-weight:800;line-height:1.45;color:var(--c);margin-bottom:10px}
+.probe-common{font-size:13.5px;line-height:1.65;color:var(--ink-soft);margin-bottom:14px}
+.probe-advice{border-left:3px solid var(--c);padding:12px 14px;background:var(--paper);margin-bottom:14px}
+.padv-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px}
+.padv-tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;color:#FFFCF6;background:var(--c);padding:3px 8px}
+.padv-ind{font-size:12.5px;font-weight:700;color:var(--c)}
+.padv-text{font-size:14px;line-height:1.7;color:var(--ink)}
+.padv-hint{margin-top:9px;font-size:12px;color:var(--ink-faint);font-style:italic}
+.probe-others{margin-bottom:14px}
+.poth-lab{font-size:11.5px;font-weight:600;color:var(--ink-faint);margin-bottom:8px}
+.poth-chips{display:flex;flex-wrap:wrap;gap:6px}
+.poth-chip{font-size:12px;font-weight:600;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line-2);padding:6px 11px;border-radius:13px;cursor:pointer;transition:.13s}
+.poth-chip:hover{border-color:var(--c)}
+.poth-chip.on{background:var(--c);color:#FFFCF6;border-color:var(--c)}
+.probe-reset{font-size:12.5px;font-weight:600;color:var(--ink-soft);background:none;border:1px solid var(--line-2);padding:8px 14px;cursor:pointer;transition:.13s}
+.probe-reset:hover{border-color:var(--ink);color:var(--ink)}
+.probe-reset.ghost{margin-top:12px;border:none;color:var(--ink-faint);padding:6px 0}
+.probe-reset.ghost:hover{color:var(--ink)}
+
 .step-onto{gap:0}
 .onto-headline-row{display:flex;align-items:flex-start;gap:14px;margin-bottom:24px}
 .onto-headline-mark{flex:none;margin-top:6px;opacity:.85}
