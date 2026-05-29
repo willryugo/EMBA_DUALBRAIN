@@ -711,6 +711,9 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 .twk-btn:hover{background:rgba(0,0,0,.88)}
 .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
 .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+.twk-btn.ind-edit{flex:none}
+.twk-hint{font-size:11px;line-height:1.5;color:rgba(41,38,27,.5);margin:8px 2px 4px}
+.twk-hint b{color:rgba(41,38,27,.72);font-weight:700}
 .twk-chips{display:flex;gap:6px;flex-wrap:wrap}
 .twk-chip{position:relative;appearance:none;width:48px;height:36px;padding:0;border:0;border-radius:6px;overflow:hidden;cursor:pointer;box-shadow:0 0 0 .5px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06);transition:transform .12s cubic-bezier(.3,.7,.4,1),box-shadow .12s}
 .twk-chip:hover{transform:translateY(-1px);box-shadow:0 0 0 .5px rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.12)}
