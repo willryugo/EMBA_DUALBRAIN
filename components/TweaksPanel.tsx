@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
-import type { TweakState, ThemeKey, FontKey, Density } from "@/lib/types";
+import type { TweakState, ThemeKey, FontKey, Density, Industry } from "@/lib/types";
 import { THEMES, FONTS } from "@/lib/themes";
+import { store } from "@/lib/storage";
+import { IndustryModal } from "./IndustryModal";
 
 interface Props {
   open: boolean;
@@ -20,6 +22,15 @@ export function TweaksPanel({
   onResetFilters,
   onClearSaved,
 }: Props) {
+  // 산업 편집 모달 + 현재 산업 표시 (store에서 직접 읽음 — 저장 후 갱신)
+  const [editIndustry, setEditIndustry] = useState(false);
+  const [myInd, setMyInd] = useState<Industry[]>(
+    () => (store.get<Industry[]>("emba17_my_industries") || []) as Industry[]
+  );
+  const refreshInd = () => {
+    setMyInd((store.get<Industry[]>("emba17_my_industries") || []) as Industry[]);
+  };
+
   if (!open) return null;
   return (
     <div className="twk-panel">
@@ -30,6 +41,23 @@ export function TweaksPanel({
         </button>
       </div>
       <div className="twk-body">
+        <div className="twk-sect">내 산업</div>
+        <div className="twk-row twk-row-h">
+          <div className="twk-lbl">
+            <span>{myInd.length > 0 ? myInd[0] : "설정 안 함"}</span>
+          </div>
+          <button
+            type="button"
+            className="twk-btn ind-edit"
+            onClick={() => setEditIndustry(true)}
+          >
+            {myInd.length > 0 ? "변경" : "선택"}
+          </button>
+        </div>
+        <p className="twk-hint">
+          추천·필터·카드 <b>심화 진단의 산업별 처방</b>이 이 값으로 맞춰집니다.
+        </p>
+
         <div className="twk-sect">컬러 팔레트</div>
         <TweakSelect<ThemeKey>
           label="테마"
@@ -85,6 +113,16 @@ export function TweaksPanel({
           }}
         />
       </div>
+      {editIndustry && (
+        <IndustryModal
+          mode="edit"
+          initial={myInd[0] ?? null}
+          onClose={() => {
+            setEditIndustry(false);
+            refreshInd();
+          }}
+        />
+      )}
     </div>
   );
 }
