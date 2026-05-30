@@ -7,6 +7,7 @@ export interface CardVisual {
   hero: string; // public/cards/<id>.webp
   tone: [string, string]; // 플레이스홀더 그라데이션 [from, to]
   motif: string; // 생성 은유 메모
+  hasText?: boolean; // 이미지에 제목이 이미 박혀있으면 true → 커버에서 텍스트 오버레이 생략
 }
 
 const VISUALS = visualsJson as Record<string, unknown>;

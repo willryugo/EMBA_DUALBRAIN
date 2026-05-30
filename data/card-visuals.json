@@ -6,7 +6,8 @@
     "ratio": "4:5"
   },
   "mpo-two-factor-herzberg": {
-    "hero": "/cards/mpo-two-factor-herzberg.svg",
+    "hero": "/cards/mpo-two-factor-herzberg.png",
+    "hasText": true,
     "tone": [
       "#ece5d6",
       "#cbb9a6"

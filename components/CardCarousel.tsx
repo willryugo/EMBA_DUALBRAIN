@@ -236,15 +236,17 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
                   onError={() => setImgFail(true)}
                 />
               )}
-              <div className="cc-cover-grad" />
-              <div className="cc-cover-text">
-                <div className="cc-eyebrow">
-                  {COURSE_SHORT[card.course]}
-                  {card.week ? ` · WK${String(card.week).padStart(2, "0")}` : ""}
+              {!(visual?.hasText && !imgFail) && <div className="cc-cover-grad" />}
+              {!(visual?.hasText && !imgFail) && (
+                <div className="cc-cover-text">
+                  <div className="cc-eyebrow">
+                    {COURSE_SHORT[card.course]}
+                    {card.week ? ` · WK${String(card.week).padStart(2, "0")}` : ""}
+                  </div>
+                  <h1 className="cc-hook">{card.hook}</h1>
+                  <div className="cc-concept">— {card.concept}</div>
                 </div>
-                <h1 className="cc-hook">{card.hook}</h1>
-                <div className="cc-concept">— {card.concept}</div>
-              </div>
+              )}
               <div className="cc-swipe-hint">밀어서 시작 →</div>
             </div>
           )}
