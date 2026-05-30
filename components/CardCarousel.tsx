@@ -253,34 +253,52 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
 
           {/* INSIGHT */}
           {kind === "insight" && (
-            <div className="cc-text-slide">
-              <div className="cc-kicker">CONCEPT</div>
+            <div className="cc-text-slide cc-edi">
+              <div className="cc-edi-head">
+                <span className="cc-num">01</span>
+                <span className="cc-bar" />
+                <span className="cc-eng">CONCEPT</span>
+              </div>
               <h2 className="cc-h2">{card.concept}</h2>
+              <div className="cc-rule" />
               <p className="cc-body">{card.insight}</p>
             </div>
           )}
 
           {/* CASE */}
           {kind === "case" && (
-            <div className="cc-text-slide">
-              <div className="cc-kicker">CASE STUDY</div>
+            <div className="cc-text-slide cc-edi">
+              <div className="cc-edi-head">
+                <span className="cc-num">02</span>
+                <span className="cc-bar" />
+                <span className="cc-eng">CASE STUDY</span>
+              </div>
               <h2 className="cc-h2">{card.case_title}</h2>
+              <div className="cc-rule" />
               <p className="cc-body">{card.case_body}</p>
             </div>
           )}
 
           {/* PROBE (인터랙티브 5why) */}
           {kind === "probe" && (
-            <div className="cc-text-slide cc-probe">
-              <div className="cc-kicker">당신 상황에 맞춰 — 스무고개</div>
+            <div className="cc-text-slide cc-edi cc-probe">
+              <div className="cc-edi-head">
+                <span className="cc-num">03</span>
+                <span className="cc-bar" />
+                <span className="cc-eng">YOUR CASE · 스무고개</span>
+              </div>
               {renderProbe()}
             </div>
           )}
 
           {/* OUTRO */}
           {kind === "outro" && (
-            <div className="cc-text-slide cc-outro">
-              <div className="cc-kicker">한 마디로</div>
+            <div className="cc-text-slide cc-edi cc-outro">
+              <div className="cc-edi-head">
+                <span className="cc-num">04</span>
+                <span className="cc-bar" />
+                <span className="cc-eng">TAKEAWAY</span>
+              </div>
               <blockquote className="cc-quote">&ldquo;{card.quote}&rdquo;</blockquote>
               <div className="cc-outro-actions">
                 <button className={"cc-save " + (saved ? "on" : "")} onClick={toggleSave}>
