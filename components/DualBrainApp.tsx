@@ -55,6 +55,7 @@ export function DualBrainApp() {
   // Hydration-안전: 모든 클라이언트 상태는 서버 기본값으로 초기화, 마운트 후 localStorage에서 복원.
   const [view, setView] = useState<"home" | "graph">("home");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [carouselId, setCarouselId] = useState<string | null>(null);
   const [tweaks, setTweaks] = useState<TweakState>(TWEAK_DEFAULTS);
   const [filter, setFilter] = useState<FilterState>(FILTER_DEFAULTS);
   const [savedIds, setSavedIds] = useState<string[]>([]);
@@ -268,6 +269,19 @@ export function DualBrainApp() {
           cards={CARDS}
           onClose={() => setOpenId(null)}
           onOpen={setOpenId}
+          onCarousel={(id) => {
+            setOpenId(null);
+            setCarouselId(id);
+          }}
+        />
+      )}
+
+      {carouselId && (
+        <CardCarousel
+          cardId={carouselId}
+          cards={CARDS}
+          onClose={() => setCarouselId(null)}
+          onOpen={(id) => setCarouselId(id)}
         />
       )}
 
