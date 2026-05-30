@@ -492,76 +492,88 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 .dt-carousel{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;color:var(--paper);background:var(--ink);border:none;border-radius:18px;padding:8px 15px;cursor:pointer;transition:.13s;white-space:nowrap}
 .dt-carousel:hover{background:var(--accent)}
 
-/* ══ 인터랙티브 캐러셀 카드뉴스 (에디토리얼 미니멀) ══ */
-.cc-overlay{position:fixed;inset:0;background:rgba(16,15,12,.82);backdrop-filter:blur(6px);z-index:400;display:flex;align-items:center;justify-content:center;padding:16px}
-.cc-stage-wrap{position:relative;width:min(430px,92vw);aspect-ratio:4/5;max-height:90vh;background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.45);display:flex;flex-direction:column}
-.cc-x{position:absolute;top:12px;right:12px;z-index:6;width:32px;height:32px;border:none;border-radius:50%;background:rgba(255,255,255,.6);backdrop-filter:blur(4px);color:#16150F;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.cc-progress{position:absolute;top:10px;left:14px;right:54px;z-index:5;display:flex;gap:5px}
-.cc-pseg{flex:1;height:3px;border-radius:2px;background:rgba(120,110,100,.28);cursor:pointer;transition:.2s}
-.cc-pseg.on{background:var(--c)}
-.cc-slide{flex:1;display:flex;overflow:hidden}
-.cc-cover{position:relative;flex:1;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
-.cc-hero{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.cc-cover-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(16,15,12,.62) 0%,rgba(16,15,12,.15) 42%,rgba(16,15,12,.05) 70%,transparent 100%)}
-.cc-cover-text{position:relative;z-index:2;padding:0 30px 26px}
-.cc-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:rgba(255,252,246,.92);margin-bottom:14px}
-.cc-hook{font-family:var(--serif);font-weight:900;font-size:30px;line-height:1.22;color:#FFFCF6;letter-spacing:-.01em;text-wrap:balance;margin:0 0 12px;text-shadow:0 1px 16px rgba(0,0,0,.35)}
-.cc-concept{font-size:13.5px;font-weight:700;color:rgba(255,252,246,.86)}
-.cc-swipe-hint{position:absolute;z-index:2;bottom:13px;right:18px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:rgba(255,252,246,.7);animation:ccpulse 1.8s ease-in-out infinite}
-@keyframes ccpulse{0%,100%{opacity:.5;transform:translateX(0)}50%{opacity:1;transform:translateX(4px)}}
-.cc-text-slide{position:relative;flex:1;display:flex;flex-direction:column;padding:46px 30px 46px 34px;overflow-y:auto}
-/* 좌측 강조 밴드 — T타임즈식 */
-.cc-edi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c)}
-/* 우하단 브랜드 푸터 */
-.cc-edi::after{content:"DUALBRAIN · EMBA 17";position:absolute;right:22px;bottom:16px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--ink-faint);font-weight:600}
-/* T타임즈식 에디토리얼 헤더 */
-.cc-edi-head{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-.cc-num{font-family:var(--mono);font-size:34px;font-weight:800;line-height:1;color:var(--c);letter-spacing:-.02em}
-.cc-edi-head .cc-bar{width:2px;height:30px;background:var(--c);opacity:.4;flex:none}
-.cc-eng{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
-.cc-rule{height:2px;background:var(--ink);opacity:.12;margin:14px 0 18px}
-.cc-edi .cc-h2{font-family:var(--serif);font-weight:900;font-size:27px;line-height:1.28;color:var(--ink);margin:0;letter-spacing:-.01em;text-wrap:balance}
-.cc-edi .cc-body{font-size:16px;line-height:1.82;color:var(--ink);word-break:keep-all;font-weight:450}
-.cc-kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--c);margin-bottom:16px}
-.cc-h2{font-family:var(--serif);font-weight:900;font-size:23px;line-height:1.3;color:var(--ink);margin:0 0 16px;text-wrap:balance}
-.cc-body{font-size:15px;line-height:1.78;color:var(--ink-soft);word-break:keep-all}
-.cc-probe{padding-top:48px}
-.cc-stage{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-faint);margin-bottom:12px}
-.cc-trail{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
-.cc-trail span{font-size:10.5px;font-weight:600;color:var(--ink-soft);background:color-mix(in srgb,var(--c) 12%,var(--paper));border:1px solid color-mix(in srgb,var(--c) 26%,transparent);padding:3px 8px;border-radius:10px}
-.cc-q{font-family:var(--serif);font-weight:800;font-size:20px;line-height:1.4;color:var(--ink);margin-bottom:18px;text-wrap:balance}
+/* ══ 풀 비주얼 카드뉴스 캐러셀 (T타임즈/trendcircle 톤) ══ */
+.cc-overlay{position:fixed;inset:0;background:rgba(10,9,7,.9);backdrop-filter:blur(8px);z-index:400;display:flex;align-items:center;justify-content:center;padding:14px}
+.cc-stage-wrap{position:relative;width:min(430px,94vw);aspect-ratio:4/5;max-height:88vh;border-radius:16px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.55);display:flex;flex-direction:column}
+
+/* 배경 이미지 + 스크림 (모든 슬라이드 공통) */
+.cc-bg{position:absolute;inset:0;z-index:0;background:#1a1614}
+.cc-bgimg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cc-scrim{position:absolute;inset:0}
+/* 표지: 하단만 어둡게 (이미지 잘 보이게) */
+.cc-scrim-cover{background:linear-gradient(to top,rgba(8,7,5,.82) 0%,rgba(8,7,5,.5) 30%,rgba(8,7,5,.12) 58%,rgba(8,7,5,.18) 100%)}
+/* 본문 슬라이드: 전체를 진하게 (긴 텍스트 가독성) */
+.cc-scrim-insight,.cc-scrim-case,.cc-scrim-probe,.cc-scrim-outro{background:linear-gradient(to bottom,rgba(8,7,5,.88) 0%,rgba(8,7,5,.8) 45%,rgba(8,7,5,.86) 100%)}
+
+.cc-x{position:absolute;top:13px;right:13px;z-index:8;width:34px;height:34px;border:none;border-radius:50%;background:rgba(255,255,255,.18);backdrop-filter:blur(6px);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.13s}
+.cc-x:hover{background:rgba(255,255,255,.32)}
+.cc-progress{position:absolute;top:13px;left:16px;right:60px;z-index:7;display:flex;gap:5px}
+.cc-pseg{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.28);cursor:pointer;transition:.25s}
+.cc-pseg.on{background:#fff}
+
+.cc-slide{position:relative;z-index:2;flex:1;display:flex;overflow:hidden}
+
+/* 표지 — 하단 정렬 큰 헤드라인 */
+.cc-cover-fg{align-self:flex-end;width:100%;padding:0 30px 64px;display:flex;flex-direction:column}
+.cc-eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.78);margin-bottom:14px}
+.cc-hook{font-family:var(--serif);font-weight:900;font-size:34px;line-height:1.18;color:#fff;letter-spacing:-.02em;text-wrap:balance;margin:0 0 14px;text-shadow:0 2px 24px rgba(0,0,0,.5)}
+.cc-concept{font-size:14px;font-weight:700;color:rgba(255,255,255,.82)}
+
+/* 본문 슬라이드 — 이미지 위 흰 텍스트 */
+.cc-fg{position:relative;flex:1;display:flex;flex-direction:column;padding:50px 30px 64px;overflow-y:auto;color:#fff}
+.cc-edi-head{display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.cc-num{font-family:var(--mono);font-size:38px;font-weight:800;line-height:1;color:#fff;letter-spacing:-.02em}
+.cc-edi-head .cc-bar{width:2px;height:32px;background:rgba(255,255,255,.4);flex:none}
+.cc-eng{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:rgba(255,255,255,.7)}
+.cc-edi .cc-h2{font-family:var(--serif);font-weight:900;font-size:28px;line-height:1.3;color:#fff;margin:0 0 18px;letter-spacing:-.01em;text-wrap:balance;text-shadow:0 1px 12px rgba(0,0,0,.4)}
+.cc-edi .cc-body{font-size:16px;line-height:1.85;color:rgba(255,255,255,.92);word-break:keep-all;font-weight:400}
+
+/* 5why */
+.cc-probe{}
+.cc-trail{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.cc-trail span{font-size:11px;font-weight:600;color:#fff;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.24);padding:4px 10px;border-radius:11px}
+.cc-stage{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:rgba(255,255,255,.6);margin-bottom:12px}
+.cc-q{font-family:var(--serif);font-weight:800;font-size:21px;line-height:1.4;color:#fff;margin-bottom:18px;text-wrap:balance}
 .cc-opts{display:flex;flex-direction:column;gap:10px}
-.cc-opt{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;font-size:14.5px;line-height:1.45;color:var(--ink);background:var(--paper);border:1.5px solid var(--line-2);border-radius:10px;padding:15px 16px;cursor:pointer;transition:.14s}
-.cc-opt:hover{border-color:var(--c);background:color-mix(in srgb,var(--c) 6%,var(--paper));transform:translateX(2px)}
-.cc-opt-arr{color:var(--c);font-weight:700;flex:none}
-.cc-verdict{font-family:var(--serif);font-weight:900;font-size:19px;line-height:1.4;color:var(--c);margin-bottom:12px;text-wrap:balance}
-.cc-common{font-size:13.5px;line-height:1.7;color:var(--ink-soft);margin-bottom:16px}
-.cc-advice{border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 5%,var(--paper));border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:14px}
+.cc-opt{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;font-size:15px;line-height:1.45;color:#fff;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);border-radius:11px;padding:16px 17px;cursor:pointer;transition:.14s;backdrop-filter:blur(3px)}
+.cc-opt:hover{background:rgba(255,255,255,.2);border-color:#fff}
+.cc-opt-arr{color:#fff;font-weight:700;flex:none}
+.cc-verdict{font-family:var(--serif);font-weight:900;font-size:20px;line-height:1.4;color:#fff;margin-bottom:12px;text-wrap:balance}
+.cc-common{font-size:14px;line-height:1.72;color:rgba(255,255,255,.86);margin-bottom:16px}
+.cc-advice{border-left:3px solid #fff;background:rgba(255,255,255,.12);border-radius:0 8px 8px 0;padding:14px 16px;margin-bottom:14px;backdrop-filter:blur(3px)}
 .cc-adv-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-.cc-adv-tag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#FFFCF6;background:var(--c);padding:3px 8px;border-radius:3px}
-.cc-adv-ind{font-size:12.5px;font-weight:700;color:var(--c)}
-.cc-advice p{font-size:14px;line-height:1.7;color:var(--ink)}
+.cc-adv-tag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:#16150F;background:#fff;padding:3px 8px;border-radius:3px}
+.cc-adv-ind{font-size:12.5px;font-weight:700;color:#fff}
+.cc-advice p{font-size:14.5px;line-height:1.72;color:#fff}
 .cc-others{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:16px}
-.cc-others-lab{font-size:11px;font-weight:600;color:var(--ink-faint);width:100%;margin-bottom:2px}
-.cc-othchip{font-size:11.5px;font-weight:600;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line-2);border-radius:12px;padding:6px 11px;cursor:pointer;transition:.13s}
-.cc-othchip:hover{border-color:var(--c)}
-.cc-othchip.on{background:var(--c);color:#FFFCF6;border-color:var(--c)}
-.cc-reset{align-self:flex-start;font-size:12.5px;font-weight:600;color:var(--ink-soft);background:none;border:1px solid var(--line-2);border-radius:7px;padding:8px 14px;cursor:pointer}
-.cc-reset:hover{border-color:var(--ink);color:var(--ink)}
-.cc-quote{font-family:var(--serif);font-weight:800;font-size:22px;line-height:1.5;color:var(--ink);margin:0 0 22px;padding:0;border:none;text-wrap:balance}
+.cc-others-lab{font-size:11px;font-weight:600;color:rgba(255,255,255,.6);width:100%;margin-bottom:2px}
+.cc-othchip{font-size:11.5px;font-weight:600;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:6px 11px;cursor:pointer;transition:.13s}
+.cc-othchip:hover{border-color:#fff}
+.cc-othchip.on{background:#fff;color:#16150F;border-color:#fff}
+.cc-reset{align-self:flex-start;font-size:12.5px;font-weight:600;color:#fff;background:none;border:1px solid rgba(255,255,255,.4);border-radius:7px;padding:8px 14px;cursor:pointer}
+.cc-reset:hover{border-color:#fff;background:rgba(255,255,255,.12)}
+
+/* 아웃트로 */
+.cc-quote{font-family:var(--serif);font-weight:800;font-size:24px;line-height:1.5;color:#fff;margin:0 0 24px;padding:0;border:none;text-wrap:balance;text-shadow:0 1px 12px rgba(0,0,0,.4)}
 .cc-outro-actions{margin-bottom:22px}
-.cc-save{font-size:13.5px;font-weight:700;color:var(--ink);border:1.5px solid var(--ink);background:var(--paper);padding:11px 18px;border-radius:8px;cursor:pointer;transition:.13s}
-.cc-save:hover{background:var(--ink);color:var(--paper)}
-.cc-save.on{background:var(--ink);color:var(--accent)}
-.cc-related-lab{font-size:11px;font-weight:600;letter-spacing:.04em;color:var(--ink-faint);margin-bottom:10px}
-.cc-rel{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;font-size:14px;font-weight:600;color:var(--ink);background:var(--paper);border:1px solid var(--line-2);border-radius:9px;padding:13px 15px;margin-bottom:8px;cursor:pointer;transition:.13s}
-.cc-rel:hover{border-color:var(--c)}
-.cc-rel-arr{color:var(--c);font-weight:700;flex:none}
-.cc-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:40px;height:40px;border:none;border-radius:50%;background:rgba(255,255,255,.55);backdrop-filter:blur(4px);color:#16150F;font-size:24px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.13s}
-.cc-nav:hover{background:rgba(255,255,255,.85)}
-.cc-nav.prev{left:10px}
-.cc-nav.next{right:10px}
-@media(max-width:480px){.cc-hook{font-size:26px}.cc-h2{font-size:21px}.cc-text-slide{padding:50px 22px 24px}.cc-cover-text{padding:0 22px 22px}}
+.cc-save{font-size:14px;font-weight:700;color:#16150F;border:none;background:#fff;padding:12px 20px;border-radius:9px;cursor:pointer;transition:.13s}
+.cc-save:hover{background:rgba(255,255,255,.85)}
+.cc-save.on{background:var(--c);color:#fff}
+.cc-related-lab{font-size:11px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.6);margin-bottom:10px}
+.cc-rel{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;text-align:left;font-size:14px;font-weight:600;color:#fff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);border-radius:9px;padding:13px 15px;margin-bottom:8px;cursor:pointer;transition:.13s}
+.cc-rel:hover{background:rgba(255,255,255,.2);border-color:#fff}
+.cc-rel-arr{color:#fff;font-weight:700;flex:none}
+
+/* 브랜드 푸터 */
+.cc-brand{position:absolute;left:30px;bottom:18px;z-index:6;font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:rgba(255,255,255,.5);font-weight:600}
+
+/* 하단 네비바 — 슬라이드 밖 (글자 안 가림) */
+.cc-navbar{position:absolute;right:18px;bottom:14px;z-index:7;display:flex;align-items:center;gap:10px}
+.cc-page{font-family:var(--mono);font-size:11px;font-weight:600;color:rgba(255,255,255,.7);letter-spacing:.08em}
+.cc-nav{width:38px;height:38px;border:none;border-radius:50%;background:rgba(255,255,255,.92);color:#16150F;font-size:22px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.13s}
+.cc-nav:hover{background:#fff;transform:scale(1.06)}
+.cc-nav:disabled{opacity:.3;cursor:default;transform:none}
+@media(max-width:480px){.cc-hook{font-size:30px}.cc-edi .cc-h2{font-size:25px}.cc-fg{padding:46px 24px 60px}.cc-cover-fg{padding:0 24px 60px}.cc-brand{left:24px}}
 
 .stepbar{display:flex;gap:0;padding:0 26px;border-bottom:1px solid var(--line)}
 .stepbar .step{flex:1;padding:14px 4px 12px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;position:relative;transition:.13s;text-align:left;min-width:0}

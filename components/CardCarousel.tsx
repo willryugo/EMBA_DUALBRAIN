@@ -223,65 +223,62 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
           ))}
         </div>
 
+        {/* ── 풀 비주얼 배경 (모든 슬라이드 공통) ── */}
+        <div className="cc-bg" style={{ background: bg }}>
+          {visual && !imgFail && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className="cc-bgimg"
+              src={visual.hero}
+              alt=""
+              onError={() => setImgFail(true)}
+            />
+          )}
+          <div className={"cc-scrim cc-scrim-" + kind} />
+        </div>
+
         <div className={"cc-slide cc-" + kind}>
           {/* COVER */}
           {kind === "cover" && (
-            <div className="cc-cover" style={{ background: bg }}>
-              {visual && !imgFail && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  className="cc-hero"
-                  src={visual.hero}
-                  alt=""
-                  onError={() => setImgFail(true)}
-                />
-              )}
-              {!(visual?.hasText && !imgFail) && <div className="cc-cover-grad" />}
-              {!(visual?.hasText && !imgFail) && (
-                <div className="cc-cover-text">
-                  <div className="cc-eyebrow">
-                    {COURSE_SHORT[card.course]}
-                    {card.week ? ` · WK${String(card.week).padStart(2, "0")}` : ""}
-                  </div>
-                  <h1 className="cc-hook">{card.hook}</h1>
-                  <div className="cc-concept">— {card.concept}</div>
-                </div>
-              )}
-              <div className="cc-swipe-hint">밀어서 시작 →</div>
+            <div className="cc-cover-fg">
+              <div className="cc-eyebrow">
+                {COURSE_SHORT[card.course]}
+                {card.week ? ` · WK${String(card.week).padStart(2, "0")}` : ""}
+              </div>
+              <h1 className="cc-hook">{card.hook}</h1>
+              <div className="cc-concept">— {card.concept}</div>
             </div>
           )}
 
           {/* INSIGHT */}
           {kind === "insight" && (
-            <div className="cc-text-slide cc-edi">
+            <div className="cc-fg cc-edi">
               <div className="cc-edi-head">
                 <span className="cc-num">01</span>
                 <span className="cc-bar" />
                 <span className="cc-eng">CONCEPT</span>
               </div>
               <h2 className="cc-h2">{card.concept}</h2>
-              <div className="cc-rule" />
               <p className="cc-body">{card.insight}</p>
             </div>
           )}
 
           {/* CASE */}
           {kind === "case" && (
-            <div className="cc-text-slide cc-edi">
+            <div className="cc-fg cc-edi">
               <div className="cc-edi-head">
                 <span className="cc-num">02</span>
                 <span className="cc-bar" />
                 <span className="cc-eng">CASE STUDY</span>
               </div>
               <h2 className="cc-h2">{card.case_title}</h2>
-              <div className="cc-rule" />
               <p className="cc-body">{card.case_body}</p>
             </div>
           )}
 
           {/* PROBE (인터랙티브 5why) */}
           {kind === "probe" && (
-            <div className="cc-text-slide cc-edi cc-probe">
+            <div className="cc-fg cc-edi cc-probe">
               <div className="cc-edi-head">
                 <span className="cc-num">03</span>
                 <span className="cc-bar" />
@@ -293,7 +290,7 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
 
           {/* OUTRO */}
           {kind === "outro" && (
-            <div className="cc-text-slide cc-edi cc-outro">
+            <div className="cc-fg cc-edi cc-outro">
               <div className="cc-edi-head">
                 <span className="cc-num">04</span>
                 <span className="cc-bar" />
@@ -324,17 +321,31 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
           )}
         </div>
 
-        {/* 좌우 네비 */}
-        {idx > 0 && (
-          <button className="cc-nav prev" onClick={() => go(-1)} aria-label="이전">
+        {/* 브랜드 푸터 */}
+        <div className="cc-brand">DUALBRAIN · EMBA 17</div>
+
+        {/* 하단 네비 (슬라이드 밖 — 글자 안 가림) */}
+        <div className="cc-navbar">
+          <button
+            className="cc-nav prev"
+            onClick={() => go(-1)}
+            disabled={idx === 0}
+            aria-label="이전"
+          >
             ‹
           </button>
-        )}
-        {idx < slides.length - 1 && (
-          <button className="cc-nav next" onClick={() => go(1)} aria-label="다음">
+          <span className="cc-page">
+            {idx + 1} / {slides.length}
+          </span>
+          <button
+            className="cc-nav next"
+            onClick={() => go(1)}
+            disabled={idx === slides.length - 1}
+            aria-label="다음"
+          >
             ›
           </button>
-        )}
+        </div>
       </div>
     </div>
   );
