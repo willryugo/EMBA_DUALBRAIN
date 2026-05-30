@@ -12,6 +12,7 @@ import {
   type CardProbe,
   type ProbeLeaf,
 } from "@/lib/probe";
+import { hasVisual } from "@/lib/visuals";
 import { DBMark } from "./DBMark";
 
 const STEP_LABELS = [
@@ -27,9 +28,10 @@ interface Props {
   cards: Card[];
   onClose: () => void;
   onOpen: (id: string) => void;
+  onCarousel?: (id: string) => void;
 }
 
-export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
+export function DetailModal({ cardId, cards, onClose, onOpen, onCarousel }: Props) {
   const card = useMemo(() => cards.find((c) => c.id === cardId), [cardId, cards]);
   const [step, setStep] = useState(0);
   const color = card ? COURSE_COLOR[card.course] || "#16150F" : "#16150F";
@@ -118,9 +120,22 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
             <span className="dt-sep">·</span>
             <span className="dt-concept">{card.concept}</span>
           </div>
-          <button className="dt-close" onClick={onClose} aria-label="닫기">
-            ×
-          </button>
+          <div className="dt-actions">
+            {onCarousel && (hasVisual(card.id) || getProbe(card.id)) && (
+              <button
+                className="dt-carousel"
+                onClick={() => {
+                  logEvent("carousel_launch", { card_id: card.id });
+                  onCarousel(card.id);
+                }}
+              >
+                ✨ 카드뉴스
+              </button>
+            )}
+            <button className="dt-close" onClick={onClose} aria-label="닫기">
+              ×
+            </button>
+          </div>
         </div>
 
         <div className="stepbar">

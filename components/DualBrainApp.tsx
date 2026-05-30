@@ -21,6 +21,7 @@ import { HeroAI } from "./HeroAI";
 import { SearchBar, FilterChips, FilterPanel } from "./Filters";
 import { MagCard, layoutClass } from "./MagCard";
 import { DetailModal } from "./DetailModal";
+import { CardCarousel } from "./CardCarousel";
 import { OntologyGraph } from "./OntologyGraph";
 import { TweaksPanel } from "./TweaksPanel";
 import { Footer } from "./Footer";
