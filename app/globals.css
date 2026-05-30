@@ -509,7 +509,15 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 .cc-concept{font-size:13.5px;font-weight:700;color:rgba(255,252,246,.86)}
 .cc-swipe-hint{position:absolute;z-index:2;bottom:13px;right:18px;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:rgba(255,252,246,.7);animation:ccpulse 1.8s ease-in-out infinite}
 @keyframes ccpulse{0%,100%{opacity:.5;transform:translateX(0)}50%{opacity:1;transform:translateX(4px)}}
-.cc-text-slide{flex:1;display:flex;flex-direction:column;padding:54px 30px 30px;overflow-y:auto}
+.cc-text-slide{flex:1;display:flex;flex-direction:column;padding:46px 32px 30px;overflow-y:auto}
+/* T타임즈식 에디토리얼 헤더 */
+.cc-edi-head{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.cc-num{font-family:var(--mono);font-size:34px;font-weight:800;line-height:1;color:var(--c);letter-spacing:-.02em}
+.cc-edi-head .cc-bar{width:2px;height:30px;background:var(--c);opacity:.4;flex:none}
+.cc-eng{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--ink-soft)}
+.cc-rule{height:2px;background:var(--ink);opacity:.12;margin:14px 0 18px}
+.cc-edi .cc-h2{font-family:var(--serif);font-weight:900;font-size:27px;line-height:1.28;color:var(--ink);margin:0;letter-spacing:-.01em;text-wrap:balance}
+.cc-edi .cc-body{font-size:16px;line-height:1.82;color:var(--ink);word-break:keep-all;font-weight:450}
 .cc-kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;font-weight:700;color:var(--c);margin-bottom:16px}
 .cc-h2{font-family:var(--serif);font-weight:900;font-size:23px;line-height:1.3;color:var(--ink);margin:0 0 16px;text-wrap:balance}
 .cc-body{font-size:15px;line-height:1.78;color:var(--ink-soft);word-break:keep-all}
