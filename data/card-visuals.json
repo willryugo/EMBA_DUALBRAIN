@@ -6,63 +6,99 @@
     "ratio": "4:5"
   },
   "mpo-two-factor-herzberg": {
-    "hero": "/cards/mpo-two-factor-herzberg.webp",
-    "tone": ["#ece5d6", "#cbb9a6"],
+    "hero": "/cards/mpo-two-factor-herzberg.svg",
+    "tone": [
+      "#ece5d6",
+      "#cbb9a6"
+    ],
     "motif": "서로 다른 두 축 — 바닥을 메우는 것과 위로 솟는 것"
   },
   "ms-mega-project-overrun": {
-    "hero": "/cards/ms-mega-project-overrun.webp",
-    "tone": ["#e6e7e2", "#b9bcc0"],
+    "hero": "/cards/ms-mega-project-overrun.svg",
+    "tone": [
+      "#e6e7e2",
+      "#b9bcc0"
+    ],
     "motif": "안개 속으로 뻗는 다리"
   },
   "mkt-b2b-solution-sales": {
-    "hero": "/cards/mkt-b2b-solution-sales.webp",
-    "tone": ["#eae3d8", "#c2b29c"],
+    "hero": "/cards/mkt-b2b-solution-sales.svg",
+    "tone": [
+      "#eae3d8",
+      "#c2b29c"
+    ],
     "motif": "연결된 점들, 하나만 빛난다"
   },
   "acc-accrual-basis": {
-    "hero": "/cards/acc-accrual-basis.webp",
-    "tone": ["#e9e6da", "#bcc0ad"],
+    "hero": "/cards/acc-accrual-basis.svg",
+    "tone": [
+      "#e9e6da",
+      "#bcc0ad"
+    ],
     "motif": "가득 차 보이나 바닥이 비는 그릇"
   },
   "eco-price-elasticity": {
-    "hero": "/cards/eco-price-elasticity.webp",
-    "tone": ["#ece1d9", "#cda894"],
+    "hero": "/cards/eco-price-elasticity.svg",
+    "tone": [
+      "#ece1d9",
+      "#cda894"
+    ],
     "motif": "팽팽히 당겨진 곡선"
   },
   "eth-medical-device-incentive": {
-    "hero": "/cards/eth-medical-device-incentive.webp",
-    "tone": ["#e8e6e3", "#b0aaa3"],
+    "hero": "/cards/eth-medical-device-incentive.svg",
+    "tone": [
+      "#e8e6e3",
+      "#b0aaa3"
+    ],
     "motif": "흰색과 검정 사이의 경계선"
   },
   "mpo-recruitment-vs-promote": {
-    "hero": "/cards/mpo-recruitment-vs-promote.webp",
-    "tone": ["#e7e8df", "#b3bda4"],
+    "hero": "/cards/mpo-recruitment-vs-promote.svg",
+    "tone": [
+      "#e7e8df",
+      "#b3bda4"
+    ],
     "motif": "옮겨 심은 가지 vs 자란 줄기"
   },
   "eco-prisoners-dilemma": {
-    "hero": "/cards/eco-prisoners-dilemma.webp",
-    "tone": ["#eadfd7", "#c6a38f"],
+    "hero": "/cards/eco-prisoners-dilemma.svg",
+    "tone": [
+      "#eadfd7",
+      "#c6a38f"
+    ],
     "motif": "마주 보는 두 갈래 길"
   },
   "mkt-stp": {
-    "hero": "/cards/mkt-stp.webp",
-    "tone": ["#ebe4d6", "#c5b399"],
+    "hero": "/cards/mkt-stp.svg",
+    "tone": [
+      "#ebe4d6",
+      "#c5b399"
+    ],
     "motif": "흩어진 점이 한 초점으로 좁혀짐"
   },
   "acc-working-capital": {
-    "hero": "/cards/acc-working-capital.webp",
-    "tone": ["#e8e7db", "#bcc1ab"],
+    "hero": "/cards/acc-working-capital.svg",
+    "tone": [
+      "#e8e7db",
+      "#bcc1ab"
+    ],
     "motif": "끊김 없는 순환 고리"
   },
   "eth-whistleblower": {
-    "hero": "/cards/eth-whistleblower.webp",
-    "tone": ["#e9e7e4", "#ada7a0"],
+    "hero": "/cards/eth-whistleblower.svg",
+    "tone": [
+      "#e9e7e4",
+      "#ada7a0"
+    ],
     "motif": "벽을 관통하는 통로와 빛"
   },
   "ms-newsvendor": {
-    "hero": "/cards/ms-newsvendor.webp",
-    "tone": ["#e7e8e3", "#b7babe"],
+    "hero": "/cards/ms-newsvendor.svg",
+    "tone": [
+      "#e7e8e3",
+      "#b7babe"
+    ],
     "motif": "부족과 과잉 사이의 저울"
   }
 }
