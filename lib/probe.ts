@@ -7,17 +7,21 @@ import probesJson from "@/data/probes.json";
 
 export interface ProbeOption {
   label: string;
-  next?: string; // 다음 노드 id (Stage 1 → Stage 2)
-  leaf?: string; // 최종 leaf id (Stage 2 → Stage 3)
+  next?: string; // 다음 질문 id (임의 깊이 체인 가능)
+  leaf?: string; // 최종 leaf id (바로 처방으로)
+  because?: string; // 이 선택의 의미 — 개념 임베딩 (선택지 밑 한 줄)
 }
 
 export interface ProbeQuestion {
   q: string;
+  lens?: string; // 이 길목의 이론 렌즈 (칩)
+  teach?: string; // 길목에서 가르치는 1-2줄 (개념 임베딩)
   options: ProbeOption[];
 }
 
 export interface ProbeLeaf {
   verdict: string;
+  principle?: string; // 적용된 핵심 원리(이론) 한 줄
   common: string;
   byIndustry: Record<string, string>; // 키: Industry enum 또는 "default"
 }
