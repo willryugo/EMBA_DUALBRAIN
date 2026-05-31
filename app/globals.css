@@ -1096,3 +1096,22 @@ mark.hl {
     color-mix(in srgb, var(--c, var(--accent)) 40%, transparent) 0
   );
 }
+
+/* ── 스텝 내비게이션 간결화: 인라인 유도 버튼 제거, 하단 '다음'만 점멸 유도 ── */
+/* 각 스텝의 '그때 배웠던…/쉽게…/그래서 내일…/연결된 카드 보기' 버튼 일괄 숨김 */
+.nextcue { display: none !important; }
+/* 하단 '다음' — 다음 단계가 있으면 점멸로 누르게 유도 (모든 카드 규칙) */
+.dn-btn.dn-next.pulse {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 800;
+  animation: nextPulse 1.5s ease-in-out infinite;
+}
+@keyframes nextPulse {
+  0%,100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 46%, transparent); transform: translateY(0); }
+  50%     { box-shadow: 0 0 0 8px color-mix(in srgb, var(--accent) 0%, transparent); transform: translateY(-1px); }
+}
+@supports not (background: color-mix(in srgb, red, blue)) {
+  .dn-btn.dn-next.pulse { animation: nextPulseFB 1.5s ease-in-out infinite; }
+  @keyframes nextPulseFB { 0%,100%{ box-shadow:0 0 0 0 rgba(214,94,146,.5);} 50%{ box-shadow:0 0 0 8px rgba(214,94,146,0);} }
+}

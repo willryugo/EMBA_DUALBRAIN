@@ -181,7 +181,11 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
               ></button>
             ))}
           </div>
-          <button className="dn-btn" onClick={next} disabled={step === 4}>
+          <button
+            className={"dn-btn dn-next" + (step < 4 ? " pulse" : "")}
+            onClick={next}
+            disabled={step === 4}
+          >
             다음 →
           </button>
         </div>
