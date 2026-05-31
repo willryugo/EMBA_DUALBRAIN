@@ -187,6 +187,19 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
               </div>
               <h1 className="ttn-cover-h">{journey.symptom}</h1>
               {journey.symptomSub && <p className="ttn-cover-sub">{journey.symptomSub}</p>}
+
+              <ol className="ttn-cover-toc">
+                {journey.steps.map((s) => (
+                  <li key={s.n} className={"ttn-toc-li" + (s.isResult ? " result" : "")}>
+                    <span className="ttn-toc-n">{s.n}</span>
+                    <span className="ttn-toc-q">{s.why}</span>
+                  </li>
+                ))}
+              </ol>
+
+              <button className="ttn-cover-start" onClick={() => go(1)}>
+                첫 번째 “왜?”부터 시작 <span aria-hidden>→</span>
+              </button>
             </>
           )}
 
