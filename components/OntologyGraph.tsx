@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Card } from "@/lib/types";
-import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
+import type { Card, Industry } from "@/lib/types";
+import { COURSE_COLOR, COURSE_SHORT, INDUSTRIES, UNIVERSAL } from "@/lib/manifest";
+import { store } from "@/lib/storage";
 import neighborsJson from "@/data/neighbors.json";
 
 interface Props {
@@ -163,6 +164,20 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   viewRef.current = view;
   const panRef = useRef<{ cx: number; cy: number; vx: number; vy: number } | null>(null);
 
+  // 색칠 모드: 과목 색 ↔ 나의 산업군 강조
+  const [colorMode, setColorMode] = useState<"course" | "industry">("course");
+  const [myInds, setMyInds] = useState<Industry[]>([]);
+  useEffect(() => {
+    setMyInds((store.get<Industry[]>("emba17_my_industries") || []) as Industry[]);
+  }, []);
+  const toggleInd = (ind: Industry) => {
+    setMyInds((prev) => {
+      const next = prev.includes(ind) ? prev.filter((x) => x !== ind) : [...prev, ind];
+      store.set("emba17_my_industries", next);
+      return next;
+    });
+  };
+
   // 마운트 직후 페이드인 (최종 배치만 부드럽게 등장)
   useEffect(() => {
     setNodes(settled.map((n) => ({ ...n })));
@@ -314,6 +329,13 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     n.x >= view.x - 60 && n.x <= view.x + view.w + 60 &&
     n.y >= view.y - 60 && n.y <= view.y + view.h + 60;
 
+  // 나의 산업군 모드: 카드가 내 산업(또는 범용)에 해당하면 관련
+  const isRelevant = (c: Card) => {
+    if (colorMode !== "industry") return true;
+    const inds = Array.isArray(c.industry) ? c.industry : [];
+    return inds.includes(UNIVERSAL) || (myInds.length > 0 && inds.some((i) => myInds.includes(i)));
+  };
+
   return (
     <div className="bm-fs" onClick={() => setActive(null)}>
       <style>{`
@@ -322,6 +344,17 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
         .bm-node-c { animation: bmTwinkle 3.4s ease-in-out infinite; }
         .bm-glow-c { transform-box: fill-box; transform-origin: center; animation: bmGlowPulse 3s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce){ .bm-node-c,.bm-glow-c{ animation: none } }
+        .bm-modebar{position:absolute;top:60px;left:26px;z-index:12;display:flex;flex-direction:column;gap:10px;max-width:64vw}
+        .bm-seg{display:inline-flex;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:3px;gap:2px;width:max-content}
+        .bm-seg button{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.6);background:transparent;border:none;border-radius:7px;padding:7px 14px;cursor:pointer;transition:.13s;font-family:inherit}
+        .bm-seg button.on{background:#fff;color:#16150F}
+        .bm-indwrap{display:flex;flex-direction:column;gap:7px}
+        .bm-indhint{font-family:var(--mono);font-size:11px;color:rgba(255,220,150,.9);font-weight:700}
+        .bm-indchips{display:flex;flex-wrap:wrap;gap:6px;max-width:62vw}
+        .bm-indchip{font-size:11px;font-weight:600;color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:5px 11px;cursor:pointer;transition:.12s;font-family:inherit}
+        .bm-indchip:hover{border-color:rgba(255,255,255,.45)}
+        .bm-indchip.on{background:#fff;color:#16150F;border-color:#fff}
+        @media(max-width:600px){.bm-modebar{top:auto;bottom:84px;left:16px;max-width:92vw}.bm-indchips{max-width:90vw}}
       `}</style>
       <div className="bm-head">
         <h2>두 번째 뇌의 지도</h2>
@@ -329,6 +362,34 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
           휠 = 확대 · 드래그 = 이동 · 클릭 = 연결망 · 더블클릭 = 카드 · ESC/빈곳 = 선택 해제
         </div>
         <button className="bm-close" onClick={onClose}>← 매거진으로</button>
+      </div>
+
+      {/* 좌상단: 색칠 모드 토글 (EMBA 과목 / 나의 산업군) */}
+      <div className="bm-modebar" onClick={(e) => e.stopPropagation()}>
+        <div className="bm-seg">
+          <button className={colorMode === "course" ? "on" : ""} onClick={() => setColorMode("course")}>
+            EMBA 과목
+          </button>
+          <button className={colorMode === "industry" ? "on" : ""} onClick={() => setColorMode("industry")}>
+            나의 산업군
+          </button>
+        </div>
+        {colorMode === "industry" && (
+          <div className="bm-indwrap">
+            {myInds.length === 0 && <span className="bm-indhint">내 산업을 선택하세요 ↓</span>}
+            <div className="bm-indchips">
+              {INDUSTRIES.filter((i) => i !== UNIVERSAL).map((ind) => (
+                <button
+                  key={ind}
+                  className={"bm-indchip " + (myInds.includes(ind) ? "on" : "")}
+                  onClick={() => toggleInd(ind)}
+                >
+                  {ind}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <svg
@@ -375,24 +436,28 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
             const dim = isDim(n.id);
             const isActive = active === n.id;
             const isHub = n.deg >= 16; // 허브는 항상
+            const relevant = isRelevant(n.card); // 산업군 모드: 내 산업 관련?
+            const grayed = colorMode === "industry" && !relevant;
             // 확대할수록 더 작은 노드 라벨까지 드러남(보이는 영역 안에서만)
             const meetsDensity = n.deg >= labelDegThreshold && inView(n);
             const showLabel =
-              isActive || hover === n.id || isHub || meetsDensity || (active && adj[active]?.has(n.id));
+              isActive || hover === n.id || isHub || meetsDensity ||
+              (active && adj[active]?.has(n.id)) ||
+              (colorMode === "industry" && relevant && inView(n));
             // 라벨은 화면상 크기 일정(축척 보정) — 확대해도 글자가 안 커짐
             const lblSize = Math.max(11, Math.min(20, n.r * 0.55)) / k;
             return (
               <g
                 key={n.id}
                 transform={`translate(${n.x},${n.y})`}
-                style={{ cursor: "pointer", opacity: dim ? 0.18 : 1, transition: "opacity .2s" }}
+                style={{ cursor: "pointer", opacity: dim ? 0.18 : grayed ? 0.24 : 1, transition: "opacity .25s" }}
                 onPointerDown={onDown(n.id)}
                 onClick={handleClick(n.id)}
                 onMouseEnter={() => setHover(n.id)}
                 onMouseLeave={() => setHover(null)}
               >
                 {/* 허브 글로우 (펄스) */}
-                {isHub && (
+                {isHub && !grayed && (
                   <circle
                     className="bm-glow-c"
                     r={n.r + 8}
@@ -403,7 +468,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                 <circle
                   className={isActive ? undefined : "bm-node-c"}
                   r={n.r}
-                  fill={n.color}
+                  fill={grayed ? "#3f4658" : n.color}
                   stroke={isActive ? "#fff" : "rgba(255,255,255,.22)"}
                   strokeWidth={(isActive ? 2.5 : 1) / k}
                   style={{ animationDelay: `${(n.id.charCodeAt(n.id.length - 1) % 11) * 0.31}s` }}
