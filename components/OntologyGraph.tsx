@@ -193,6 +193,21 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     return () => svg.removeEventListener("wheel", onWheel);
   }, []);
 
+  // ESC: 선택 있으면 해제(매거진으로 안 나감), 없을 때만 닫기
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (active) {
+        e.stopPropagation();
+        setActive(null);
+      } else {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [active, onClose]);
+
   // ── 드래그 중에만 가벼운 라이브 물리 (주변 노드가 반응) ──
   const runDragLoop = () => {
     cancelAnimationFrame(dragRafRef.current);
@@ -311,7 +326,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       <div className="bm-head">
         <h2>두 번째 뇌의 지도</h2>
         <div className="bm-hint">
-          휠 = 확대(지도처럼 디테일 드러남) · 빈 공간 드래그 = 이동 · 클릭 = 연결망 · 더블클릭 = 카드
+          휠 = 확대 · 드래그 = 이동 · 클릭 = 연결망 · 더블클릭 = 카드 · ESC/빈곳 = 선택 해제
         </div>
         <button className="bm-close" onClick={onClose}>← 매거진으로</button>
       </div>
@@ -349,6 +364,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                 stroke={on ? a.color : "#aab4d4"}
                 strokeOpacity={on ? 0.7 : dim ? 0.04 : baseLineOpacity}
                 strokeWidth={(on ? 2 : 1) / k}
+                style={{ transition: "stroke-opacity .45s ease, stroke-width .3s ease" }}
               />
             );
           })}
@@ -392,19 +408,23 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                   strokeWidth={(isActive ? 2.5 : 1) / k}
                   style={{ animationDelay: `${(n.id.charCodeAt(n.id.length - 1) % 11) * 0.31}s` }}
                 />
-                {showLabel && (
-                  <text
-                    x={0}
-                    y={n.r + lblSize + 2}
-                    textAnchor="middle"
-                    fill={isHub || isActive ? "#fff" : "rgba(255,255,255,.85)"}
-                    fontSize={lblSize}
-                    fontWeight={isHub || isActive ? 700 : 500}
-                    style={{ pointerEvents: "none", textShadow: "0 1px 5px rgba(0,0,0,.9)" }}
-                  >
-                    {n.card.concept.length > 16 ? n.card.concept.slice(0, 15) + "…" : n.card.concept}
-                  </text>
-                )}
+                {/* 라벨은 항상 마운트 + opacity 전환 → 줌에 따라 지도처럼 스르륵 등장/사라짐 */}
+                <text
+                  x={0}
+                  y={n.r + lblSize + 2}
+                  textAnchor="middle"
+                  fill={isHub || isActive ? "#fff" : "rgba(255,255,255,.85)"}
+                  fontSize={lblSize}
+                  fontWeight={isHub || isActive ? 700 : 500}
+                  style={{
+                    pointerEvents: "none",
+                    textShadow: "0 1px 5px rgba(0,0,0,.9)",
+                    opacity: showLabel ? 1 : 0,
+                    transition: "opacity .4s ease",
+                  }}
+                >
+                  {n.card.concept.length > 16 ? n.card.concept.slice(0, 15) + "…" : n.card.concept}
+                </text>
               </g>
             );
           })}
@@ -424,6 +444,16 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       {/* 선택된 노드 정보 */}
       {active && nodeById[active] && (
         <div className="bm-info" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => setActive(null)}
+            aria-label="선택 해제"
+            style={{
+              position: "absolute", top: 10, right: 12, width: 26, height: 26,
+              borderRadius: "50%", border: "1px solid rgba(255,255,255,.25)",
+              background: "rgba(255,255,255,.08)", color: "#fff", cursor: "pointer",
+              fontSize: 13, lineHeight: 1, display: "flex", alignItems: "center", justifyContent: "center",
+            }}
+          >✕</button>
           <div className="bm-info-course" style={{ color: nodeById[active].color }}>
             {COURSE_SHORT[nodeById[active].card.course]} · 연결 {nodeById[active].deg}
           </div>
