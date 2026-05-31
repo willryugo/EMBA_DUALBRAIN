@@ -121,8 +121,6 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
             }
           }}
         />
-      </div>
-      <div className="row">
         <button
           className="go"
           onClick={() => doAsk()}
@@ -135,7 +133,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
                 <span></span>
                 <span></span>
               </span>{" "}
-              두 번째 뇌가 찾는 중
+              찾는 중
             </>
           ) : (
             <>

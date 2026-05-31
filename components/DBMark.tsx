@@ -24,8 +24,8 @@ export function DBMark({
       aria-hidden="true"
     >
       <g style={{ mixBlendMode: "multiply" }}>
-        <circle className="dbm-l" cx="32" cy="30" r="25" fill="var(--brain-l)" opacity="0.78" />
-        <circle className="dbm-r" cx="68" cy="30" r="25" fill="var(--brain-r)" opacity="0.78" />
+        <circle className="dbm-l" cx="32" cy="30" r="25" fill="var(--brain-l)" opacity="0.95" />
+        <circle className="dbm-r" cx="68" cy="30" r="25" fill="var(--brain-r)" opacity="0.95" />
       </g>
       <style>{`
         /* 명상 점멸 — circle엔 filter 금지(SVG filter 영역 클리핑=네모 발생 + multiply 깨짐).
