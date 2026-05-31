@@ -1042,3 +1042,43 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
   .probe-spotlight{ padding:15px 12px 8px; }
   .probe-spotlight .ps-flag{ left:12px; font-size:11px; }
 }
+
+
+/* ── 카드 제목/헤드라인 가독성 (keep-all + balance + 하이라이트) ── */
+/* 한국어 단어 중간 끊김 방지 + 줄 길이 균형 */
+.card h3,
+.stat-hook,
+.mf-body h3,
+.spread .sc-quote,
+.poster-hook,
+.step-problem .scene,
+.aibox h3 {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+/* 핵심 단어 하이라이트 — 형광펜 밑줄 느낌(카드색 var(--c), 없으면 accent) */
+mark.hl {
+  background: linear-gradient(
+    transparent 58%,
+    color-mix(in srgb, var(--c, var(--accent)) 34%, transparent) 0
+  );
+  color: inherit;
+  font-weight: inherit;
+  padding: 0 .03em;
+  border-radius: 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+/* color-mix 미지원 구형 브라우저 fallback */
+@supports not (background: color-mix(in srgb, red, blue)) {
+  mark.hl { background: linear-gradient(transparent 58%, var(--accent-soft, #ffe1ef) 0); }
+}
+/* 모달 문제인식 헤드라인은 강조를 조금 더 또렷하게 */
+.step-problem .scene mark.hl,
+.poster-hook mark.hl {
+  background: linear-gradient(
+    transparent 52%,
+    color-mix(in srgb, var(--c, var(--accent)) 40%, transparent) 0
+  );
+}

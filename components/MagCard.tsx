@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import type { Card } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT, UNIVERSAL } from "@/lib/manifest";
 import { DBMark } from "./DBMark";
+import { rich } from "./rich";
 
 export type Layout =
   | ""
@@ -51,7 +52,7 @@ export function MagCard({ card, index, layout, onClick }: Props) {
           {card.week ? String(card.week).padStart(2, "0") : "–"}
         </div>
         <h3>{card.concept}</h3>
-        <p className="stat-hook">{card.hook}</p>
+        <p className="stat-hook">{rich(card.hook)}</p>
         <div className="foot">
           <div className="inds">{indStr || "범용"}</div>
           <div className="arrow">→</div>
@@ -74,7 +75,7 @@ export function MagCard({ card, index, layout, onClick }: Props) {
           <div className="spread-sep"></div>
           <div className="spread-col r">
             <div className="sc-eyebrow">APPLICATION</div>
-            <div className="sc-quote">&ldquo;{card.hook}&rdquo;</div>
+            <div className="sc-quote">&ldquo;{rich(card.hook)}&rdquo;</div>
             <p className="sc-body sc-app">{card.application}</p>
           </div>
         </div>
@@ -96,7 +97,7 @@ export function MagCard({ card, index, layout, onClick }: Props) {
         <div className="mf-rule"></div>
         <div className="mf-body">
           <div className="mf-eyebrow">MANIFESTO · 한 줄</div>
-          <h3>{card.hook}</h3>
+          <h3>{rich(card.hook)}</h3>
           <p className="mf-concept">— {card.concept}</p>
           <div className="mf-foot">
             <span className="mf-course">{COURSE_SHORT[card.course]}</span>
@@ -121,7 +122,7 @@ export function MagCard({ card, index, layout, onClick }: Props) {
               N°{String(index + 1).padStart(2, "0")} / FEATURE
             </div>
           </div>
-          <h3>{card.hook}</h3>
+          <h3>{rich(card.hook)}</h3>
           <div className="concept">{card.concept}</div>
           <p className="ins">{card.insight}</p>
           <div className="feat-bottom">
@@ -142,7 +143,7 @@ export function MagCard({ card, index, layout, onClick }: Props) {
             </div>
             <div className="cnum">N°{String(index + 1).padStart(2, "0")}</div>
           </div>
-          <h3>{card.hook}</h3>
+          <h3>{rich(card.hook)}</h3>
           <div className="concept">{card.concept}</div>
           <p className="ins">{card.insight}</p>
           <div className="foot">
