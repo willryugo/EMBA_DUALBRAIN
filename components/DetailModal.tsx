@@ -329,6 +329,18 @@ function StepDecision({
   return (
     <div className="step-content step-decision" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">DECISION · 04 30초 안에 쓸 것</div>
+      {getProbe(card.id) && (
+        <div
+          className="probe-spotlight"
+          style={{ ["--c" as string]: color } as React.CSSProperties}
+        >
+          <span className="ps-flag">⬇ 여기까지 왔다면 꼭</span>
+          <div className="ps-sub">
+            같은 개념도 <b>내 산업·내 상황</b>에선 답이 달라집니다 — 스무고개로 30초 만에 좁혀보세요.
+          </div>
+          <ProbeFlow card={card} color={color} />
+        </div>
+      )}
       <div className="decision-block">
         <div className="db-lab">30초 안에 결정할 한 줄</div>
         <p className="db-text">{card.decision}</p>
@@ -355,7 +367,6 @@ function StepDecision({
           ))}
         </ul>
       </div>
-      <ProbeFlow card={card} color={color} />
       <div className="row-actions">
         <button className={"save " + (saved ? "on" : "")} onClick={onSave}>
           {saved ? "★ 내 솔루션 카드" : "☆ 또 보기 · 솔루션 카드로 저장"}
