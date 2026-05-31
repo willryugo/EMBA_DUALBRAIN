@@ -90,6 +90,10 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     return m;
   }, [links]);
 
+  // 드래그 상태 ref — stepPhysics가 settled(useMemo)에서 호출되므로
+  // 반드시 stepPhysics 정의보다 위에 선언해야 TDZ ReferenceError가 안 난다.
+  const draggingRef = useRef<string | null>(null);
+
   // ── 물리 1스텝 (공용) ──
   const stepPhysics = (ns: SimNode[], idx: Record<string, number>, alpha: number) => {
     for (let i = 0; i < ns.length; i++) {
@@ -149,7 +153,6 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   const [ready, setReady] = useState(false);
   const [active, setActive] = useState<string | null>(null);
   const [hover, setHover] = useState<string | null>(null);
-  const draggingRef = useRef<string | null>(null);
   const dragRafRef = useRef<number>(0);
   const svgRef = useRef<SVGSVGElement>(null);
   const lastClickRef = useRef<{ id: string; t: number }>({ id: "", t: 0 });
