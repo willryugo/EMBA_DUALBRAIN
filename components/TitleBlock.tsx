@@ -22,7 +22,7 @@ export function TitleBlock({ todayLabel, totalCards }: Props) {
       <div className="title-row">
         <div className="title-stage">
           <div className="title-bgmark" aria-hidden="true">
-            <DBMark size={420} />
+            <DBMark size={420} animated />
           </div>
           <h1>
             <span className="t-emba">EMBA</span>{" "}

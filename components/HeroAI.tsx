@@ -72,19 +72,26 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
       <h3>
         지금 이 고민, <mark>수업에서 본 적이 있다.</mark>
       </h3>
-      <textarea
-        ref={taRef}
-        value={val}
-        onChange={(e) => setVal(e.target.value)}
-        placeholder="당신의 회의의 진짜 문제를 한 줄로 써보세요. 두 번째 뇌가 81장 인사이트 중 가장 가까운 3장을 추천드립니다."
-        rows={1}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-            e.preventDefault();
-            doAsk();
-          }
-        }}
-      />
+      <div className={"aibox-search" + (val.trim() ? " filled" : "")}>
+        <svg className="aibox-search-ico" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="M21 21l-4.3-4.3" />
+        </svg>
+        <textarea
+          ref={taRef}
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          placeholder="듀얼브레인에 무엇이든 물어보세요 — 회의의 진짜 고민을 한 줄로"
+          rows={1}
+          onKeyDown={(e) => {
+            // Enter = 즉시 검색, Shift+Enter = 줄바꿈
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              doAsk();
+            }
+          }}
+        />
+      </div>
       <div className="row">
         <button
           className="go"

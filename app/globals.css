@@ -110,6 +110,14 @@ img,svg{display:block;max-width:100%}
 .aibox h3 mark{background:linear-gradient(transparent 56%, var(--accent-soft) 56%);padding:0 .12em;color:var(--ink)}
 .aibox textarea{width:100%;border:none;border-bottom:1.5px solid var(--ink);padding:8px 0 14px;font-family:var(--serif);font-size:clamp(18px,2.2vw,24px);font-weight:500;background:transparent;resize:none;line-height:1.4;color:var(--ink);outline:none;min-height:48px}
 .aibox textarea::placeholder{color:var(--ink-faint);font-style:italic}
+/* ── 검색창: 한눈에 검색창으로 보이게 + 빈 상태 점멸 유도 ── */
+.aibox-search{position:relative;display:flex;align-items:flex-start;gap:13px;margin-top:6px;padding:15px 18px;background:var(--paper);border:2px solid var(--ink);transition:.18s;animation:searchPulse 2.6s ease-in-out infinite}
+.aibox-search.filled,.aibox-search:focus-within{animation:none;border-color:var(--accent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.aibox-search-ico{flex:none;width:24px;height:24px;margin-top:6px;stroke:var(--accent);stroke-width:2.2;fill:none;stroke-linecap:round}
+.aibox-search textarea{flex:1;min-width:0;border:none !important;border-bottom:none !important;padding:3px 0 !important;min-height:30px;font-size:clamp(17px,2vw,21px)}
+.aibox-search textarea::placeholder{color:color-mix(in srgb,var(--accent) 78%,var(--ink-faint));font-style:italic;opacity:.92}
+@keyframes searchPulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 0%,transparent);border-color:var(--ink)}50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--accent) 20%,transparent);border-color:var(--accent)}}
+@media(prefers-reduced-motion:reduce){.aibox-search{animation:none}}
 .aibox .row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:14px;justify-content:flex-end}
 .aibox .go{font-size:14px;font-weight:700;color:var(--paper);background:var(--ink);padding:12px 22px;display:inline-flex;align-items:center;gap:8px;transition:.15s;letter-spacing:.02em;white-space:nowrap;border:1.5px solid var(--ink)}
 .aibox .go:hover{background:var(--accent);border-color:var(--accent)}
@@ -118,13 +126,13 @@ img,svg{display:block;max-width:100%}
 
 .airesult{margin-top:18px;padding-top:18px;border-top:1px dashed var(--line-2);animation:fade .3s}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.airesult .reason{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-soft);margin-bottom:14px;line-height:1.55}
+.airesult .reason{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-soft);margin-bottom:14px;line-height:1.6}
 .airesult .reason b{font-style:normal;color:var(--ink);font-weight:700}
 .airesult .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .airesult .ai-card{background:var(--bg);border:1px solid var(--line-2);padding:14px 16px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;gap:8px;text-align:left;min-height:120px}
 .airesult .ai-card:hover{border-color:var(--ink);background:var(--paper);transform:translateY(-2px)}
 .airesult .ai-card .n{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.1em}
-.airesult .ai-card .ah{font-family:var(--serif);font-weight:900;font-size:15.5px;line-height:1.3;color:var(--ink)}
+.airesult .ai-card .ah{font-family:var(--serif);font-weight:900;font-size:17px;line-height:1.32;color:var(--ink)}
 .airesult .ai-card .ac{font-size:11.5px;font-weight:600;color:var(--c,var(--ink-soft));letter-spacing:.06em;text-transform:uppercase;margin-top:auto}
 @media(max-width:720px){.airesult .cards{grid-template-columns:1fr;gap:10px}}
 
@@ -136,13 +144,13 @@ img,svg{display:block;max-width:100%}
 
 /* "혹시 이런 카드도?" 관련 카드 칩 스트립 */
 .ai-related{margin-top:18px;padding-top:14px;border-top:1px dashed var(--line)}
-.ai-related-head{font-family:var(--serif);font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.ai-related-head{font-family:var(--serif);font-size:14.5px;font-weight:700;color:var(--ink-soft);margin-bottom:10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .ai-related-sub{font-family:var(--sans);font-size:10.5px;font-weight:600;color:var(--ink-faint);letter-spacing:.04em;text-transform:uppercase}
 .ai-related-chips{display:flex;flex-direction:column;gap:6px}
 .ai-related-chip{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:9px 12px;background:var(--bg);border:1px solid var(--line);text-align:left;transition:.15s;border-radius:2px}
 .ai-related-chip:hover{border-color:var(--c,var(--ink));background:var(--paper);transform:translateX(2px)}
 .ai-related-chip .arc-dot{width:6px;height:6px;border-radius:50%;background:var(--c,var(--ink-faint))}
-.ai-related-chip .arc-hook{font-size:13.5px;font-weight:600;color:var(--ink);line-height:1.35;word-break:keep-all}
+.ai-related-chip .arc-hook{font-size:15px;font-weight:600;color:var(--ink);line-height:1.4;word-break:keep-all}
 .ai-related-chip .arc-meta{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--c,var(--ink-faint));letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
 @media(max-width:720px){.ai-related-chip{grid-template-columns:auto 1fr;gap:8px;padding:8px 10px}.ai-related-chip .arc-meta{display:none}}
 
@@ -151,11 +159,11 @@ img,svg{display:block;max-width:100%}
 .pain-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 .ph-eyebrow{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.2em;color:var(--ink-soft);display:inline-flex;align-items:center;gap:9px}
 .ph-eyebrow::before{content:"";width:24px;height:2px;background:var(--ink)}
-.ph-lead{font-family:var(--serif);font-style:italic;font-size:16px;color:var(--ink-soft);max-width:46ch;line-height:1.55;word-break:keep-all}
+.ph-lead{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink-soft);max-width:52ch;line-height:1.6;word-break:keep-all}
 .pain-tabs{display:flex;gap:0;border-bottom:1px solid var(--line-2);margin-bottom:0;overflow-x:auto}
 .pain-tab{flex:1;min-width:120px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:14px 16px 13px;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;transition:.13s;text-align:left;position:relative;white-space:nowrap}
 .pain-tab .pt-n{font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:.14em;font-weight:600}
-.pain-tab .pt-k{font-family:var(--serif);font-weight:900;font-size:21px;color:var(--ink-faint);letter-spacing:-.008em;line-height:1}
+.pain-tab .pt-k{font-family:var(--serif);font-weight:900;font-size:23px;color:var(--ink-faint);letter-spacing:-.008em;line-height:1}
 .pain-tab .pt-e{font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:.18em;font-weight:600;text-transform:uppercase}
 .pain-tab:hover .pt-k{color:var(--ink)}
 .pain-tab.on{border-color:var(--pc)}
@@ -164,12 +172,12 @@ img,svg{display:block;max-width:100%}
 .pain-tab.on .pt-e{color:var(--pc)}
 @media(max-width:720px){.pain-tab{min-width:100px;padding:11px 12px 10px}.pain-tab .pt-k{font-size:16px}}
 .pain-items{display:grid;grid-template-columns:1fr 1fr;gap:0;padding-top:0}
-.pain-item{display:flex;align-items:flex-start;gap:14px;padding:18px 4px 16px;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);cursor:pointer;transition:.13s;position:relative;width:100%;color:var(--ink)}
+.pain-item{display:flex;align-items:flex-start;gap:14px;padding:20px 4px 18px;text-align:left;background:none;border:none;border-bottom:1px solid var(--line);cursor:pointer;transition:.13s;position:relative;width:100%;color:var(--ink)}
 .pain-item:nth-child(odd){padding-right:18px}
 .pain-item:nth-child(even){padding-left:18px;border-left:1px solid var(--line)}
 .pain-item:hover{background:color-mix(in srgb, var(--pc) 6%, transparent)}
 .pi-dot{width:7px;height:7px;border-radius:50%;background:var(--pc);flex:none;margin-top:8px}
-.pi-text{font-family:var(--serif);font-weight:500;font-size:17px;line-height:1.5;color:var(--ink);flex:1;word-break:keep-all;text-wrap:pretty}
+.pi-text{font-family:var(--serif);font-weight:500;font-size:18.5px;line-height:1.55;color:var(--ink);flex:1;word-break:keep-all;text-wrap:pretty}
 .pi-arrow{font-family:var(--serif);font-size:18px;color:var(--ink-faint);font-weight:700;flex:none;transition:.13s;margin-top:1px}
 .pain-item:hover .pi-arrow{color:var(--pc);transform:translateX(3px)}
 @media(max-width:720px){.pain-items{grid-template-columns:1fr}.pain-item:nth-child(odd),.pain-item:nth-child(even){padding:14px 4px;border-left:none}.pi-text{font-size:16px}}
