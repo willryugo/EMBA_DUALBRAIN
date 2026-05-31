@@ -28,16 +28,16 @@ export function DBMark({
         <circle className="dbm-r" cx="68" cy="30" r="25" fill="var(--brain-r)" opacity="0.78" />
       </g>
       <style>{`
-        .db-mark-animated .dbm-l{transform-box:fill-box;transform-origin:center;animation:dbmFireL 5s ease-in-out infinite}
-        .db-mark-animated .dbm-r{transform-box:fill-box;transform-origin:center;animation:dbmFireR 5s ease-in-out infinite}
-        /* 뉴런 발화: 깊게 가라앉았다(어둡고 진하게) 한 번 살아나는 throb */
-        @keyframes dbmFireL{
-          0%,100%{filter:brightness(.62) saturate(1.5) contrast(1.1);transform:scale(.99)}
-          50%{filter:brightness(1.04) saturate(1.15) contrast(1) drop-shadow(0 0 10px rgba(70,52,130,.55));transform:scale(1.035)}
+        /* 사이버 네온 명상 — 두 반구가 형광빛으로 느리게 숨 쉬며 교대로 발화 */
+        .db-mark-animated .dbm-l{transform-box:fill-box;transform-origin:center;animation:dbmNeuronL 7s ease-in-out infinite}
+        .db-mark-animated .dbm-r{transform-box:fill-box;transform-origin:center;animation:dbmNeuronR 7s ease-in-out infinite}
+        @keyframes dbmNeuronL{
+          0%,100%{filter:brightness(.7) saturate(1.7) hue-rotate(-6deg) drop-shadow(0 0 6px rgba(90,120,255,.35));transform:scale(.985)}
+          50%{filter:brightness(1.45) saturate(2.2) hue-rotate(8deg) drop-shadow(0 0 26px rgba(120,150,255,.9)) drop-shadow(0 0 54px rgba(90,120,255,.5));transform:scale(1.045)}
         }
-        @keyframes dbmFireR{
-          0%,100%{filter:brightness(1.04) saturate(1.15) contrast(1) drop-shadow(0 0 10px rgba(120,52,96,.5));transform:scale(1.035)}
-          50%{filter:brightness(.62) saturate(1.5) contrast(1.1);transform:scale(.99)}
+        @keyframes dbmNeuronR{
+          0%,100%{filter:brightness(1.45) saturate(2.2) hue-rotate(-8deg) drop-shadow(0 0 26px rgba(255,120,190,.9)) drop-shadow(0 0 54px rgba(230,90,150,.5));transform:scale(1.045)}
+          50%{filter:brightness(.7) saturate(1.7) hue-rotate(6deg) drop-shadow(0 0 6px rgba(230,90,150,.35));transform:scale(.985)}
         }
         @media (prefers-reduced-motion: reduce){.db-mark-animated .dbm-l,.db-mark-animated .dbm-r{animation:none}}
       `}</style>

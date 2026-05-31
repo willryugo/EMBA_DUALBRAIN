@@ -1,16 +1,34 @@
 import { DBMark } from "./DBMark";
 import members from "@/data/members.json";
+import type { Industry } from "@/lib/types";
 
 const COHORT_SIZE = members.length;
-const COHORT_INDUSTRIES = new Set(members.map((m) => m.industry)).size;
+// 17기에 실제 존재하는 산업군 (빈도순) — "내가 속한 산업군" 선택지
+const COHORT_INDUSTRY_LIST: string[] = (() => {
+  const cnt: Record<string, number> = {};
+  members.forEach((m) => {
+    const k = (m.industry || "").trim();
+    if (k) cnt[k] = (cnt[k] || 0) + 1;
+  });
+  return Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]);
+})();
+const COHORT_INDUSTRIES = COHORT_INDUSTRY_LIST.length;
 
 interface Props {
   todayLabel: string;
   totalCards: number;
   onEnter?: () => void; // 온톨로지 브레인맵(두 번째 뇌)으로 진입
+  myIndustries?: Industry[];
+  onToggleIndustry?: (ind: Industry) => void;
 }
 
-export function TitleBlock({ todayLabel, totalCards, onEnter }: Props) {
+export function TitleBlock({
+  todayLabel,
+  totalCards,
+  onEnter,
+  myIndustries = [],
+  onToggleIndustry,
+}: Props) {
   return (
     <section className="title-block wrap">
       <div className="vol">
@@ -60,24 +78,43 @@ export function TitleBlock({ todayLabel, totalCards, onEnter }: Props) {
           분석과 직관, <span className="deck-em">두 개의 뇌</span>가 만나는 곳.
         </span>
       </p>
-      <div className="stats">
-        <div className="s">
-          <b>{totalCards}</b>
-          <span>인사이트 카드</span>
+      {onToggleIndustry ? (
+        <div className="ind-pick">
+          <div className="ind-pick-head">
+            <span className="ind-pick-lab">내 산업군으로 보기</span>
+            <span className="ind-pick-meta">
+              {totalCards} 카드 · 7 과목 · {COHORT_SIZE} 원우 · {COHORT_INDUSTRIES} 산업군
+            </span>
+          </div>
+          <div className="ind-pick-chips">
+            {COHORT_INDUSTRY_LIST.map((ind) => {
+              const on = myIndustries.includes(ind as Industry);
+              return (
+                <button
+                  key={ind}
+                  className={"ind-pick-chip" + (on ? " on" : "")}
+                  onClick={() => onToggleIndustry(ind as Industry)}
+                  aria-pressed={on}
+                >
+                  {ind}
+                </button>
+              );
+            })}
+          </div>
+          <div className="ind-pick-hint">
+            {myIndustries.length > 0
+              ? "선택한 산업 기준으로 추천·처방·오늘의 질문이 맞춰집니다."
+              : "선택하면 추천·처방·오늘의 질문이 내 산업에 맞춰집니다. (다시 누르면 해제)"}
+          </div>
         </div>
-        <div className="s">
-          <b>7</b>
-          <span>과목 · ONTOLOGY</span>
+      ) : (
+        <div className="stats">
+          <div className="s"><b>{totalCards}</b><span>인사이트 카드</span></div>
+          <div className="s"><b>7</b><span>과목 · ONTOLOGY</span></div>
+          <div className="s"><b>{COHORT_SIZE}</b><span>원우 · 작성자</span></div>
+          <div className="s"><b>{COHORT_INDUSTRIES}</b><span>산업군</span></div>
         </div>
-        <div className="s">
-          <b>{COHORT_SIZE}</b>
-          <span>원우 · 작성자</span>
-        </div>
-        <div className="s">
-          <b>{COHORT_INDUSTRIES}</b>
-          <span>산업군</span>
-        </div>
-      </div>
+      )}
     </section>
   );
 }

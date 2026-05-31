@@ -196,6 +196,14 @@ export function DualBrainApp() {
         todayLabel={today}
         totalCards={CARDS.length}
         onEnter={() => setView("graph")}
+        myIndustries={myIndustries}
+        onToggleIndustry={(ind) => {
+          const next = myIndustries.includes(ind)
+            ? myIndustries.filter((x) => x !== ind)
+            : [...myIndustries, ind];
+          setMyIndustries(next);
+          store.set("emba17_my_industries", next);
+        }}
       />
 
       <main className="wrap">

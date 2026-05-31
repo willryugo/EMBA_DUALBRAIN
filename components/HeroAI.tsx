@@ -1,9 +1,24 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Card, Industry, OwnerPainCategory } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
 import { recommendCards, type RecommendResult } from "@/lib/recommend";
 import { logEvent } from "@/lib/events";
+
+// 접속 시각(일·시간)과 내 산업으로 만드는 결정적 시드 — 매 접속/매 시간 '오늘의 질문'이 달라진다.
+function makeSeed(myIndustries: Industry[]): number {
+  const d = new Date();
+  const base = d.getFullYear() * 100000 + (d.getMonth() + 1) * 1000 + d.getDate() * 24 + d.getHours();
+  let s = base;
+  for (const ind of myIndustries) for (let i = 0; i < ind.length; i++) s = (s * 31 + ind.charCodeAt(i)) >>> 0;
+  return s >>> 0;
+}
+// 시드 기반 회전 — 배열을 시드만큼 회전시켜 매번 다른 순서로 노출
+function rotate<T>(arr: T[], by: number): T[] {
+  if (arr.length === 0) return arr;
+  const k = ((by % arr.length) + arr.length) % arr.length;
+  return arr.slice(k).concat(arr.slice(0, k));
+}
 
 interface Props {
   cards: Card[];
@@ -16,8 +31,23 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
   const [val, setVal] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RecommendResult | null>(null);
-  const [activeCat, setActiveCat] = useState(0);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // 접속/시간/산업 시드로 '오늘의 질문'을 회전 — 카테고리 순서·각 항목 순서·기본 탭이 매번 달라진다.
+  const seed = useMemo(() => makeSeed(myIndustries), [myIndustries]);
+  const rotatedPains = useMemo<OwnerPainCategory[]>(
+    () =>
+      rotate(ownerPains, seed).map((c, ci) => ({
+        ...c,
+        items: rotate(c.items, seed + ci * 7),
+      })),
+    [ownerPains, seed]
+  );
+  const [activeCat, setActiveCat] = useState(0);
+  // 시드가 바뀌면(시간 경과·산업 변경) 기본 탭도 회전
+  useEffect(() => {
+    setActiveCat(0);
+  }, [seed]);
 
   useEffect(() => {
     if (taRef.current) {
@@ -120,14 +150,21 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
 
       <div className="pain-section">
         <div className="pain-head">
-          <div className="ph-eyebrow">C레벨의 고민들 · C-SUITE DESK</div>
+          <div className="ph-eyebrow">
+            C레벨의 고민들 · C-SUITE DESK
+            <span className="ph-rotate">
+              {myIndustries.length > 0
+                ? `· ${myIndustries[0]} 맞춤`
+                : "· 접속할 때마다 새로고침"}
+            </span>
+          </div>
           <div className="ph-lead">
             오늘 누군가의 임원회의에 올라온 진짜 질문. 클릭하면 관련 인사이트
             3장이 뜬다.
           </div>
         </div>
         <div className="pain-tabs">
-          {ownerPains.map((c, i) => (
+          {rotatedPains.map((c, i) => (
             <button
               key={c.cat}
               className={"pain-tab " + (activeCat === i ? "on" : "")}
@@ -141,13 +178,13 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
           ))}
         </div>
         <div className="pain-items">
-          {ownerPains[activeCat].items.map((p, i) => (
+          {(rotatedPains[activeCat]?.items ?? []).map((p, i) => (
             <button
               key={i}
               className="pain-item"
               onClick={() => usePain(p)}
               style={
-                { ["--pc" as string]: ownerPains[activeCat].color } as React.CSSProperties
+                { ["--pc" as string]: rotatedPains[activeCat]?.color } as React.CSSProperties
               }
             >
               <span className="pi-dot"></span>
