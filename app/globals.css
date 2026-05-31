@@ -17,8 +17,8 @@
   --brain-l:#6E7AD6;
   --brain-r:#DC5C97;
   /* 로고 전용 네온 네이비+핑크 — 테마와 무관하게 고정. 배경 톤이 바뀌어도 안 어둑해진다. */
-  --mark-l:#5A6BF5;
-  --mark-r:#FF4FA3;
+  --mark-l:#3D6BFF;
+  --mark-r:#FF4FA6;
   --bg-image:radial-gradient(80% 60% at 100% 0%, rgba(209,128,158,.18) 0%, transparent 55%), radial-gradient(60% 60% at 0% 100%, rgba(140,150,191,.16) 0%, transparent 55%);
   --serif:"Nanum Myeongjo",ui-serif,serif;
   --sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
@@ -55,7 +55,7 @@ img,svg{display:block;max-width:100%}
 .masthead nav button:hover{color:var(--ink)}
 .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.05em;display:flex;gap:14px}
 .mast-meta span{white-space:nowrap}
-@media(max-width:720px){.mast-meta{display:none}.masthead nav{gap:14px}}
+@media(max-width:720px){.mast-meta{display:none}.masthead nav{gap:12px;font-size:12px}.brand .name{font-size:15px}}
 .masthead-mark{margin-right:2px}
 
 /* ───── Title block ───── */
@@ -71,8 +71,9 @@ img,svg{display:block;max-width:100%}
 .title-block .title-sub{font-family:var(--serif);font-style:italic;font-size:clamp(14px,1.2vw,16px);color:var(--ink-soft);margin-top:8px;font-weight:500;letter-spacing:-.005em;position:relative;z-index:2}
 .title-row{display:flex;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-bottom:14px;position:relative}
 .title-stage{position:relative;display:flex;flex-direction:column;align-items:flex-start;padding:10px 24px 6px 24px;min-height:100px;overflow:visible}
-.title-bgmark{position:absolute;left:-8px;top:50%;transform:translateY(-50%) scale(.52);transform-origin:left center;z-index:1;pointer-events:none;opacity:.3;filter:blur(.5px)}
+.title-bgmark{position:absolute;left:-8px;top:50%;transform:translateY(-50%) scale(.52);transform-origin:left center;z-index:1;pointer-events:none;opacity:.5}
 .title-bgmark .db-mark circle{opacity:1 !important}
+.title-bgmark .db-mark g{mix-blend-mode:normal !important}
 @media(max-width:1080px){.title-bgmark{opacity:.26}.title-bgmark .db-mark{transform:scale(.7);transform-origin:left center}}
 @media(max-width:720px){.title-stage{padding:20px 8px 14px 14px;min-height:140px}.title-bgmark{opacity:.22;left:-20px}.title-bgmark .db-mark{transform:scale(.5);transform-origin:left center}}
 
@@ -358,8 +359,8 @@ img,svg{display:block;max-width:100%}
   .title-block h1{font-size:42px;line-height:.92;letter-spacing:-.028em}
   .title-block h1 .t-emba{font-size:.5em;vertical-align:.22em}
   .title-block .title-sub{font-size:13px;margin-top:6px;display:none}
-  .title-stage{padding:14px 4px 6px 10px;min-height:auto}
-  .title-bgmark{opacity:.18;left:-30px}
+  .title-stage{padding:14px 4px 6px 0;min-height:auto}
+  .title-bgmark{opacity:.22;left:-14px}
   .title-bgmark .db-mark{transform:scale(.42);transform-origin:left center}
   .title-by-block{display:none}
   .byline{display:none}
@@ -377,6 +378,9 @@ img,svg{display:block;max-width:100%}
   .aibox textarea{font-size:15px;padding:6px 0 8px;min-height:32px}
   .aibox .row{margin-top:8px}
   .aibox .go{padding:10px 14px;font-size:13px;width:100%;justify-content:center}
+  .aibox-search{flex-wrap:wrap;gap:10px}
+  .aibox-search textarea{flex:1 1 160px}
+  .aibox-search .go{flex:1 0 100%;width:auto;justify-content:center}
 
   .pain-section{margin-top:18px;padding-top:14px}
   .pain-head{margin-bottom:10px;gap:6px}
