@@ -5,13 +5,12 @@ import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
 import { store } from "@/lib/storage";
 import { logEvent } from "@/lib/events";
 import {
-  getProbe,
-  resolveLeafAdvice,
-  leafIndustries,
-  type ProbeLeaf,
-} from "@/lib/probe";
+  getJourney,
+  resolveResultAdvice,
+  resultIndustries,
+  type CardJourney,
+} from "@/lib/journey";
 import { getVisual, toneGradient } from "@/lib/visuals";
-import { relatedCards } from "@/lib/related";
 
 interface Props {
   cardId: string;
@@ -20,11 +19,11 @@ interface Props {
   onOpen: (id: string) => void;
 }
 
-// 인스타식 인터랙티브 캐러셀 카드뉴스. 에디토리얼 미니멀.
-// 슬라이드: 커버 → 통찰 → 케이스 → 5why 분기(인터랙티브) → 인용/액션
+// 진짜 5why 카드뉴스 — T타임즈식 밝은 레이아웃 (상단 이미지 + 하단 텍스트).
+// 슬라이드: 표지(증상) → Why1~3(고정) → Why4(선택) → Why5(산업별 처방) → 추천(open ending)
 export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
   const card = useMemo(() => cards.find((c) => c.id === cardId), [cardId, cards]);
-  const probe = useMemo(() => getProbe(cardId), [cardId]);
+  const journey = useMemo<CardJourney | null>(() => getJourney(cardId), [cardId]);
   const visual = useMemo(() => getVisual(cardId), [cardId]);
   const myIndustries = useMemo<Industry[]>(
     () => (store.get<Industry[]>("emba17_my_industries") || []) as Industry[],
@@ -32,35 +31,25 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
   );
   const color = card ? COURSE_COLOR[card.course] || "#16150F" : "#16150F";
 
-  // 슬라이드 구성
-  const slides = useMemo(() => {
-    const s: string[] = ["cover", "insight", "case"];
-    if (probe) s.push("probe");
-    s.push("outro");
-    return s;
-  }, [probe]);
+  // 슬라이드: cover + steps + recommend
+  const slideCount = journey ? journey.steps.length + 2 : 1; // 표지 + N단계 + 추천
 
   const [idx, setIdx] = useState(0);
   const [imgFail, setImgFail] = useState(false);
-  const [saved, setSaved] = useState(false);
-
-  // 5why 내부 상태
-  const [pState, setPState] = useState<string>("root");
-  const [pTrail, setPTrail] = useState<string[]>([]);
+  const [pickTag, setPickTag] = useState<string | null>(null);
   const [overrideInd, setOverrideInd] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     setIdx(0);
     setImgFail(false);
-    setPState("root");
-    setPTrail([]);
+    setPickTag(null);
     setOverrideInd(null);
     setSaved(((store.get<string[]>("emba17_saved") || []) as string[]).includes(cardId));
     if (cardId) logEvent("carousel_open", { card_id: cardId });
   }, [cardId]);
 
-  const go = (d: number) =>
-    setIdx((i) => Math.max(0, Math.min(slides.length - 1, i + d)));
+  const go = (d: number) => setIdx((i) => Math.max(0, Math.min(slideCount - 1, i + d)));
 
   useEffect(() => {
     const fn = (e: KeyboardEvent) => {
@@ -70,7 +59,7 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
     };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
-  }, [onClose, slides.length]);
+  }, [onClose, slideCount]);
 
   const touch = useRef({ x: 0, y: 0 });
   const onTS = (e: React.TouchEvent) => {
@@ -85,8 +74,9 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
   };
 
   if (!card) return null;
-  const kind = slides[idx];
-  const bg = visual ? toneGradient(visual) : `linear-gradient(145deg, #ece5d6, #cbb9a6)`;
+
+  const heroSrc = visual && !imgFail ? visual.hero : null;
+  const heroBg = visual ? toneGradient(visual) : "linear-gradient(145deg,#ece5d6,#cbb9a6)";
 
   const toggleSave = () => {
     const cur = (store.get<string[]>("emba17_saved") || []) as string[];
@@ -95,256 +85,213 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
     setSaved(next.includes(cardId));
   };
 
-  // ── 5why 진행 ──
-  const renderProbe = () => {
-    if (!probe) return null;
-    if (pState.startsWith("leaf:")) {
-      const leaf: ProbeLeaf | undefined = probe.leaves[pState.slice(5)];
-      if (!leaf) return null;
-      const auto = resolveLeafAdvice(leaf, myIndustries);
-      const shownInd = overrideInd ?? auto.matchedIndustry;
-      const text =
-        overrideInd && leaf.byIndustry[overrideInd]
-          ? leaf.byIndustry[overrideInd]
-          : auto.text;
-      const others = leafIndustries(leaf);
-      return (
-        <div className="cc-probe-result">
-          <div className="cc-trail">
-            {pTrail.map((t, i) => (
-              <span key={i}>{t}</span>
-            ))}
-          </div>
-          <div className="cc-verdict">{leaf.verdict}</div>
-          <p className="cc-common">{leaf.common}</p>
-          <div className="cc-advice">
-            <div className="cc-adv-head">
-              {shownInd ? (
-                <>
-                  <span className="cc-adv-tag">내 산업 처방</span>
-                  <span className="cc-adv-ind">{shownInd}</span>
-                </>
-              ) : (
-                <span className="cc-adv-tag">기본 처방 · 산업 미설정</span>
-              )}
-            </div>
-            <p>{text}</p>
-          </div>
-          {others.length > 1 && (
-            <div className="cc-others">
-              <span className="cc-others-lab">다른 산업이라면?</span>
-              {others.map((ind) => (
-                <button
-                  key={ind}
-                  className={"cc-othchip " + (ind === shownInd ? "on" : "")}
-                  onClick={() => setOverrideInd(ind)}
-                >
-                  {ind}
-                </button>
-              ))}
-            </div>
-          )}
-          <button
-            className="cc-reset"
-            onClick={() => {
-              setPState("root");
-              setPTrail([]);
-              setOverrideInd(null);
-            }}
-          >
-            ↺ 다시 진단
-          </button>
-        </div>
-      );
-    }
-    const q = pState === "root" ? probe.root : probe.nodes[pState];
-    if (!q) return null;
-    const stage = pState === "root" ? 1 : 2;
+  // ── journey 없는 카드: 간단 폴백 (표지만) ──
+  if (!journey) {
     return (
-      <div className="cc-probe-q">
-        <div className="cc-stage">스무고개 {stage}/2</div>
-        {pTrail.length > 0 && (
-          <div className="cc-trail">
-            {pTrail.map((t, i) => (
-              <span key={i}>{t}</span>
-            ))}
+      <div
+        className="ttn-overlay"
+        onClick={(e) => {
+          if ((e.target as HTMLElement).classList.contains("ttn-overlay")) onClose();
+        }}
+      >
+        <div className="ttn-card" style={{ ["--c" as string]: color } as React.CSSProperties}>
+          <button className="ttn-x" onClick={onClose}>✕</button>
+          <div className="ttn-pic" style={{ background: heroBg }}>
+            {heroSrc && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="ttn-img" src={heroSrc} alt="" onError={() => setImgFail(true)} />
+            )}
           </div>
-        )}
-        <div className="cc-q">{q.q}</div>
-        <div className="cc-opts">
-          {q.options.map((o, i) => (
-            <button
-              key={i}
-              className="cc-opt"
-              onClick={() => {
-                setPTrail((t) => [...t, o.label]);
-                if (o.leaf) {
-                  setPState("leaf:" + o.leaf);
-                  logEvent("carousel_probe_leaf", { card_id: cardId, leaf: o.leaf });
-                } else if (o.next) setPState(o.next);
-              }}
-            >
-              <span>{o.label}</span>
-              <span className="cc-opt-arr">→</span>
-            </button>
-          ))}
+          <div className="ttn-body">
+            <div className="ttn-eyebrow">{COURSE_SHORT[card.course]}</div>
+            <h1 className="ttn-cover-h">{card.hook}</h1>
+            <p className="ttn-cover-sub">{card.insight}</p>
+          </div>
         </div>
       </div>
     );
-  };
+  }
 
-  const related = useMemo(() => relatedCards(card, cards).slice(0, 3), [card, cards]);
+  // ── 슬라이드 종류 결정 ──
+  // idx 0 = 표지, 1..steps.length = 각 why, 마지막 = 추천
+  const isCover = idx === 0;
+  const isRecommend = idx === slideCount - 1;
+  const step = !isCover && !isRecommend ? journey.steps[idx - 1] : null;
+
+  // 결과(마지막 why)용 처방
+  const resultTag = pickTag || Object.keys(journey.results)[0];
+  const result = journey.results[resultTag];
+  const advice = result ? resolveResultAdvice(result, myIndustries) : null;
+  const shownInd = overrideInd ?? advice?.matchedIndustry ?? null;
+  const adviceText =
+    overrideInd && result?.byIndustry[overrideInd]
+      ? result.byIndustry[overrideInd]
+      : advice?.text ?? "";
+  const otherInds = result ? resultIndustries(result) : [];
+
+  const relatedCardsResolved = journey.related
+    .map((id) => cards.find((c) => c.id === id))
+    .filter(Boolean) as Card[];
 
   return (
     <div
-      className="cc-overlay"
+      className="ttn-overlay"
       onClick={(e) => {
-        if ((e.target as HTMLElement).classList.contains("cc-overlay")) onClose();
+        if ((e.target as HTMLElement).classList.contains("ttn-overlay")) onClose();
       }}
     >
       <div
-        className="cc-stage-wrap"
+        className="ttn-card"
         style={{ ["--c" as string]: color } as React.CSSProperties}
         onTouchStart={onTS}
         onTouchEnd={onTE}
       >
-        <button className="cc-x" onClick={onClose} aria-label="닫기">
-          ✕
-        </button>
+        <button className="ttn-x" onClick={onClose} aria-label="닫기">✕</button>
 
-        {/* 진행 바 */}
-        <div className="cc-progress">
-          {slides.map((_, i) => (
-            <span
-              key={i}
-              className={"cc-pseg " + (i <= idx ? "on" : "")}
-              onClick={() => setIdx(i)}
-            />
+        {/* 진행바 */}
+        <div className="ttn-progress">
+          {Array.from({ length: slideCount }).map((_, i) => (
+            <span key={i} className={"ttn-seg " + (i <= idx ? "on" : "")} onClick={() => setIdx(i)} />
           ))}
         </div>
 
-        {/* ── 풀 비주얼 배경 (모든 슬라이드 공통) ── */}
-        <div className="cc-bg" style={{ background: bg }}>
-          {visual && !imgFail && (
+        {/* 상단 이미지 (모든 슬라이드 공통, 한 장 재사용) */}
+        <div className="ttn-pic" style={{ background: heroBg }}>
+          {heroSrc && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              className="cc-bgimg"
-              src={visual.hero}
-              alt=""
-              onError={() => setImgFail(true)}
-            />
+            <img className="ttn-img" src={heroSrc} alt="" onError={() => setImgFail(true)} />
           )}
-          <div className={"cc-scrim cc-scrim-" + kind} />
+          {!isCover && (
+            <div className="ttn-pic-tag">
+              {isRecommend ? "다음으로" : `${step?.n}Why`}
+            </div>
+          )}
         </div>
 
-        <div className={"cc-slide cc-" + kind}>
-          {/* COVER */}
-          {kind === "cover" && (
-            <div className="cc-cover-fg">
-              <div className="cc-eyebrow">
-                {COURSE_SHORT[card.course]}
-                {card.week ? ` · WK${String(card.week).padStart(2, "0")}` : ""}
+        {/* 하단 텍스트 (밝은 배경) */}
+        <div className="ttn-body">
+          {/* 표지 */}
+          {isCover && (
+            <>
+              <div className="ttn-eyebrow">
+                {COURSE_SHORT[card.course]} · 5WHY
               </div>
-              <h1 className="cc-hook">{card.hook}</h1>
-              <div className="cc-concept">— {card.concept}</div>
-            </div>
+              <h1 className="ttn-cover-h">{journey.symptom}</h1>
+              {journey.symptomSub && <p className="ttn-cover-sub">{journey.symptomSub}</p>}
+            </>
           )}
 
-          {/* INSIGHT */}
-          {kind === "insight" && (
-            <div className="cc-fg cc-edi">
-              <div className="cc-edi-head">
-                <span className="cc-num">01</span>
-                <span className="cc-bar" />
-                <span className="cc-eng">CONCEPT</span>
+          {/* Why 단계 */}
+          {step && !step.isResult && (
+            <>
+              <div className="ttn-step-lab">
+                <span className="ttn-step-n">{step.n}<i>Why</i></span>
               </div>
-              <h2 className="cc-h2">{card.concept}</h2>
-              <p className="cc-body">{card.insight}</p>
-            </div>
-          )}
-
-          {/* CASE */}
-          {kind === "case" && (
-            <div className="cc-fg cc-edi">
-              <div className="cc-edi-head">
-                <span className="cc-num">02</span>
-                <span className="cc-bar" />
-                <span className="cc-eng">CASE STUDY</span>
-              </div>
-              <h2 className="cc-h2">{card.case_title}</h2>
-              <p className="cc-body">{card.case_body}</p>
-            </div>
-          )}
-
-          {/* PROBE (인터랙티브 5why) */}
-          {kind === "probe" && (
-            <div className="cc-fg cc-edi cc-probe">
-              <div className="cc-edi-head">
-                <span className="cc-num">03</span>
-                <span className="cc-bar" />
-                <span className="cc-eng">YOUR CASE · 스무고개</span>
-              </div>
-              {renderProbe()}
-            </div>
-          )}
-
-          {/* OUTRO */}
-          {kind === "outro" && (
-            <div className="cc-fg cc-edi cc-outro">
-              <div className="cc-edi-head">
-                <span className="cc-num">04</span>
-                <span className="cc-bar" />
-                <span className="cc-eng">TAKEAWAY</span>
-              </div>
-              <blockquote className="cc-quote">&ldquo;{card.quote}&rdquo;</blockquote>
-              <div className="cc-outro-actions">
-                <button className={"cc-save " + (saved ? "on" : "")} onClick={toggleSave}>
-                  {saved ? "★ 저장됨" : "☆ 솔루션 카드 저장"}
-                </button>
-              </div>
-              {related.length > 0 && (
-                <div className="cc-related">
-                  <div className="cc-related-lab">이어 보면 좋은 카드</div>
-                  {related.map((r) => (
+              <h2 className="ttn-why">{step.why}</h2>
+              {step.pick ? (
+                <div className="ttn-pick">
+                  <div className="ttn-pick-q">{step.pick.q}</div>
+                  {step.pick.options.map((o) => (
                     <button
-                      key={r.c.id}
-                      className="cc-rel"
-                      onClick={() => onOpen(r.c.id)}
+                      key={o.tag}
+                      className={"ttn-opt " + (pickTag === o.tag ? "on" : "")}
+                      onClick={() => {
+                        setPickTag(o.tag);
+                        setOverrideInd(null);
+                        logEvent("journey_pick", { card_id: cardId, tag: o.tag });
+                        setTimeout(() => go(1), 220);
+                      }}
                     >
-                      <span className="cc-rel-hook">{r.c.hook}</span>
-                      <span className="cc-rel-arr">→</span>
+                      <span>{o.label}</span>
+                      <span className="ttn-opt-arr">→</span>
                     </button>
                   ))}
+                  {pickTag && step.becauseByTag?.[pickTag] && (
+                    <p className="ttn-because ttn-because-pick">{step.becauseByTag[pickTag]}</p>
+                  )}
                 </div>
+              ) : (
+                <>
+                  <p className="ttn-because">{step.because}</p>
+                  {step.keyword && <div className="ttn-keyword">{step.keyword}</div>}
+                </>
               )}
-            </div>
+            </>
+          )}
+
+          {/* 마지막 Why = 산업별 처방 결과 */}
+          {step && step.isResult && (
+            <>
+              <div className="ttn-step-lab">
+                <span className="ttn-step-n">{step.n}<i>Why</i></span>
+              </div>
+              <h2 className="ttn-why">{step.why}</h2>
+              {result && (
+                <>
+                  <div className="ttn-verdict">{result.verdict}</div>
+                  <div className="ttn-rx">
+                    <div className="ttn-rx-head">
+                      {shownInd ? (
+                        <>
+                          <span className="ttn-rx-tag">내 산업 처방</span>
+                          <span className="ttn-rx-ind">{shownInd}</span>
+                        </>
+                      ) : (
+                        <span className="ttn-rx-tag">기본 처방</span>
+                      )}
+                    </div>
+                    <p>{adviceText}</p>
+                  </div>
+                  {otherInds.length > 1 && (
+                    <div className="ttn-others">
+                      <span className="ttn-others-lab">다른 산업이라면?</span>
+                      {otherInds.map((ind) => (
+                        <button
+                          key={ind}
+                          className={"ttn-othchip " + (ind === shownInd ? "on" : "")}
+                          onClick={() => setOverrideInd(ind)}
+                        >
+                          {ind}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </>
+          )}
+
+          {/* 추천 (open ending) */}
+          {isRecommend && (
+            <>
+              <div className="ttn-eyebrow">이 카드와 연결된 두 번째 뇌</div>
+              <h2 className="ttn-rec-h">다음엔, 이 카드</h2>
+              <div className="ttn-recs">
+                {relatedCardsResolved.map((r) => (
+                  <button key={r.id} className="ttn-rec" onClick={() => onOpen(r.id)}>
+                    <span className="ttn-rec-course" style={{ color: COURSE_COLOR[r.course] }}>
+                      {COURSE_SHORT[r.course]}
+                    </span>
+                    <span className="ttn-rec-hook">{r.hook}</span>
+                    <span className="ttn-rec-arr">→</span>
+                  </button>
+                ))}
+              </div>
+              <button className={"ttn-save " + (saved ? "on" : "")} onClick={toggleSave}>
+                {saved ? "★ 저장됨" : "☆ 이 솔루션 저장"}
+              </button>
+            </>
           )}
         </div>
 
-        {/* 브랜드 푸터 */}
-        <div className="cc-brand">DUALBRAIN · EMBA 17</div>
-
-        {/* 하단 네비 (슬라이드 밖 — 글자 안 가림) */}
-        <div className="cc-navbar">
-          <button
-            className="cc-nav prev"
-            onClick={() => go(-1)}
-            disabled={idx === 0}
-            aria-label="이전"
-          >
-            ‹
-          </button>
-          <span className="cc-page">
-            {idx + 1} / {slides.length}
-          </span>
-          <button
-            className="cc-nav next"
-            onClick={() => go(1)}
-            disabled={idx === slides.length - 1}
-            aria-label="다음"
-          >
-            ›
-          </button>
+        {/* 브랜드 + 네비 */}
+        <div className="ttn-foot">
+          <span className="ttn-brand">DUALBRAIN · EMBA 17</span>
+          <div className="ttn-nav">
+            <button className="ttn-arrow" onClick={() => go(-1)} disabled={idx === 0} aria-label="이전">‹</button>
+            <span className="ttn-page">{idx + 1} / {slideCount}</span>
+            <button className="ttn-arrow" onClick={() => go(1)} disabled={idx === slideCount - 1} aria-label="다음">›</button>
+          </div>
         </div>
       </div>
     </div>
