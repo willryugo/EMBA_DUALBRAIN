@@ -7,7 +7,7 @@
   },
   "mpo-two-factor-herzberg": {
     "hero": "/cards/mpo-two-factor-herzberg.webp",
-    "hasText": true,
+    "hasText": false,
     "tone": [
       "#ece5d6",
       "#cbb9a6"
