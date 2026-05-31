@@ -87,6 +87,13 @@ export function TitleBlock({
             </span>
           </div>
           <div className="ind-pick-chips">
+            <button
+              className={"ind-pick-chip all" + (myIndustries.length === 0 ? " on" : "")}
+              onClick={() => onToggleIndustry("__ALL__" as Industry)}
+              aria-pressed={myIndustries.length === 0}
+            >
+              전체
+            </button>
             {COHORT_INDUSTRY_LIST.map((ind) => {
               const on = myIndustries.includes(ind as Industry);
               return (

@@ -18,7 +18,7 @@ import { store } from "@/lib/storage";
 import { Masthead } from "./Masthead";
 import { TitleBlock } from "./TitleBlock";
 import { HeroAI } from "./HeroAI";
-import { SearchBar, FilterChips, FilterPanel } from "./Filters";
+import { FilterChips } from "./Filters";
 import { MagCard, layoutClass } from "./MagCard";
 import { DetailModal } from "./DetailModal";
 import { OntologyGraph } from "./OntologyGraph";
@@ -198,9 +198,13 @@ export function DualBrainApp() {
         onEnter={() => setView("graph")}
         myIndustries={myIndustries}
         onToggleIndustry={(ind) => {
-          const next = myIndustries.includes(ind)
-            ? myIndustries.filter((x) => x !== ind)
-            : [...myIndustries, ind];
+          // "전체"(__ALL__) = 산업 선택 해제(모두 보기)
+          const next =
+            (ind as string) === "__ALL__"
+              ? []
+              : myIndustries.includes(ind)
+                ? myIndustries.filter((x) => x !== ind)
+                : [...myIndustries, ind];
           setMyIndustries(next);
           store.set("emba17_my_industries", next);
         }}
@@ -253,13 +257,6 @@ export function DualBrainApp() {
       </main>
 
       <Footer todayLabel={today} />
-
-      <button
-        className="fab"
-        onClick={() => setView(view === "graph" ? "home" : "graph")}
-      >
-        {view === "graph" ? "← 매거진" : "∞ 온톨로지"}
-      </button>
 
       <button
         className="tweaks-toggle"
