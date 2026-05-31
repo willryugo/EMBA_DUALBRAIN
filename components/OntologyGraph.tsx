@@ -198,9 +198,9 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       const fy = rect.height ? (e.clientY - rect.top) / rect.height : 0.5;
       const mx = v.x + fx * v.w;
       const my = v.y + fy * v.h;
-      const scale = e.deltaY < 0 ? 0.85 : 1 / 0.85; // 위로 굴리면 확대
+      const scale = e.deltaY < 0 ? 0.82 : 1 / 0.82; // 위로 굴리면 확대(스냅감)
       let nw = v.w * scale;
-      nw = Math.max(W * 0.16, Math.min(W * 1.5, nw)); // 줌 한계
+      nw = Math.max(W * 0.1, Math.min(W * 1.5, nw)); // 줌 한계 — 더 깊이 확대
       const nh = nw * (H / W);
       setView({ x: mx - fx * nw, y: my - fy * nh, w: nw, h: nh });
     };
@@ -320,11 +320,11 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   }, [nodes]);
 
   // ── 시맨틱 줌 (지도 축척처럼): 확대할수록 라벨·연결선이 더 드러남 ──
-  const k = W / view.w; // 1=전체보기, 클수록 확대
+  const k = W / view.w; // 1=전체보기, 클수록 확대 (지도 축척)
   // 확대할수록 라벨 기준 degree를 낮춤 → 작은 노드 제목까지 단계적 등장
-  const labelDegThreshold = Math.max(1, Math.round(16 - (k - 1) * 6));
+  const labelDegThreshold = Math.max(1, Math.round(22 - (k - 1) * 11));
   // 확대할수록 연결선을 진하게 → 안 보이던 연결이 드러남
-  const baseLineOpacity = Math.min(0.55, 0.16 + (k - 1) * 0.13);
+  const baseLineOpacity = Math.min(0.72, 0.06 + (k - 1) * 0.2);
   const inView = (n: SimNode) =>
     n.x >= view.x - 60 && n.x <= view.x + view.w + 60 &&
     n.y >= view.y - 60 && n.y <= view.y + view.h + 60;
@@ -439,7 +439,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
           {nodes.map((n) => {
             const dim = isDim(n.id);
             const isActive = active === n.id;
-            const isHub = n.deg >= 16; // 허브는 항상
+            const isHub = n.deg >= 20; // 최상위 허브만 항상 표시 (확대 시 점차 더 등장)
             const tier = industryTier(n.card); // 0무관 1공통 2내산업
             const grayed = colorMode === "industry" && tier === 0;
             const iglow = colorMode === "industry" && tier === 2; // 내 산업 → 빛남
