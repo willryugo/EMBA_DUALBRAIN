@@ -329,11 +329,13 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     n.x >= view.x - 60 && n.x <= view.x + view.w + 60 &&
     n.y >= view.y - 60 && n.y <= view.y + view.h + 60;
 
-  // 나의 산업군 모드: 카드가 내 산업(또는 범용)에 해당하면 관련
-  const isRelevant = (c: Card) => {
-    if (colorMode !== "industry") return true;
+  // 나의 산업군 모드 관련도: 0=무관, 1=공통(범용), 2=내 산업 특정
+  const industryTier = (c: Card): 0 | 1 | 2 => {
+    if (colorMode !== "industry") return 2;
     const inds = Array.isArray(c.industry) ? c.industry : [];
-    return inds.includes(UNIVERSAL) || (myInds.length > 0 && inds.some((i) => myInds.includes(i)));
+    if (myInds.length > 0 && inds.some((i) => myInds.includes(i))) return 2;
+    if (inds.includes(UNIVERSAL)) return 1;
+    return 0;
   };
 
   return (
@@ -343,6 +345,8 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
         @keyframes bmGlowPulse { 0%,100%{opacity:.12; transform:scale(1)} 50%{opacity:.34; transform:scale(1.14)} }
         .bm-node-c { animation: bmTwinkle 3.4s ease-in-out infinite; }
         .bm-glow-c { transform-box: fill-box; transform-origin: center; animation: bmGlowPulse 3s ease-in-out infinite; }
+        @keyframes bmRelGlow { 0%,100%{opacity:.22; transform:scale(1)} 50%{opacity:.62; transform:scale(1.28)} }
+        .bm-relglow { transform-box: fill-box; transform-origin: center; animation: bmRelGlow 1.8s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce){ .bm-node-c,.bm-glow-c{ animation: none } }
         .bm-modebar{position:absolute;top:60px;left:26px;z-index:12;display:flex;flex-direction:column;gap:10px;max-width:64vw}
         .bm-seg{display:inline-flex;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:3px;gap:2px;width:max-content}
@@ -436,14 +440,15 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
             const dim = isDim(n.id);
             const isActive = active === n.id;
             const isHub = n.deg >= 16; // 허브는 항상
-            const relevant = isRelevant(n.card); // 산업군 모드: 내 산업 관련?
-            const grayed = colorMode === "industry" && !relevant;
+            const tier = industryTier(n.card); // 0무관 1공통 2내산업
+            const grayed = colorMode === "industry" && tier === 0;
+            const iglow = colorMode === "industry" && tier === 2; // 내 산업 → 빛남
             // 확대할수록 더 작은 노드 라벨까지 드러남(보이는 영역 안에서만)
             const meetsDensity = n.deg >= labelDegThreshold && inView(n);
             const showLabel =
               isActive || hover === n.id || isHub || meetsDensity ||
               (active && adj[active]?.has(n.id)) ||
-              (colorMode === "industry" && relevant && inView(n));
+              (colorMode === "industry" && tier === 2 && inView(n));
             // 라벨은 화면상 크기 일정(축척 보정) — 확대해도 글자가 안 커짐
             const lblSize = Math.max(11, Math.min(20, n.r * 0.55)) / k;
             return (
@@ -456,6 +461,14 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                 onMouseEnter={() => setHover(n.id)}
                 onMouseLeave={() => setHover(null)}
               >
+                {/* 산업군 모드: 내 산업 특정 카드는 또렷이 빛남(펄스) */}
+                {iglow && (
+                  <circle className="bm-relglow" r={n.r + 11} fill={n.color} style={{ pointerEvents: "none" }} />
+                )}
+                {/* 공통(범용) 카드는 은은한 후광 */}
+                {colorMode === "industry" && tier === 1 && (
+                  <circle r={n.r + 6} fill={n.color} opacity={0.16} style={{ pointerEvents: "none" }} />
+                )}
                 {/* 허브 글로우 (펄스) */}
                 {isHub && !grayed && (
                   <circle
