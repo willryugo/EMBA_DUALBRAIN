@@ -58,6 +58,7 @@ export function DualBrainApp() {
   const [filter, setFilter] = useState<FilterState>(FILTER_DEFAULTS);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [myIndustries, setMyIndustries] = useState<Industry[]>(MY_INDUSTRIES_DEFAULT);
+  const [bizMode, setBizMode] = useState<"all" | "b2b" | "b2c">("all");
   const [tweaksOpen, setTweaksOpen] = useState(false);
   const [today, setToday] = useState("");
 
@@ -85,6 +86,8 @@ export function DualBrainApp() {
     setMyIndustries(
       store.get<Industry[]>("emba17_my_industries") || MY_INDUSTRIES_DEFAULT
     );
+    const bm = store.get<"all" | "b2b" | "b2c">("emba17_biz_mode");
+    if (bm === "b2b" || bm === "b2c" || bm === "all") setBizMode(bm);
   }, []);
 
   // 테마·폰트 라이브 반영
