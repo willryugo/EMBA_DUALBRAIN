@@ -157,12 +157,41 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   const svgRef = useRef<SVGSVGElement>(null);
   const lastClickRef = useRef<{ id: string; t: number }>({ id: "", t: 0 });
 
+  // 줌/팬 (viewBox 기반) — 휠로 확대, 빈 공간 드래그로 이동
+  const [view, setView] = useState({ x: 0, y: 0, w: W, h: H });
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  const panRef = useRef<{ cx: number; cy: number; vx: number; vy: number } | null>(null);
+
   // 마운트 직후 페이드인 (최종 배치만 부드럽게 등장)
   useEffect(() => {
     setNodes(settled.map((n) => ({ ...n })));
     const t = setTimeout(() => setReady(true), 30);
     return () => clearTimeout(t);
   }, [settled]);
+
+  // 휠 줌 (커서 기준) — 네이티브 비패시브 리스너로 preventDefault 확보
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const v = viewRef.current;
+      const rect = svg.getBoundingClientRect();
+      if (!rect.width || !rect.height) return; // 레이아웃 전 0/0 → NaN 방지
+      const fx = (e.clientX - rect.left) / rect.width;
+      const fy = (e.clientY - rect.top) / rect.height;
+      const mx = v.x + fx * v.w;
+      const my = v.y + fy * v.h;
+      const scale = e.deltaY < 0 ? 0.85 : 1 / 0.85; // 위로 굴리면 확대
+      let nw = v.w * scale;
+      nw = Math.max(W * 0.16, Math.min(W * 1.5, nw)); // 줌 한계
+      const nh = nw * (H / W);
+      setView({ x: mx - fx * nw, y: my - fy * nh, w: nw, h: nh });
+    };
+    svg.addEventListener("wheel", onWheel, { passive: false });
+    return () => svg.removeEventListener("wheel", onWheel);
+  }, []);
 
   // ── 드래그 중에만 가벼운 라이브 물리 (주변 노드가 반응) ──
   const runDragLoop = () => {
@@ -184,9 +213,10 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   const toSvg = (e: React.PointerEvent) => {
     const svg = svgRef.current!;
     const r = svg.getBoundingClientRect();
+    const v = viewRef.current;
     return {
-      x: ((e.clientX - r.left) / r.width) * W,
-      y: ((e.clientY - r.top) / r.height) * H,
+      x: v.x + ((e.clientX - r.left) / r.width) * v.w,
+      y: v.y + ((e.clientY - r.top) / r.height) * v.h,
     };
   };
   const onDown = (id: string) => (e: React.PointerEvent) => {
@@ -195,14 +225,31 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     (e.target as Element).setPointerCapture?.(e.pointerId);
     runDragLoop();
   };
+  // 빈 공간 드래그 = 화면 이동(팬)
+  const onSvgDown = (e: React.PointerEvent) => {
+    if (draggingRef.current) return;
+    panRef.current = { cx: e.clientX, cy: e.clientY, vx: viewRef.current.x, vy: viewRef.current.y };
+  };
   const onMove = (e: React.PointerEvent) => {
-    if (!draggingRef.current) return;
-    const p = toSvg(e);
-    setNodes((prev) =>
-      prev.map((n) => (n.id === draggingRef.current ? { ...n, x: p.x, y: p.y, vx: 0, vy: 0 } : n))
-    );
+    if (draggingRef.current) {
+      const p = toSvg(e);
+      setNodes((prev) =>
+        prev.map((n) => (n.id === draggingRef.current ? { ...n, x: p.x, y: p.y, vx: 0, vy: 0 } : n))
+      );
+      return;
+    }
+    if (panRef.current) {
+      const svg = svgRef.current!;
+      const r = svg.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      const v = viewRef.current;
+      const dx = ((e.clientX - panRef.current.cx) / r.width) * v.w;
+      const dy = ((e.clientY - panRef.current.cy) / r.height) * v.h;
+      setView({ ...v, x: panRef.current.vx - dx, y: panRef.current.vy - dy });
+    }
   };
   const onUp = () => {
+    panRef.current = null;
     if (!draggingRef.current) return;
     draggingRef.current = null;
     // 놓은 뒤 잠깐만 더 정착시키고 멈춤
@@ -244,10 +291,17 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
 
   return (
     <div className="bm-fs" onClick={() => setActive(null)}>
+      <style>{`
+        @keyframes bmTwinkle { 0%,100%{opacity:1} 50%{opacity:.6} }
+        @keyframes bmGlowPulse { 0%,100%{opacity:.12; transform:scale(1)} 50%{opacity:.34; transform:scale(1.14)} }
+        .bm-node-c { animation: bmTwinkle 3.4s ease-in-out infinite; }
+        .bm-glow-c { transform-box: fill-box; transform-origin: center; animation: bmGlowPulse 3s ease-in-out infinite; }
+        @media (prefers-reduced-motion: reduce){ .bm-node-c,.bm-glow-c{ animation: none } }
+      `}</style>
       <div className="bm-head">
         <h2>두 번째 뇌의 지도</h2>
         <div className="bm-hint">
-          노드 클릭 = 연결망 · 더블클릭 = 카드 · 드래그 = 이동
+          노드 클릭 = 연결망 · 더블클릭 = 카드 · 휠 = 확대/축소 · 빈 공간 드래그 = 이동
         </div>
         <button className="bm-close" onClick={onClose}>← 매거진으로</button>
       </div>
@@ -255,12 +309,21 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       <svg
         ref={svgRef}
         className="bm-svg"
-        viewBox={`0 0 ${W} ${H}`}
+        viewBox={`${view.x} ${view.y} ${view.w} ${view.h}`}
         preserveAspectRatio="xMidYMid meet"
+        onPointerDown={onSvgDown}
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerLeave={onUp}
-        style={{ opacity: ready ? 1 : 0, transition: "opacity .5s ease" }}
+        onDoubleClick={(e) => {
+          if ((e.target as Element).tagName === "svg") setView({ x: 0, y: 0, w: W, h: H });
+        }}
+        style={{
+          opacity: ready ? 1 : 0,
+          transition: "opacity .5s ease",
+          cursor: "grab",
+          touchAction: "none",
+        }}
       >
         {/* 엣지 */}
         <g>
@@ -300,15 +363,22 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                 onMouseEnter={() => setHover(n.id)}
                 onMouseLeave={() => setHover(null)}
               >
-                {/* 허브 글로우 */}
+                {/* 허브 글로우 (펄스) */}
                 {isHub && (
-                  <circle r={n.r + 8} fill={n.color} opacity={0.18} style={{ pointerEvents: "none" }} />
+                  <circle
+                    className="bm-glow-c"
+                    r={n.r + 8}
+                    fill={n.color}
+                    style={{ pointerEvents: "none", animationDelay: `${(n.id.charCodeAt(0) % 7) * 0.3}s` }}
+                  />
                 )}
                 <circle
+                  className={isActive ? undefined : "bm-node-c"}
                   r={n.r}
                   fill={n.color}
                   stroke={isActive ? "#fff" : "rgba(255,255,255,.22)"}
                   strokeWidth={isActive ? 2.5 : 1}
+                  style={{ animationDelay: `${(n.id.charCodeAt(n.id.length - 1) % 11) * 0.31}s` }}
                 />
                 {showLabel && (
                   <text
