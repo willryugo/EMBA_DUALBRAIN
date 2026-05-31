@@ -8,6 +8,7 @@ export interface CardVisual {
   tone: [string, string]; // 플레이스홀더 그라데이션 [from, to]
   motif: string; // 생성 은유 메모
   hasText?: boolean; // 이미지에 제목이 이미 박혀있으면 true → 커버에서 텍스트 오버레이 생략
+  slides?: string[]; // 카드뉴스 슬라이드별 이미지 (idx 매핑). 없으면 hero 1장 재사용
 }
 
 const VISUALS = visualsJson as Record<string, unknown>;

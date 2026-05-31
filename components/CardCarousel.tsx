@@ -77,6 +77,9 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
 
   const heroSrc = visual && !imgFail ? visual.hero : null;
   const heroBg = visual ? toneGradient(visual) : "linear-gradient(145deg,#ece5d6,#cbb9a6)";
+  // 슬라이드별 이미지 — slides[idx] 있으면 사용, 없으면 hero 재사용
+  const slideSrc =
+    visual && !imgFail ? (visual.slides?.[idx] ?? visual.hero) : null;
 
   const toggleSave = () => {
     const cur = (store.get<string[]>("emba17_saved") || []) as string[];
@@ -155,11 +158,17 @@ export function CardCarousel({ cardId, cards, onClose, onOpen }: Props) {
           ))}
         </div>
 
-        {/* 상단 이미지 (모든 슬라이드 공통, 한 장 재사용) */}
+        {/* 상단 이미지 (슬라이드별) — 부드러운 페이드인 */}
         <div className="ttn-pic" style={{ background: heroBg }}>
-          {heroSrc && (
+          {slideSrc && (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className="ttn-img" src={heroSrc} alt="" onError={() => setImgFail(true)} />
+            <img
+              key={slideSrc}
+              className="ttn-img ttn-img-fade"
+              src={slideSrc}
+              alt=""
+              onError={() => setImgFail(true)}
+            />
           )}
           {!isCover && (
             <div className="ttn-pic-tag">
