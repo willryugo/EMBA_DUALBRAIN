@@ -11,7 +11,7 @@ import type {
   OwnerPainCategory,
   TweakState,
 } from "@/lib/types";
-import { MY_INDUSTRIES_DEFAULT, UNIVERSAL } from "@/lib/manifest";
+import { MY_INDUSTRIES_DEFAULT, UNIVERSAL, COURSE_COLOR } from "@/lib/manifest";
 import { applyFont, applyTheme } from "@/lib/themes";
 import { store } from "@/lib/storage";
 
@@ -27,6 +27,14 @@ import { Footer } from "./Footer";
 
 const CARDS = cardsData as Card[];
 const OWNER_PAINS = ownerPainsData as OwnerPainCategory[];
+
+// 과제로 보는 카드뉴스 — 17기 조별발표 케이스 ↔ 카드 매핑 (추출 보강은 후속)
+const TEAM_CASES: { id: string; team: string; caseTitle: string }[] = [
+  { id: "mpo-rob-parson", team: "1조", caseTitle: "Morgan Stanley · Rob Parson" },
+  { id: "mpo-terracog", team: "2조", caseTitle: "TerraCog GPS" },
+  { id: "mpo-martha-rinaldi", team: "3조", caseTitle: "Martha Rinaldi" },
+  { id: "mpo-recruitment-vs-promote", team: "4조", caseTitle: "Recruitment of a Star" },
+];
 
 const TWEAK_DEFAULTS: TweakState = {
   theme: "dawn",
@@ -226,6 +234,38 @@ export function DualBrainApp() {
           bizMode={bizMode}
           onOpen={setOpenId}
         />
+
+        <section className="teamcase">
+          <div className="teamcase-head">
+            <div className="tc-eyebrow">과제로 보는 카드뉴스 · TEAM CASE STUDY</div>
+            <h2 className="tc-title">우리가 직접 발표한 그 사례 — 카드로 다시 본다</h2>
+            <p className="tc-lead">
+              17기가 조별로 분석·발표한 하버드 케이스. 그날의 고민이 한 장의 카드가 됐다.
+            </p>
+          </div>
+          <div className="teamcase-grid">
+            {TEAM_CASES.map((tc) => {
+              const card = CARDS.find((c) => c.id === tc.id);
+              if (!card) return null;
+              return (
+                <button
+                  key={tc.id}
+                  className="tc-card"
+                  style={{ ["--c" as string]: COURSE_COLOR[card.course] } as React.CSSProperties}
+                  onClick={() => setOpenId(tc.id)}
+                >
+                  <span className="tc-badge">{tc.team}</span>
+                  <span className="tc-case">{tc.caseTitle}</span>
+                  <span className="tc-hook">{card.hook}</span>
+                  <span className="tc-foot">
+                    <span>{card.concept}</span>
+                    <span className="tc-arrow">카드 열기 →</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
         <div className="section-head" style={{ marginTop: 54 }}>
           <h2>회의 직전, 키워드로 꺼내기</h2>

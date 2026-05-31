@@ -954,3 +954,22 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 .airesult-tag::before{content:"";width:24px;height:2px;background:var(--accent)}
 .airesult-q{font-family:var(--serif);font-style:italic;font-weight:700;font-size:18px;line-height:1.4;color:var(--ink);margin-bottom:12px;padding-left:14px;border-left:3px solid var(--accent);word-break:keep-all}
 @media(max-width:720px){.airesult-q{font-size:15px}.pain-item .pi-cta{font-size:9px}.pain-howto .ph-step{font-size:9.5px}}
+
+/* ── 과제로 보는 카드뉴스 (TEAM CASE) — 강조 섹션 ── */
+.teamcase{margin-top:40px;border:2px solid var(--ink);background:linear-gradient(180deg,color-mix(in srgb,var(--brain-l) 7%,var(--paper)),var(--paper));padding:26px 28px 28px;position:relative;box-shadow:8px 8px 0 color-mix(in srgb,var(--brain-l) 32%,var(--ink))}
+.teamcase::before{content:"TEAM CASE";position:absolute;top:-11px;left:24px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.22em;background:var(--ink);color:var(--paper);padding:3px 10px}
+.teamcase-head{margin-bottom:18px}
+.tc-eyebrow{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--brain-r);display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.tc-eyebrow::before{content:"";width:24px;height:2px;background:var(--brain-r)}
+.tc-title{font-family:var(--serif);font-weight:900;font-size:clamp(20px,2.4vw,28px);letter-spacing:-.015em;color:var(--ink);word-break:keep-all;text-wrap:balance;line-height:1.2}
+.tc-lead{font-family:var(--serif);font-style:italic;font-size:14.5px;color:var(--ink-soft);margin-top:8px;word-break:keep-all}
+.teamcase-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tc-card{display:flex;flex-direction:column;gap:9px;text-align:left;background:var(--paper);border:1px solid var(--line-2);border-top:3px solid var(--c,var(--brain-l));padding:16px 16px 14px;cursor:pointer;transition:.16s;min-height:172px}
+.tc-card:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 12px 26px rgba(22,21,15,.12)}
+.tc-badge{align-self:flex-start;font-family:var(--mono);font-size:11px;font-weight:800;letter-spacing:.04em;color:#fff;background:var(--c,var(--brain-l));padding:3px 9px;border-radius:999px}
+.tc-case{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.03em;color:var(--ink-faint);text-transform:uppercase}
+.tc-hook{font-family:var(--serif);font-weight:900;font-size:16.5px;line-height:1.32;color:var(--ink);word-break:keep-all;flex:1}
+.tc-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-soft)}
+.tc-foot .tc-arrow{font-family:var(--mono);font-weight:700;color:var(--c,var(--brain-l));white-space:nowrap}
+@media(max-width:1080px){.teamcase-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.teamcase{padding:18px 16px 20px;box-shadow:5px 5px 0 color-mix(in srgb,var(--brain-l) 32%,var(--ink))}.teamcase-grid{grid-template-columns:1fr;gap:10px}.tc-card{min-height:auto}.tc-title{font-size:18px}.tc-lead{font-size:13px}}
