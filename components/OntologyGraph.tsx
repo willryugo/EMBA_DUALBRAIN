@@ -289,6 +289,16 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     return m;
   }, [nodes]);
 
+  // ── 시맨틱 줌 (지도 축척처럼): 확대할수록 라벨·연결선이 더 드러남 ──
+  const k = W / view.w; // 1=전체보기, 클수록 확대
+  // 확대할수록 라벨 기준 degree를 낮춤 → 작은 노드 제목까지 단계적 등장
+  const labelDegThreshold = Math.max(1, Math.round(16 - (k - 1) * 6));
+  // 확대할수록 연결선을 진하게 → 안 보이던 연결이 드러남
+  const baseLineOpacity = Math.min(0.55, 0.16 + (k - 1) * 0.13);
+  const inView = (n: SimNode) =>
+    n.x >= view.x - 60 && n.x <= view.x + view.w + 60 &&
+    n.y >= view.y - 60 && n.y <= view.y + view.h + 60;
+
   return (
     <div className="bm-fs" onClick={() => setActive(null)}>
       <style>{`
@@ -301,7 +311,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       <div className="bm-head">
         <h2>두 번째 뇌의 지도</h2>
         <div className="bm-hint">
-          노드 클릭 = 연결망 · 더블클릭 = 카드 · 휠 = 확대/축소 · 빈 공간 드래그 = 이동
+          휠 = 확대(지도처럼 디테일 드러남) · 빈 공간 드래그 = 이동 · 클릭 = 연결망 · 더블클릭 = 카드
         </div>
         <button className="bm-close" onClick={onClose}>← 매거진으로</button>
       </div>
@@ -337,8 +347,8 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                 key={i}
                 x1={a.x} y1={a.y} x2={b.x} y2={b.y}
                 stroke={on ? a.color : "#aab4d4"}
-                strokeOpacity={on ? 0.7 : dim ? 0.04 : 0.16}
-                strokeWidth={on ? 2 : 1}
+                strokeOpacity={on ? 0.7 : dim ? 0.04 : baseLineOpacity}
+                strokeWidth={(on ? 2 : 1) / k}
               />
             );
           })}
@@ -348,11 +358,13 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
           {nodes.map((n) => {
             const dim = isDim(n.id);
             const isActive = active === n.id;
-            const isHub = n.deg >= 16; // 허브만 라벨 항상 (상위 ~절반 이상 연결)
+            const isHub = n.deg >= 16; // 허브는 항상
+            // 확대할수록 더 작은 노드 라벨까지 드러남(보이는 영역 안에서만)
+            const meetsDensity = n.deg >= labelDegThreshold && inView(n);
             const showLabel =
-              isActive || hover === n.id || isHub || (active && adj[active]?.has(n.id));
-            // 라벨 폰트도 노드 크기에 비례 (허브는 크게)
-            const lblSize = Math.max(11, Math.min(20, n.r * 0.55));
+              isActive || hover === n.id || isHub || meetsDensity || (active && adj[active]?.has(n.id));
+            // 라벨은 화면상 크기 일정(축척 보정) — 확대해도 글자가 안 커짐
+            const lblSize = Math.max(11, Math.min(20, n.r * 0.55)) / k;
             return (
               <g
                 key={n.id}
@@ -377,7 +389,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                   r={n.r}
                   fill={n.color}
                   stroke={isActive ? "#fff" : "rgba(255,255,255,.22)"}
-                  strokeWidth={isActive ? 2.5 : 1}
+                  strokeWidth={(isActive ? 2.5 : 1) / k}
                   style={{ animationDelay: `${(n.id.charCodeAt(n.id.length - 1) % 11) * 0.31}s` }}
                 />
                 {showLabel && (
