@@ -44,11 +44,22 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
   const [result, setResult] = useState<RecommendResult | null>(null);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
   const [phIdx, setPhIdx] = useState(0);
+  const [refreshNonce, setRefreshNonce] = useState(0);
+  const [activePain, setActivePain] = useState<string | null>(null);
+  // 방문할 때마다 질문이 새로 섞이게 — 마운트 후 client에서만(하이드레이션 안전).
+  useEffect(() => {
+    const n = typeof performance !== "undefined" ? performance.now() : 1;
+    setRefreshNonce((Math.floor(n * 1000) % 100000) + 1);
+  }, []);
 
   // 접속/시간/산업 시드로 '오늘의 질문'을 회전 — 카테고리 순서·각 항목 순서·기본 탭이 매번 달라진다.
   const seed = useMemo(
-    () => makeSeed(myIndustries) ^ (bizMode === "b2b" ? 0x9e37 : bizMode === "b2c" ? 0x85eb : 0),
-    [myIndustries, bizMode]
+    () =>
+      (makeSeed(myIndustries) ^
+        (bizMode === "b2b" ? 0x9e37 : bizMode === "b2c" ? 0x85eb : 0) ^
+        refreshNonce) >>>
+      0,
+    [myIndustries, bizMode, refreshNonce]
   );
   const rotatedPains = useMemo<OwnerPainCategory[]>(
     () =>
@@ -106,6 +117,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
 
   const usePain = (pain: string) => {
     setVal(pain);
+    setActivePain(pain);
     setTimeout(() => doAsk(pain), 80);
   };
 
@@ -185,9 +197,19 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
             </span>
           </div>
           <div className="ph-lead">
-            오늘 누군가의 임원회의에 올라온 진짜 질문. 클릭하면 관련 인사이트
-            3장이 뜬다.
+            오늘 누군가의 임원회의에 올라온 진짜 질문 —{" "}
+            <b>① 분야를 고르고 → ② 질문을 누르면</b> 아래에 관련 인사이트 3장이 뜬다.
           </div>
+        </div>
+        <div className="pain-howto">
+          <span className="ph-step">STEP 1 · 분야 고르기</span>
+          <button
+            type="button"
+            className="pain-refresh"
+            onClick={() => setRefreshNonce((n) => n + 1)}
+          >
+            ↻ 다른 질문 보기
+          </button>
         </div>
         <div className="pain-tabs">
           {rotatedPains.map((c, i) => (
@@ -203,11 +225,14 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
             </button>
           ))}
         </div>
+        <div className="pain-step2">
+          STEP 2 · 질문 누르기 <span className="ps-arr">↓</span> 아래에 인사이트 3장
+        </div>
         <div className="pain-items">
           {(rotatedPains[activeCat]?.items ?? []).map((p, i) => (
             <button
               key={i}
-              className="pain-item"
+              className={"pain-item" + (activePain === p ? " on" : "")}
               onClick={() => usePain(p)}
               style={
                 { ["--pc" as string]: rotatedPains[activeCat]?.color } as React.CSSProperties
@@ -215,7 +240,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
             >
               <span className="pi-dot"></span>
               <span className="pi-text">{p}</span>
-              <span className="pi-arrow">→</span>
+              <span className="pi-cta">인사이트 3장 <span className="pi-arrow">→</span></span>
             </button>
           ))}
         </div>
@@ -223,6 +248,8 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
 
       {result && (
         <div className="airesult">
+          <div className="airesult-tag">두 번째 뇌의 답 · INSIGHTS</div>
+          {activePain && <div className="airesult-q">“{activePain}”</div>}
           <div className="reason">
             <b>두 번째 뇌:</b> {result.reason}
           </div>

@@ -936,3 +936,21 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 .bm-info-open{font-size:13px;font-weight:700;color:#16150F;background:#fff;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;transition:.13s}
 .bm-info-open:hover{background:rgba(255,255,255,.85)}
 @media(max-width:600px){.bm-head{flex-wrap:wrap;gap:8px;padding:14px 16px}.bm-hint{width:100%;order:3}.bm-legend{max-width:90%;gap:9px;left:16px;bottom:16px}.bm-info{right:12px;left:12px;width:auto;bottom:12px}}
+
+/* ── C-Suite Desk UX 보강: 액션(분야→질문)과 결과(카드) 분리 ── */
+.pain-howto{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap}
+.pain-howto .ph-step{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+.pain-refresh{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.03em;color:var(--ink-soft);border:1px solid var(--line-2);border-radius:999px;padding:5px 13px;background:var(--paper);cursor:pointer;transition:.14s}
+.pain-refresh:hover{border-color:var(--ink);color:var(--ink);transform:translateY(-1px)}
+.pain-step2{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:14px 0 4px;display:flex;align-items:center;gap:7px}
+.pain-step2 .ps-arr{font-size:13px}
+.pain-item{border-radius:8px}
+.pain-item .pi-cta{margin-left:auto;flex:none;display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--ink-faint);transition:.15s;white-space:nowrap}
+.pain-item .pi-cta .pi-arrow{font-family:var(--mono);font-size:12px;color:inherit;margin:0}
+.pain-item:hover .pi-cta,.pain-item.on .pi-cta{color:var(--pc)}
+.pain-item.on{background:color-mix(in srgb,var(--pc) 10%,transparent)!important;box-shadow:inset 3px 0 0 var(--pc)}
+.pain-item.on .pi-text{color:var(--ink);font-weight:700}
+.airesult-tag{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;display:flex;align-items:center;gap:9px}
+.airesult-tag::before{content:"";width:24px;height:2px;background:var(--accent)}
+.airesult-q{font-family:var(--serif);font-style:italic;font-weight:700;font-size:18px;line-height:1.4;color:var(--ink);margin-bottom:12px;padding-left:14px;border-left:3px solid var(--accent);word-break:keep-all}
+@media(max-width:720px){.airesult-q{font-size:15px}.pain-item .pi-cta{font-size:9px}.pain-howto .ph-step{font-size:9.5px}}
