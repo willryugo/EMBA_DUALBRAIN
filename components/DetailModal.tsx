@@ -462,23 +462,22 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
           <div className="padv-head">
             {shownInd ? (
               <>
-                <span className="padv-tag">내 산업 처방</span>
+                <span className="padv-tag">이 산업이라면</span>
                 <span className="padv-ind">{shownInd}</span>
               </>
             ) : (
-              <span className="padv-tag">기본 처방 (산업 미설정)</span>
+              <span className="padv-tag">바로 쓰는 처방</span>
             )}
           </div>
           <p className="padv-text">{shownText}</p>
-          {!auto.matchedIndustry && !overrideInd && (
-            <div className="padv-hint">
-              ⚙ Tweaks에서 내 산업을 설정하면 더 맞춤형 처방이 나옵니다.
-            </div>
-          )}
         </div>
-        {others.length > 1 && (
+        {others.length >= 1 && (
           <div className="probe-others">
-            <div className="poth-lab">다른 산업이라면? — 같은 진단, 다른 처방</div>
+            <div className="poth-lab">
+              {shownInd
+                ? "다른 산업이라면? — 눌러서 비교"
+                : "혹시 이런 산업이세요? — 누르면 그 산업 버전으로 바뀝니다"}
+            </div>
             <div className="poth-chips">
               {others.map((ind) => (
                 <button
@@ -489,6 +488,14 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
                   {ind}
                 </button>
               ))}
+              {shownInd && (
+                <button
+                  className="poth-chip reset"
+                  onClick={() => setOverrideInd(null)}
+                >
+                  ↺ 공통으로
+                </button>
+              )}
             </div>
           </div>
         )}
@@ -677,7 +684,7 @@ function StepOntology({
                 onMouseEnter={() => setHover(p.c.id)}
                 onMouseLeave={() => setHover((h) => (h === p.c.id ? null : h))}
               >
-                <title>{p.c.hook} — 클릭해서 이동</title>
+                <title>{p.c.hook.replace(/\*/g, "").replace(/\n/g, " ")} — 클릭해서 이동</title>
                 {/* 큰 투명 히트영역 — 클릭/호버를 쉽게 */}
                 <circle cx={p.x} cy={p.y} r="30" fill="transparent" className="onto-hit" />
                 <circle
@@ -704,7 +711,7 @@ function StepOntology({
                       transformOrigin: isRight ? "left center" : "right center",
                     }}
                   >
-                    <div className="onto-lbl-hook">{p.c.hook}</div>
+                    <div className="onto-lbl-hook">{rich(p.c.hook)}</div>
                     <div className="onto-lbl-course" style={{ color: col }}>
                       {COURSE_SHORT[p.c.course]}
                     </div>
