@@ -146,6 +146,21 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       stepPhysics(ns, idx, alpha);
       alpha *= 0.99;
     }
+    // 블롭을 캔버스 정중앙으로 옮기고, 여백 맞춰 키워서 화면을 꽉 채움 (한쪽 쏠림 방지)
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    ns.forEach((n) => {
+      minX = Math.min(minX, n.x - n.r); minY = Math.min(minY, n.y - n.r);
+      maxX = Math.max(maxX, n.x + n.r); maxY = Math.max(maxY, n.y + n.r);
+    });
+    const bw = maxX - minX || 1, bh = maxY - minY || 1;
+    const pad = 90;
+    const fit = Math.min((W - pad * 2) / bw, (H - pad * 2) / bh, 1.7);
+    const bcx = (minX + maxX) / 2, bcy = (minY + maxY) / 2;
+    ns.forEach((n) => {
+      n.x = W / 2 + (n.x - bcx) * fit;
+      n.y = H / 2 + (n.y - bcy) * fit;
+      n.vx = 0; n.vy = 0;
+    });
     return ns;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes0, links]);
@@ -308,10 +323,12 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     setActive((a) => (a === id ? null : id));
   };
 
+  // 클릭(active) 또는 호버(hover) 어느 쪽이든 '초점'으로 — 관련 노드만 하이라이트(옵시디언식)
+  const focus = active || hover;
   const isDim = (id: string) =>
-    active && active !== id && !adj[active]?.has(id);
+    !!focus && focus !== id && !adj[focus]?.has(id);
   const linkOn = (l: SimLink) =>
-    active && (l.s === active || l.t === active);
+    !!focus && (l.s === focus || l.t === focus);
 
   const nodeById = useMemo(() => {
     const m: Record<string, SimNode> = {};
@@ -323,8 +340,8 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   const k = W / view.w; // 1=전체보기, 클수록 확대 (지도 축척)
   // 확대할수록 라벨 기준 degree를 낮춤 → 작은 노드 제목까지 단계적 등장
   const labelDegThreshold = Math.max(1, Math.round(22 - (k - 1) * 11));
-  // 확대할수록 연결선을 진하게 → 안 보이던 연결이 드러남
-  const baseLineOpacity = Math.min(0.72, 0.06 + (k - 1) * 0.2);
+  // 연결선은 줌과 무관하게 항상 은은히 보인다 (확대 시 점점 진해지는 'ramp' 제거 — 들어오자마자 별자리처럼 이어짐)
+  const baseLineOpacity = 0.16;
   const inView = (n: SimNode) =>
     n.x >= view.x - 60 && n.x <= view.x + view.w + 60 &&
     n.y >= view.y - 60 && n.y <= view.y + view.h + 60;
@@ -347,7 +364,13 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
         .bm-glow-c { transform-box: fill-box; transform-origin: center; animation: bmGlowPulse 3s ease-in-out infinite; }
         @keyframes bmRelGlow { 0%,100%{opacity:.22; transform:scale(1)} 50%{opacity:.62; transform:scale(1.28)} }
         .bm-relglow { transform-box: fill-box; transform-origin: center; animation: bmRelGlow 1.8s ease-in-out infinite; }
-        @media (prefers-reduced-motion: reduce){ .bm-node-c,.bm-glow-c{ animation: none } }
+        /* 별자리 부유 — 각 노드가 제자리 주변을 천천히 떠다닌다 (지속 생동감) */
+        @keyframes bmFloat { 0%{transform:translate(0,0)} 25%{transform:translate(3px,-4px)} 50%{transform:translate(-3px,3px)} 75%{transform:translate(4px,2px)} 100%{transform:translate(0,0)} }
+        .bm-float { animation: bmFloat var(--fdur,11s) ease-in-out var(--fdel,0s) infinite; }
+        /* 초점 노드의 엣지가 바깥으로 그어지는 연결 애니메이션 */
+        @keyframes bmDraw { from{stroke-dashoffset:1} to{stroke-dashoffset:0} }
+        .bm-edge-on { stroke-dasharray:1; animation: bmDraw .5s ease forwards; }
+        @media (prefers-reduced-motion: reduce){ .bm-node-c,.bm-glow-c,.bm-float{ animation: none } }
         .bm-modebar{position:absolute;top:60px;left:26px;z-index:12;display:flex;flex-direction:column;gap:10px;max-width:64vw}
         .bm-seg{display:inline-flex;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:3px;gap:2px;width:max-content}
         .bm-seg button{font-size:12.5px;font-weight:700;color:rgba(255,255,255,.6);background:transparent;border:none;border-radius:7px;padding:7px 14px;cursor:pointer;transition:.13s;font-family:inherit}
@@ -421,15 +444,17 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
             const a = nodeById[l.s], b = nodeById[l.t];
             if (!a || !b) return null;
             const on = linkOn(l);
-            const dim = active && !on;
+            const dim = focus && !on;
             return (
               <line
                 key={i}
+                className={on ? "bm-edge-on" : undefined}
+                pathLength={on ? 1 : undefined}
                 x1={a.x} y1={a.y} x2={b.x} y2={b.y}
                 stroke={on ? a.color : "#aab4d4"}
-                strokeOpacity={on ? 0.7 : dim ? 0.04 : baseLineOpacity}
-                strokeWidth={(on ? 2 : 1) / k}
-                style={{ transition: "stroke-opacity .45s ease, stroke-width .3s ease" }}
+                strokeOpacity={on ? 0.85 : dim ? 0.03 : baseLineOpacity}
+                strokeWidth={(on ? 2.4 : 1) / k}
+                style={{ transition: "stroke-opacity .4s ease, stroke-width .3s ease" }}
               />
             );
           })}
@@ -447,7 +472,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
             const meetsDensity = n.deg >= labelDegThreshold && inView(n);
             const showLabel =
               isActive || hover === n.id || isHub || meetsDensity ||
-              (active && adj[active]?.has(n.id)) ||
+              (focus && adj[focus]?.has(n.id)) ||
               (colorMode === "industry" && tier === 2 && inView(n));
             // 라벨은 화면상 크기 일정(축척 보정) — 확대해도 글자가 안 커짐
             const lblSize = Math.max(11, Math.min(20, n.r * 0.55)) / k;
@@ -461,6 +486,13 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                 onMouseEnter={() => setHover(n.id)}
                 onMouseLeave={() => setHover(null)}
               >
+                <g
+                  className="bm-float"
+                  style={{
+                    ["--fdur" as string]: `${9 + (n.id.charCodeAt(0) % 7)}s`,
+                    ["--fdel" as string]: `${-(n.id.charCodeAt(n.id.length - 1) % 13)}s`,
+                  } as React.CSSProperties}
+                >
                 {/* 산업군 모드: 내 산업 특정 카드는 또렷이 빛남(펄스) */}
                 {iglow && (
                   <circle className="bm-relglow" r={n.r + 11} fill={n.color} style={{ pointerEvents: "none" }} />
@@ -503,6 +535,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
                 >
                   {n.card.concept.length > 16 ? n.card.concept.slice(0, 15) + "…" : n.card.concept}
                 </text>
+                </g>
               </g>
             );
           })}
