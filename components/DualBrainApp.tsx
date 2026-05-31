@@ -69,6 +69,16 @@ export function DualBrainApp() {
   const [myIndustries, setMyIndustries] = useState<Industry[]>(MY_INDUSTRIES_DEFAULT);
   const [bizMode, setBizMode] = useState<"all" | "b2b" | "b2c">("all");
   const [tweaksOpen, setTweaksOpen] = useState(false);
+  // 관리자 전용 노출: ?admin=1 활성(이 브라우저에 저장) / ?admin=0 해제. (추후 비밀번호 게이트로 교체)
+  const [adminMode, setAdminMode] = useState(false);
+  useEffect(() => {
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.get("admin") === "1") localStorage.setItem("emba17_admin", "1");
+      if (sp.get("admin") === "0") localStorage.removeItem("emba17_admin");
+      setAdminMode(localStorage.getItem("emba17_admin") === "1");
+    } catch {}
+  }, []);
   const [today, setToday] = useState("");
 
   // 마운트 후 1회: localStorage 복원
@@ -332,10 +342,11 @@ export function DualBrainApp() {
 
       <Footer todayLabel={today} />
 
+      {adminMode && (
       <button
         className="tweaks-toggle"
         onClick={() => setTweaksOpen((o) => !o)}
-        title="테마·폰트·팔레트 트윅"
+        title="테마·폰트·팔레트 트윅 (관리자 전용)"
       >
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
           <circle cx="12" cy="12" r="3" />
@@ -343,6 +354,7 @@ export function DualBrainApp() {
         </svg>
         <span>Tweaks · 테마 변경</span>
       </button>
+      )}
 
       {openId && (
         <DetailModal
