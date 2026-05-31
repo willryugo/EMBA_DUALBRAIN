@@ -18,7 +18,7 @@ import { store } from "@/lib/storage";
 import { Masthead } from "./Masthead";
 import { TitleBlock } from "./TitleBlock";
 import { HeroAI } from "./HeroAI";
-import { FilterChips } from "./Filters";
+import { FilterChips, FilterPanel } from "./Filters";
 import { MagCard, layoutClass } from "./MagCard";
 import { DetailModal } from "./DetailModal";
 import { OntologyGraph } from "./OntologyGraph";
@@ -222,7 +222,6 @@ export function DualBrainApp() {
           <h2>회의 직전, 키워드로 꺼내기</h2>
           <div className="sub">SEARCH · FILTER</div>
         </div>
-        <SearchBar state={filter} setState={setF} savedCount={savedIds.length} />
         <div className="filter-row">
           <FilterChips state={filter} setState={setF} />
         </div>
