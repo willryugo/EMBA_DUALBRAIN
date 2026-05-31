@@ -16,6 +16,9 @@
   --accent-soft:#E8C8DC;
   --brain-l:#6E7AD6;
   --brain-r:#DC5C97;
+  /* 로고 전용 네온 네이비+핑크 — 테마와 무관하게 고정. 배경 톤이 바뀌어도 안 어둑해진다. */
+  --mark-l:#5A6BF5;
+  --mark-r:#FF4FA3;
   --bg-image:radial-gradient(80% 60% at 100% 0%, rgba(209,128,158,.18) 0%, transparent 55%), radial-gradient(60% 60% at 0% 100%, rgba(140,150,191,.16) 0%, transparent 55%);
   --serif:"Nanum Myeongjo",ui-serif,serif;
   --sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
