@@ -52,6 +52,11 @@ export function TitleBlock({
           <div className="title-sub">EMBA 17기의 두 번째 뇌</div>
         </div>
         <div className="title-by-block">
+          <div className="tby-info">
+            <span className="tby-i">by</span>
+            <span className="tby-b">17기 학술국</span>
+            <span className="tby-en">YONSEI EMBA 17 · ACADEMIC OFFICE</span>
+          </div>
           {onEnter && (
             <button className="tby-enter" onClick={onEnter} type="button">
               <span className="tbe-inf" aria-hidden="true">∞</span>
@@ -59,9 +64,6 @@ export function TitleBlock({
               <span className="tbe-sub">81장 인사이트 브레인맵 →</span>
             </button>
           )}
-          <span className="tby-i">by</span>
-          <span className="tby-b">17기 학술국</span>
-          <span className="tby-en">YONSEI EMBA 17 · ACADEMIC OFFICE</span>
         </div>
       </div>
       <div className="byline">
@@ -69,6 +71,7 @@ export function TitleBlock({
         <span className="byline-sep"></span>
         <span className="byline-by">VOL.01 · 52명의 두 번째 뇌</span>
       </div>
+      <div className="title-lower">
       <p className="deck">
         <b>회의 30분 전, 다시 꺼내 쓴다.</b>
         <span className="deck-em-wrap">
@@ -122,6 +125,7 @@ export function TitleBlock({
           <div className="s"><b>{COHORT_INDUSTRIES}</b><span>산업군</span></div>
         </div>
       )}
+      </div>
     </section>
   );
 }
