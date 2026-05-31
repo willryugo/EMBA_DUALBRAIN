@@ -17,8 +17,8 @@
   --brain-l:#6E7AD6;
   --brain-r:#DC5C97;
   /* 로고 전용 네온 네이비+핑크 — 테마와 무관하게 고정. 배경 톤이 바뀌어도 안 어둑해진다. */
-  --mark-l:#3D6BFF;
-  --mark-r:#FF4FA6;
+  --mark-l:#4E5DB6;
+  --mark-r:#D55E92;
   --bg-image:radial-gradient(80% 60% at 100% 0%, rgba(209,128,158,.18) 0%, transparent 55%), radial-gradient(60% 60% at 0% 100%, rgba(140,150,191,.16) 0%, transparent 55%);
   --serif:"Nanum Myeongjo",ui-serif,serif;
   --sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
@@ -71,7 +71,7 @@ img,svg{display:block;max-width:100%}
 .title-block .title-sub{font-family:var(--serif);font-style:italic;font-size:clamp(14px,1.2vw,16px);color:var(--ink-soft);margin-top:8px;font-weight:500;letter-spacing:-.005em;position:relative;z-index:2}
 .title-row{display:flex;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-bottom:14px;position:relative}
 .title-stage{position:relative;display:flex;flex-direction:column;align-items:flex-start;padding:10px 24px 6px 24px;min-height:100px;overflow:visible}
-.title-bgmark{position:absolute;left:-8px;top:50%;transform:translateY(-50%) scale(.52);transform-origin:left center;z-index:1;pointer-events:none;opacity:.5}
+.title-bgmark{position:absolute;left:-8px;top:50%;transform:translateY(-50%) scale(.52);transform-origin:left center;z-index:1;pointer-events:none;opacity:.44}
 .title-bgmark .db-mark circle{opacity:1 !important}
 .title-bgmark .db-mark g{mix-blend-mode:normal !important}
 @media(max-width:1080px){.title-bgmark{opacity:.26}.title-bgmark .db-mark{transform:scale(.7);transform-origin:left center}}
