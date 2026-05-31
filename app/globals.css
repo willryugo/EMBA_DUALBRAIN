@@ -128,6 +128,11 @@ img,svg{display:block;max-width:100%}
 .ind-pick-chip.all.on{background:var(--ink);box-shadow:0 4px 14px color-mix(in srgb,var(--ink) 30%,transparent)}
 .ind-pick-hint{margin-top:9px;font-size:11.5px;color:var(--ink-faint);font-style:italic}
 .ph-rotate{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--accent);margin-left:8px;text-transform:none}
+/* B2B / B2C 세그먼트 */
+.biz-seg{display:inline-flex;gap:2px;padding:2px;background:var(--bg);border:1px solid var(--line-2);border-radius:999px}
+.biz-seg-btn{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);background:transparent;border:none;border-radius:999px;padding:4px 12px;cursor:pointer;transition:.13s}
+.biz-seg-btn:hover{color:var(--ink)}
+.biz-seg-btn.on{color:#fff;background:linear-gradient(120deg,var(--brain-l),var(--brain-r))}
 @media(max-width:720px){.ind-pick{margin-top:16px;padding-top:14px}.ind-pick-chip{font-size:12px;padding:7px 12px}.ind-pick-meta{display:none}}
 
 /* ───── Section header ───── */
@@ -659,7 +664,7 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 .poster{margin-top:8px;padding:34px 28px 50px;background:color-mix(in srgb, var(--c) 6%, var(--paper));border:1.5px solid var(--ink);position:relative;overflow:hidden;min-height:340px;display:flex;flex-direction:column}
 .poster-meta{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:16px;margin-bottom:24px;z-index:2;position:relative}
 .poster-meta .pm-course{color:var(--c);font-weight:700}
-.poster-hook{font-family:var(--serif);font-weight:900;font-size:clamp(40px,7vw,84px);line-height:.96;letter-spacing:-.026em;color:var(--ink);margin-bottom:18px;z-index:2;position:relative;text-wrap:balance}
+.poster-hook{font-family:var(--serif);font-weight:900;font-size:clamp(36px,6vw,72px);line-height:1.04;letter-spacing:-.026em;color:var(--ink);margin-bottom:18px;z-index:2;position:relative;text-wrap:balance;word-break:keep-all;overflow-wrap:break-word}
 .poster-concept{font-family:var(--serif);font-style:italic;font-size:18px;font-weight:500;color:var(--ink-soft);margin-top:auto;z-index:2;position:relative}
 .poster-block{position:absolute;right:-20px;bottom:-40px;width:60%;height:65%;background:var(--c);opacity:.10;transform:rotate(-4deg);z-index:1}
 .step-hook .nextcue{margin-top:24px}

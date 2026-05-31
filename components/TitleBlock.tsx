@@ -20,7 +20,15 @@ interface Props {
   onEnter?: () => void; // 온톨로지 브레인맵(두 번째 뇌)으로 진입
   myIndustries?: Industry[];
   onToggleIndustry?: (ind: Industry) => void;
+  bizMode?: "all" | "b2b" | "b2c";
+  onBizMode?: (m: "all" | "b2b" | "b2c") => void;
 }
+
+const BIZ_OPTS: { k: "all" | "b2b" | "b2c"; label: string }[] = [
+  { k: "all", label: "전체" },
+  { k: "b2b", label: "B2B" },
+  { k: "b2c", label: "B2C" },
+];
 
 export function TitleBlock({
   todayLabel,
@@ -28,6 +36,8 @@ export function TitleBlock({
   onEnter,
   myIndustries = [],
   onToggleIndustry,
+  bizMode = "all",
+  onBizMode,
 }: Props) {
   return (
     <section className="title-block wrap">
@@ -83,8 +93,22 @@ export function TitleBlock({
         <div className="ind-pick">
           <div className="ind-pick-head">
             <span className="ind-pick-lab">내 산업군으로 보기</span>
+            {onBizMode && (
+              <div className="biz-seg" role="group" aria-label="비즈니스 형태">
+                {BIZ_OPTS.map((o) => (
+                  <button
+                    key={o.k}
+                    className={"biz-seg-btn" + (bizMode === o.k ? " on" : "")}
+                    onClick={() => onBizMode(o.k)}
+                    aria-pressed={bizMode === o.k}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            )}
             <span className="ind-pick-meta">
-              {totalCards} 카드 · 7 과목 · {COHORT_SIZE} 원우 · {COHORT_INDUSTRIES} 산업군
+              {totalCards} 카드 · {COHORT_INDUSTRIES} 산업군
             </span>
           </div>
           <div className="ind-pick-chips">
@@ -110,9 +134,11 @@ export function TitleBlock({
             })}
           </div>
           <div className="ind-pick-hint">
-            {myIndustries.length > 0
-              ? "선택한 산업 기준으로 추천·처방·오늘의 질문이 맞춰집니다."
-              : "선택하면 추천·처방·오늘의 질문이 내 산업에 맞춰집니다. (다시 누르면 해제)"}
+            {bizMode !== "all"
+              ? `${bizMode.toUpperCase()} 관점 + ${myIndustries.length > 0 ? "선택 산업" : "전체"} 기준으로 추천·오늘의 질문이 맞춰집니다.`
+              : myIndustries.length > 0
+                ? "선택한 산업 기준으로 추천·처방·오늘의 질문이 맞춰집니다."
+                : "산업군·B2B/B2C를 고르면 추천·처방·오늘의 질문이 맞춰집니다. (다시 누르면 해제)"}
           </div>
         </div>
       ) : (

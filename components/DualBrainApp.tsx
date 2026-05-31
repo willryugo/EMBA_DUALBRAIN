@@ -208,6 +208,11 @@ export function DualBrainApp() {
           setMyIndustries(next);
           store.set("emba17_my_industries", next);
         }}
+        bizMode={bizMode}
+        onBizMode={(m) => {
+          setBizMode(m);
+          store.set("emba17_biz_mode", m);
+        }}
       />
 
       <main className="wrap">
@@ -215,6 +220,7 @@ export function DualBrainApp() {
           cards={CARDS}
           ownerPains={OWNER_PAINS}
           myIndustries={myIndustries}
+          bizMode={bizMode}
           onOpen={setOpenId}
         />
 

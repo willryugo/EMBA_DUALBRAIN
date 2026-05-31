@@ -24,17 +24,21 @@ interface Props {
   cards: Card[];
   ownerPains: OwnerPainCategory[];
   myIndustries: Industry[];
+  bizMode?: "all" | "b2b" | "b2c";
   onOpen: (id: string) => void;
 }
 
-export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
+export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpen }: Props) {
   const [val, setVal] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RecommendResult | null>(null);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
 
   // 접속/시간/산업 시드로 '오늘의 질문'을 회전 — 카테고리 순서·각 항목 순서·기본 탭이 매번 달라진다.
-  const seed = useMemo(() => makeSeed(myIndustries), [myIndustries]);
+  const seed = useMemo(
+    () => makeSeed(myIndustries) ^ (bizMode === "b2b" ? 0x9e37 : bizMode === "b2c" ? 0x85eb : 0),
+    [myIndustries, bizMode]
+  );
   const rotatedPains = useMemo<OwnerPainCategory[]>(
     () =>
       rotate(ownerPains, seed).map((c, ci) => ({
@@ -151,9 +155,12 @@ export function HeroAI({ cards, ownerPains, myIndustries, onOpen }: Props) {
           <div className="ph-eyebrow">
             C레벨의 고민들 · C-SUITE DESK
             <span className="ph-rotate">
+              {bizMode !== "all" ? `· ${bizMode.toUpperCase()}` : ""}
               {myIndustries.length > 0
-                ? `· ${myIndustries[0]} 맞춤`
-                : "· 접속할 때마다 새로고침"}
+                ? ` · ${myIndustries[0]} 맞춤`
+                : bizMode === "all"
+                  ? "· 접속할 때마다 새로고침"
+                  : " 관점"}
             </span>
           </div>
           <div className="ph-lead">

@@ -424,6 +424,27 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
             {leaf.principle}
           </div>
         )}
+        {leaf.principle && (
+          <div className="probe-learn">
+            <span className="plearn-where">
+              📚 이 개념은 <b>{card.course} · {card.concept}</b>
+              {card.professor ? ` (${card.professor} 교수)` : ""} 에서 배웠습니다.
+            </span>
+            <a
+              className="plearn-search"
+              href={`https://www.google.com/search?q=${encodeURIComponent(
+                leaf.principle.split(/[:：(]/)[0].trim() + " 경영 이론"
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() =>
+                logEvent("principle_search", { card_id: card.id, principle: leaf.principle })
+              }
+            >
+              🔎 이 원리 더 찾아보기 →
+            </a>
+          </div>
+        )}
         <p className="probe-common">{leaf.common}</p>
         <div className="probe-advice">
           <div className="padv-head">
