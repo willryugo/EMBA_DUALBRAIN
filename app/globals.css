@@ -973,3 +973,18 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 .tc-foot .tc-arrow{font-family:var(--mono);font-weight:700;color:var(--c,var(--brain-l));white-space:nowrap}
 @media(max-width:1080px){.teamcase-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:720px){.teamcase{padding:18px 16px 20px;box-shadow:5px 5px 0 color-mix(in srgb,var(--brain-l) 32%,var(--ink))}.teamcase-grid{grid-template-columns:1fr;gap:10px}.tc-card{min-height:auto}.tc-title{font-size:18px}.tc-lead{font-size:13px}}
+
+/* ── 스무고개 진단 카드 (DEEP DIVE) — 강조 ── */
+.deepdive{margin-top:22px;border:1.5px dashed var(--brain-l);background:color-mix(in srgb,var(--brain-l) 5%,var(--paper));padding:22px 24px 24px;position:relative}
+.deepdive-head{margin-bottom:14px}
+.dd-eyebrow{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--brain-l);margin-bottom:7px}
+.dd-title{font-family:var(--serif);font-weight:900;font-size:clamp(18px,2.2vw,24px);letter-spacing:-.01em;color:var(--ink);word-break:keep-all;line-height:1.25}
+.dd-lead{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);margin-top:7px;word-break:keep-all}
+.dd-lead b{font-style:normal;font-weight:800;color:var(--ink)}
+.deepdive-chips{display:flex;flex-wrap:wrap;gap:8px}
+.dd-chip{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line-2);border-radius:999px;padding:7px 13px;cursor:pointer;transition:.14s;text-align:left}
+.dd-chip:hover{border-color:var(--c,var(--ink));transform:translateY(-1px);box-shadow:0 4px 12px color-mix(in srgb,var(--c,var(--ink)) 22%,transparent)}
+.dd-chip .dd-dot{width:7px;height:7px;border-radius:50%;background:var(--c,var(--brain-l));flex:none}
+.dd-chip .dd-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap}
+.dd-chip .dd-course{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--ink-faint);text-transform:uppercase}
+@media(max-width:720px){.deepdive{padding:16px 16px 18px}.dd-chip .dd-name{font-size:12px;white-space:normal}.dd-title{font-size:17px}}
