@@ -30,8 +30,8 @@ const NB = neighborsJson as Record<string, unknown>;
 
 // 진짜 force-directed 브레인맵 (다크). 실제 의미 이웃만 엣지, 노드 크기=연결 수.
 export function OntologyGraph({ cards, onOpen, onClose }: Props) {
-  const W = 1600;
-  const H = 1000;
+  const W = 1800;
+  const H = 1100;
 
   // 노드·엣지 빌드
   const { nodes0, links } = useMemo(() => {
@@ -53,20 +53,27 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
         deg[t]++;
       });
     });
-    // 초기 위치: 원형 + 약간 랜덤(결정적) — 과목별로 살짝 뭉치게 시드
+    // degree 정규화 → 크기 격차 극대화 (허브 거대 / 잎 작게)
+    const degs = cards.map((c) => deg[c.id] || 0);
+    const dMin = Math.min(...degs), dMax = Math.max(...degs);
+    const norm = (d: number) => (dMax > dMin ? (d - dMin) / (dMax - dMin) : 0.5);
+    // 잎 5px → 허브 38px, 제곱 강조로 상위만 확 크게
+    const radiusOf = (d: number) => 5 + Math.pow(norm(d), 1.6) * 33;
+
+    // 초기 위치: 넓은 원형 분산 (결정적 jitter)
     const nodes0: SimNode[] = cards.map((c, i) => {
       const a = (i / cards.length) * Math.PI * 2;
-      const jitter = ((i * 37) % 13) - 6;
+      const jitter = ((i * 37) % 17) - 8;
       const d = deg[c.id] || 0;
       return {
         id: c.id,
         card: c,
-        x: W / 2 + Math.cos(a) * (300 + jitter * 6),
-        y: H / 2 + Math.sin(a) * (300 + jitter * 6),
+        x: W / 2 + Math.cos(a) * (440 + jitter * 10),
+        y: H / 2 + Math.sin(a) * (380 + jitter * 8),
         vx: 0,
         vy: 0,
         deg: d,
-        r: 7 + Math.sqrt(d) * 5.5, // 연결 많을수록 큰 노드
+        r: radiusOf(d),
         color: COURSE_COLOR[c.course] || "#9a8",
       };
     });
@@ -92,9 +99,10 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
         let d2 = dx * dx + dy * dy;
         if (d2 < 1) d2 = 1;
         const d = Math.sqrt(d2);
-        const minD = a.r + b.r + 14;
-        let f = (5200 * alpha) / d2;
-        if (d < minD) f += (minD - d) * 0.9;
+        const minD = a.r + b.r + 38; // 노드 사이 여백 크게 → 시원하게 퍼짐
+        // 반발 대폭 강화 + 큰 노드일수록 더 강하게 밀어냄(허브가 공간 확보)
+        let f = (16000 * alpha) / d2;
+        if (d < minD) f += (minD - d) * 1.2;
         const fx = (dx / d) * f, fy = (dy / d) * f;
         a.vx += fx; a.vy += fy;
         b.vx -= fx; b.vy -= fy;
@@ -105,15 +113,17 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       if (!a || !b) return;
       let dx = b.x - a.x, dy = b.y - a.y;
       let d = Math.sqrt(dx * dx + dy * dy) || 1;
-      const f = (d - 120) * 0.04 * alpha;
+      // 목표 거리 = 두 노드 반지름 + 여백 (큰 노드는 더 떨어져 가지처럼)
+      const target = a.r + b.r + 70;
+      const f = (d - target) * 0.035 * alpha;
       const fx = (dx / d) * f, fy = (dy / d) * f;
       a.vx += fx; a.vy += fy;
       b.vx -= fx; b.vy -= fy;
     });
     ns.forEach((n) => {
       if (draggingRef.current === n.id) { n.vx = 0; n.vy = 0; return; }
-      n.vx += (W / 2 - n.x) * 0.0016 * alpha;
-      n.vy += (H / 2 - n.y) * 0.0016 * alpha;
+      n.vx += (W / 2 - n.x) * 0.001 * alpha; // 중심 인력 약하게 → 넓게 펼침
+      n.vy += (H / 2 - n.y) * 0.001 * alpha;
       n.vx *= 0.86; n.vy *= 0.86;
       n.x += n.vx; n.y += n.vy;
       n.x = Math.max(n.r + 8, Math.min(W - n.r - 8, n.x));
@@ -127,9 +137,9 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     const idx: Record<string, number> = {};
     ns.forEach((n, i) => (idx[n.id] = i));
     let alpha = 1;
-    for (let s = 0; s < 320; s++) {
+    for (let s = 0; s < 500; s++) {
       stepPhysics(ns, idx, alpha);
-      alpha *= 0.985;
+      alpha *= 0.99;
     }
     return ns;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -260,9 +270,9 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
               <line
                 key={i}
                 x1={a.x} y1={a.y} x2={b.x} y2={b.y}
-                stroke={on ? a.color : "#ffffff"}
-                strokeOpacity={on ? 0.55 : dim ? 0.03 : 0.09}
-                strokeWidth={on ? 1.6 : 0.8}
+                stroke={on ? a.color : "#aab4d4"}
+                strokeOpacity={on ? 0.7 : dim ? 0.04 : 0.16}
+                strokeWidth={on ? 2 : 1}
               />
             );
           })}
@@ -272,32 +282,40 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
           {nodes.map((n) => {
             const dim = isDim(n.id);
             const isActive = active === n.id;
-            const showLabel = isActive || hover === n.id || n.deg >= 9 || (active && adj[active]?.has(n.id));
+            const isHub = n.deg >= 16; // 허브만 라벨 항상 (상위 ~절반 이상 연결)
+            const showLabel =
+              isActive || hover === n.id || isHub || (active && adj[active]?.has(n.id));
+            // 라벨 폰트도 노드 크기에 비례 (허브는 크게)
+            const lblSize = Math.max(11, Math.min(20, n.r * 0.55));
             return (
               <g
                 key={n.id}
                 transform={`translate(${n.x},${n.y})`}
-                style={{ cursor: "pointer", opacity: dim ? 0.22 : 1, transition: "opacity .2s" }}
+                style={{ cursor: "pointer", opacity: dim ? 0.18 : 1, transition: "opacity .2s" }}
                 onPointerDown={onDown(n.id)}
                 onClick={handleClick(n.id)}
                 onMouseEnter={() => setHover(n.id)}
                 onMouseLeave={() => setHover(null)}
               >
+                {/* 허브 글로우 */}
+                {isHub && (
+                  <circle r={n.r + 8} fill={n.color} opacity={0.18} style={{ pointerEvents: "none" }} />
+                )}
                 <circle
                   r={n.r}
                   fill={n.color}
-                  stroke={isActive ? "#fff" : "rgba(255,255,255,.25)"}
+                  stroke={isActive ? "#fff" : "rgba(255,255,255,.22)"}
                   strokeWidth={isActive ? 2.5 : 1}
                 />
                 {showLabel && (
                   <text
                     x={0}
-                    y={n.r + 13}
+                    y={n.r + lblSize + 2}
                     textAnchor="middle"
-                    fill="rgba(255,255,255,.9)"
-                    fontSize={11}
-                    fontWeight={isActive ? 700 : 500}
-                    style={{ pointerEvents: "none", textShadow: "0 1px 4px rgba(0,0,0,.8)" }}
+                    fill={isHub || isActive ? "#fff" : "rgba(255,255,255,.85)"}
+                    fontSize={lblSize}
+                    fontWeight={isHub || isActive ? 700 : 500}
+                    style={{ pointerEvents: "none", textShadow: "0 1px 5px rgba(0,0,0,.9)" }}
                   >
                     {n.card.concept.length > 16 ? n.card.concept.slice(0, 15) + "…" : n.card.concept}
                   </text>
