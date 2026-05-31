@@ -192,7 +192,11 @@ export function DualBrainApp() {
         savedCount={savedIds.length}
         todayLabel={today}
       />
-      <TitleBlock todayLabel={today} totalCards={CARDS.length} />
+      <TitleBlock
+        todayLabel={today}
+        totalCards={CARDS.length}
+        onEnter={() => setView("graph")}
+      />
 
       <main className="wrap">
         <HeroAI
