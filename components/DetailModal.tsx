@@ -341,6 +341,17 @@ function StepDecision({
           <ProbeFlow card={card} color={color} />
         </div>
       )}
+      {getProbe(card.id) && (
+        <div
+          className="probe-spotlight"
+          style={{ ["--c" as string]: color } as React.CSSProperties}
+        >
+          <span className="ps-flag">⬇ 여기까지 왔다면 꼭</span>
+          <div className="ps-sub">
+            같은 개념도 <b>내 산업·내 상황</b>에선 답이 달라집니다 — 스무고개로 30초 만에 좁혀보세요.
+          </div>
+            </div>
+      )}
       <div className="decision-block">
         <div className="db-lab">30초 안에 결정할 한 줄</div>
         <p className="db-text">{card.decision}</p>
