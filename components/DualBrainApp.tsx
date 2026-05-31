@@ -277,7 +277,11 @@ export function DualBrainApp() {
       {view === "graph" && (
         <OntologyGraph
           cards={CARDS}
-          onOpen={(id) => setOpenId(id)}
+          onOpen={(id) => {
+            // 그래프를 닫고 카드를 연다 — 안 닫으면 풀스크린 브레인맵이 모달을 덮어버림
+            setView("home");
+            setOpenId(id);
+          }}
           onClose={() => setView("home")}
         />
       )}
