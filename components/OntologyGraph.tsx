@@ -1,12 +1,8 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Card } from "@/lib/types";
-import {
-  COURSE_COLOR,
-  COURSE_SHORT,
-  COURSES,
-  UNIVERSAL,
-} from "@/lib/manifest";
+import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
+import neighborsJson from "@/data/neighbors.json";
 
 interface Props {
   cards: Card[];
@@ -14,354 +10,291 @@ interface Props {
   onClose: () => void;
 }
 
-export function OntologyGraph({ cards, onOpen, onClose }: Props) {
-  const [hover, setHover] = useState<string | null>(null);
-  const [focus, setFocus] = useState<string | null>(null);
+interface SimNode {
+  id: string;
+  card: Card;
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  deg: number;
+  r: number;
+  color: string;
+}
+interface SimLink {
+  s: string;
+  t: string;
+}
 
-  const layout = useMemo(() => {
-    const W = 880;
-    const H = 620;
-    const cx = W / 2;
-    const cy = H / 2;
-    const R0 = Math.min(W, H) * 0.36;
-    const byCourse: Record<string, Card[]> = {};
+const NB = neighborsJson as Record<string, unknown>;
+
+// 진짜 force-directed 브레인맵 (다크). 실제 의미 이웃만 엣지, 노드 크기=연결 수.
+export function OntologyGraph({ cards, onOpen, onClose }: Props) {
+  const W = 1600;
+  const H = 1000;
+
+  // 노드·엣지 빌드
+  const { nodes0, links } = useMemo(() => {
+    const idset = new Set(cards.map((c) => c.id));
+    const deg: Record<string, number> = {};
+    cards.forEach((c) => (deg[c.id] = 0));
+    const linkSet = new Set<string>();
+    const links: SimLink[] = [];
     cards.forEach((c) => {
-      if (!byCourse[c.course]) byCourse[c.course] = [];
-      byCourse[c.course].push(c);
-    });
-    const usedCourses = COURSES.filter((c) => byCourse[c]);
-    const positions: Record<string, { x: number; y: number; ang: number }> = {};
-    usedCourses.forEach((course, ci) => {
-      const list = byCourse[course];
-      const sectorAngle = (Math.PI * 2) / usedCourses.length;
-      const centerA = -Math.PI / 2 + ci * sectorAngle;
-      list.forEach((card, i) => {
-        const offset =
-          list.length === 1
-            ? 0
-            : (i - (list.length - 1) / 2) *
-              ((sectorAngle / list.length) * 0.55);
-        const ang = centerA + offset;
-        const r = R0 + (i % 2 === 0 ? 0 : 40);
-        positions[card.id] = {
-          x: cx + Math.cos(ang) * r,
-          y: cy + Math.sin(ang) * r,
-          ang,
-        };
+      const nb = NB[c.id];
+      if (!Array.isArray(nb)) return;
+      (nb as string[]).forEach((t) => {
+        if (!idset.has(t)) return;
+        const key = c.id < t ? c.id + "|" + t : t + "|" + c.id;
+        if (linkSet.has(key)) return;
+        linkSet.add(key);
+        links.push({ s: c.id, t });
+        deg[c.id]++;
+        deg[t]++;
       });
     });
-    interface Edge {
-      a: string;
-      b: string;
-      weight: number;
-      sameCourse: boolean;
-      sharedD: number;
-      sharedI: number;
-    }
-    const edges: Edge[] = [];
-    for (let i = 0; i < cards.length; i++) {
-      for (let j = i + 1; j < cards.length; j++) {
-        const a = cards[i];
-        const b = cards[j];
-        const sharedD = (a.domain || []).filter((d) =>
-          (b.domain || []).includes(d)
-        ).length;
-        const sharedI = (a.industry || []).filter(
-          (x) => x !== UNIVERSAL && (b.industry || []).includes(x)
-        ).length;
-        const sameCourse = a.course === b.course;
-        if (sharedD > 0 || sharedI > 0 || sameCourse) {
-          let weight = 0;
-          if (sameCourse) weight += 3;
-          weight += sharedD * 2;
-          weight += sharedI * 1.5;
-          edges.push({ a: a.id, b: b.id, weight, sameCourse, sharedD, sharedI });
-        }
-      }
-    }
-    const courseLabels = usedCourses.map((course, ci) => {
-      const sectorAngle = (Math.PI * 2) / usedCourses.length;
-      const a = -Math.PI / 2 + ci * sectorAngle;
-      const r = R0 + 110;
+    // 초기 위치: 원형 + 약간 랜덤(결정적) — 과목별로 살짝 뭉치게 시드
+    const nodes0: SimNode[] = cards.map((c, i) => {
+      const a = (i / cards.length) * Math.PI * 2;
+      const jitter = ((i * 37) % 13) - 6;
+      const d = deg[c.id] || 0;
       return {
-        course,
-        x: cx + Math.cos(a) * r,
-        y: cy + Math.sin(a) * r,
-        color: COURSE_COLOR[course],
+        id: c.id,
+        card: c,
+        x: W / 2 + Math.cos(a) * (300 + jitter * 6),
+        y: H / 2 + Math.sin(a) * (300 + jitter * 6),
+        vx: 0,
+        vy: 0,
+        deg: d,
+        r: 7 + Math.sqrt(d) * 5.5, // 연결 많을수록 큰 노드
+        color: COURSE_COLOR[c.course] || "#9a8",
       };
     });
-    return { W, H, cx, cy, positions, edges, courseLabels };
+    return { nodes0, links };
   }, [cards]);
 
-  const handleClick = (id: string) => {
-    if (focus === id) {
-      onOpen(id);
-    } else {
-      setFocus(id);
+  const [nodes, setNodes] = useState<SimNode[]>(nodes0);
+  const [active, setActive] = useState<string | null>(null);
+  const [hover, setHover] = useState<string | null>(null);
+  const draggingRef = useRef<string | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const lastClickRef = useRef<{ id: string; t: number }>({ id: "", t: 0 });
+
+  // 인접 맵 (강조용)
+  const adj = useMemo(() => {
+    const m: Record<string, Set<string>> = {};
+    links.forEach((l) => {
+      (m[l.s] ||= new Set()).add(l.t);
+      (m[l.t] ||= new Set()).add(l.s);
+    });
+    return m;
+  }, [links]);
+
+  // ── force simulation (런타임, 의존성 0) ──
+  useEffect(() => {
+    const ns = nodes0.map((n) => ({ ...n }));
+    const idx: Record<string, number> = {};
+    ns.forEach((n, i) => (idx[n.id] = i));
+    let frame = 0;
+    let raf = 0;
+    let alpha = 1;
+
+    const tick = () => {
+      // 반발력 (모든 쌍)
+      for (let i = 0; i < ns.length; i++) {
+        for (let j = i + 1; j < ns.length; j++) {
+          const a = ns[i], b = ns[j];
+          let dx = a.x - b.x, dy = a.y - b.y;
+          let d2 = dx * dx + dy * dy;
+          if (d2 < 1) d2 = 1;
+          const d = Math.sqrt(d2);
+          const minD = a.r + b.r + 14;
+          // 일반 반발 + 충돌 방지
+          let f = (5200 * alpha) / d2;
+          if (d < minD) f += (minD - d) * 0.9;
+          const fx = (dx / d) * f, fy = (dy / d) * f;
+          a.vx += fx; a.vy += fy;
+          b.vx -= fx; b.vy -= fy;
+        }
+      }
+      // 스프링 (엣지)
+      links.forEach((l) => {
+        const a = ns[idx[l.s]], b = ns[idx[l.t]];
+        if (!a || !b) return;
+        let dx = b.x - a.x, dy = b.y - a.y;
+        let d = Math.sqrt(dx * dx + dy * dy) || 1;
+        const target = 120;
+        const f = (d - target) * 0.04 * alpha;
+        const fx = (dx / d) * f, fy = (dy / d) * f;
+        a.vx += fx; a.vy += fy;
+        b.vx -= fx; b.vy -= fy;
+      });
+      // 중심 인력 + 감쇠 + 적용
+      ns.forEach((n) => {
+        if (draggingRef.current === n.id) { n.vx = 0; n.vy = 0; return; }
+        n.vx += (W / 2 - n.x) * 0.0016 * alpha;
+        n.vy += (H / 2 - n.y) * 0.0016 * alpha;
+        n.vx *= 0.86; n.vy *= 0.86;
+        n.x += n.vx; n.y += n.vy;
+        n.x = Math.max(n.r + 8, Math.min(W - n.r - 8, n.x));
+        n.y = Math.max(n.r + 8, Math.min(H - n.r - 8, n.y));
+      });
+      alpha *= 0.992;
+      frame++;
+      setNodes(ns.map((n) => ({ ...n })));
+      if (frame < 600 && alpha > 0.02) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes0, links]);
+
+  // 드래그
+  const toSvg = (e: React.PointerEvent) => {
+    const svg = svgRef.current!;
+    const r = svg.getBoundingClientRect();
+    return {
+      x: ((e.clientX - r.left) / r.width) * W,
+      y: ((e.clientY - r.top) / r.height) * H,
+    };
+  };
+  const onDown = (id: string) => (e: React.PointerEvent) => {
+    e.stopPropagation();
+    draggingRef.current = id;
+    (e.target as Element).setPointerCapture?.(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent) => {
+    if (!draggingRef.current) return;
+    const p = toSvg(e);
+    setNodes((prev) =>
+      prev.map((n) => (n.id === draggingRef.current ? { ...n, x: p.x, y: p.y, vx: 0, vy: 0 } : n))
+    );
+  };
+  const onUp = () => { draggingRef.current = null; };
+
+  const handleClick = (id: string) => (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const now = Date.now();
+    if (lastClickRef.current.id === id && now - lastClickRef.current.t < 400) {
+      onOpen(id); // 더블클릭 = 카드 열기
+      return;
     }
+    lastClickRef.current = { id, t: now };
+    setActive((a) => (a === id ? null : id));
   };
 
-  const focusedCard = focus ? cards.find((c) => c.id === focus) : null;
-  const focusedEdges = focus
-    ? layout.edges.filter((e) => e.a === focus || e.b === focus)
-    : [];
-  const focusedNeighbors = new Set<string>();
-  focusedEdges.forEach((e) => {
-    focusedNeighbors.add(e.a);
-    focusedNeighbors.add(e.b);
-  });
+  const isDim = (id: string) =>
+    active && active !== id && !adj[active]?.has(id);
+  const linkOn = (l: SimLink) =>
+    active && (l.s === active || l.t === active);
+
+  const nodeById = useMemo(() => {
+    const m: Record<string, SimNode> = {};
+    nodes.forEach((n) => (m[n.id] = n));
+    return m;
+  }, [nodes]);
 
   return (
-    <div className="graph-overlay">
-      <div className="graph-shell">
-        <div className="graph-top">
-          <div className="gt-l">
-            <div className="gt-eyebrow">ONTOLOGY</div>
-            <div className="gt-title">12개의 개념 · 두 번째 뇌의 지도</div>
-          </div>
-          <div className="gt-r">
-            <div className="gt-help">
-              노드 1번 클릭 = 연결망 보기 · 2번 클릭 = 카드 열기
-            </div>
-            <button className="gt-close" onClick={onClose}>
-              ← 매거진으로
-            </button>
-          </div>
+    <div className="bm-fs" onClick={() => setActive(null)}>
+      <div className="bm-head">
+        <h2>두 번째 뇌의 지도</h2>
+        <div className="bm-hint">
+          노드 클릭 = 연결망 · 더블클릭 = 카드 · 드래그 = 이동
         </div>
-        <div className="graph-body">
-          <div className="graph-canvas">
-            <svg
-              viewBox={`0 0 ${layout.W} ${layout.H}`}
-              preserveAspectRatio="xMidYMid meet"
-              className="graph-svg"
-            >
-              <defs>
-                <pattern
-                  id="gpat"
-                  width="20"
-                  height="20"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <circle cx="1" cy="1" r=".8" fill="rgba(22,21,15,.07)" />
-                </pattern>
-              </defs>
-              <rect width={layout.W} height={layout.H} fill="url(#gpat)" />
-              <g>
-                <circle
-                  cx={layout.cx - 10}
-                  cy={layout.cy}
-                  r="26"
-                  fill="var(--brain-l)"
-                  opacity=".18"
-                />
-                <circle
-                  cx={layout.cx + 10}
-                  cy={layout.cy}
-                  r="26"
-                  fill="var(--brain-r)"
-                  opacity=".18"
-                />
-                <text
-                  x={layout.cx}
-                  y={layout.cy + 50}
-                  textAnchor="middle"
-                  fontFamily="JetBrains Mono"
-                  fontSize="10"
-                  fill="rgba(22,21,15,.5)"
-                  letterSpacing="2"
-                >
-                  DUAL BRAIN
-                </text>
-              </g>
-              {layout.edges.map((e, i) => {
-                const pa = layout.positions[e.a];
-                const pb = layout.positions[e.b];
-                const isFocus = focus && (e.a === focus || e.b === focus);
-                const opacity = focus
-                  ? isFocus
-                    ? 0.7
-                    : 0.06
-                  : 0.2 + Math.min(0.35, e.weight * 0.05);
-                const dash = e.sameCourse ? "none" : "3 4";
-                return (
-                  <line
-                    key={i}
-                    x1={pa.x}
-                    y1={pa.y}
-                    x2={pb.x}
-                    y2={pb.y}
-                    stroke="#16150F"
-                    strokeWidth={isFocus ? 1.5 : 0.9}
-                    strokeDasharray={dash}
-                    opacity={opacity}
-                  />
-                );
-              })}
-              {cards.map((c) => {
-                const p = layout.positions[c.id];
-                const col = COURSE_COLOR[c.course];
-                const isHover = hover === c.id;
-                const isFocus = focus === c.id;
-                const isNeigh = focus && focusedNeighbors.has(c.id);
-                const dim = focus && !isFocus && !isNeigh;
-                return (
-                  <g
-                    key={c.id}
-                    className="g-node"
-                    style={{ cursor: "pointer", opacity: dim ? 0.22 : 1 }}
-                    onMouseEnter={() => setHover(c.id)}
-                    onMouseLeave={() => setHover(null)}
-                    onClick={() => handleClick(c.id)}
-                  >
-                    <circle
-                      cx={p.x}
-                      cy={p.y}
-                      r={isFocus ? 22 : 16}
-                      fill="#FFFCF6"
-                      stroke={col}
-                      strokeWidth={isFocus ? 3 : 2}
-                    />
-                    <circle
-                      cx={p.x}
-                      cy={p.y}
-                      r={isFocus ? 10 : 7}
-                      fill={col}
-                    />
-                    {(isHover || isFocus) && (
-                      <g style={{ pointerEvents: "none" }}>
-                        <rect
-                          x={p.x + 22}
-                          y={p.y - 22}
-                          width="220"
-                          height="44"
-                          fill="#16150F"
-                          rx="0"
-                        />
-                        <text
-                          x={p.x + 30}
-                          y={p.y - 6}
-                          fontFamily="Noto Serif KR"
-                          fontSize="11"
-                          fontWeight="700"
-                          fill="#FFFCF6"
-                        >
-                          {c.hook.length > 20
-                            ? c.hook.slice(0, 20) + "…"
-                            : c.hook}
-                        </text>
-                        <text
-                          x={p.x + 30}
-                          y={p.y + 11}
-                          fontFamily="JetBrains Mono"
-                          fontSize="9"
-                          fill="rgba(255,252,246,.6)"
-                          letterSpacing="1"
-                        >
-                          {COURSE_SHORT[c.course]} ·{" "}
-                          {c.concept.length > 22
-                            ? c.concept.slice(0, 22) + "…"
-                            : c.concept}
-                        </text>
-                      </g>
-                    )}
-                  </g>
-                );
-              })}
-              {layout.courseLabels.map((l, i) => (
-                <text
-                  key={i}
-                  x={l.x}
-                  y={l.y}
-                  textAnchor="middle"
-                  fontFamily="JetBrains Mono"
-                  fontSize="10"
-                  fontWeight="600"
-                  fill={l.color}
-                  letterSpacing="1.5"
-                >
-                  {COURSE_SHORT[l.course]?.toUpperCase()}
-                </text>
-              ))}
-            </svg>
-          </div>
-          <aside className="graph-side">
-            {focusedCard ? (
-              <div className="gs-card">
-                <div
-                  className="gs-eyebrow"
-                  style={{ color: COURSE_COLOR[focusedCard.course] }}
-                >
-                  {focusedCard.course}
-                </div>
-                <h3>{focusedCard.hook}</h3>
-                <div className="gs-concept">— {focusedCard.concept}</div>
-                <p className="gs-insight">{focusedCard.insight}</p>
-                <div className="gs-rel">
-                  <div className="gs-rel-lab">
-                    연결된 카드 {focusedEdges.length}개
-                  </div>
-                  {focusedEdges.slice(0, 6).map((e, i) => {
-                    const other = cards.find(
-                      (c) => c.id === (e.a === focusedCard.id ? e.b : e.a)
-                    );
-                    if (!other) return null;
-                    const col = COURSE_COLOR[other.course];
-                    return (
-                      <button
-                        key={i}
-                        className="gs-rel-item"
-                        onClick={() => setFocus(other.id)}
-                      >
-                        <span
-                          className="gs-rel-dot"
-                          style={{ background: col }}
-                        ></span>
-                        <span className="gs-rel-hook">{other.hook}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-                <button
-                  className="gs-open"
-                  onClick={() => onOpen(focusedCard.id)}
-                >
-                  이 카드 열어서 5-step 보기 →
-                </button>
-              </div>
-            ) : (
-              <div className="gs-empty">
-                <div className="gs-empty-eyebrow">SELECT</div>
-                <p>오른쪽 캔버스의 노드를 클릭하면 그 개념의 연결망이 보인다.</p>
-                <p>한 번 더 클릭하면 5-step 카드가 열린다.</p>
-                <div className="gs-legend">
-                  <div className="gs-legend-lab">범례</div>
-                  <div className="gs-leg-row">
-                    <span className="gs-leg-line solid"></span>같은 과목
-                  </div>
-                  <div className="gs-leg-row">
-                    <span className="gs-leg-line dashed"></span>공유 영역·산업
-                  </div>
-                </div>
-                <div className="gs-courses">
-                  <div className="gs-legend-lab">과목 7</div>
-                  {COURSES.map((c) => (
-                    <div key={c} className="gs-course-row">
-                      <span
-                        className="gs-course-dot"
-                        style={{ background: COURSE_COLOR[c] }}
-                      ></span>
-                      <span className="gs-course-name">
-                        {COURSE_SHORT[c]}
-                      </span>
-                      <span className="gs-course-full">{c}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </aside>
-        </div>
+        <button className="bm-close" onClick={onClose}>← 매거진으로</button>
       </div>
+
+      <svg
+        ref={svgRef}
+        className="bm-svg"
+        viewBox={`0 0 ${W} ${H}`}
+        preserveAspectRatio="xMidYMid meet"
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerLeave={onUp}
+      >
+        {/* 엣지 */}
+        <g>
+          {links.map((l, i) => {
+            const a = nodeById[l.s], b = nodeById[l.t];
+            if (!a || !b) return null;
+            const on = linkOn(l);
+            const dim = active && !on;
+            return (
+              <line
+                key={i}
+                x1={a.x} y1={a.y} x2={b.x} y2={b.y}
+                stroke={on ? a.color : "#ffffff"}
+                strokeOpacity={on ? 0.55 : dim ? 0.03 : 0.09}
+                strokeWidth={on ? 1.6 : 0.8}
+              />
+            );
+          })}
+        </g>
+        {/* 노드 */}
+        <g>
+          {nodes.map((n) => {
+            const dim = isDim(n.id);
+            const isActive = active === n.id;
+            const showLabel = isActive || hover === n.id || n.deg >= 9 || (active && adj[active]?.has(n.id));
+            return (
+              <g
+                key={n.id}
+                transform={`translate(${n.x},${n.y})`}
+                style={{ cursor: "pointer", opacity: dim ? 0.22 : 1, transition: "opacity .2s" }}
+                onPointerDown={onDown(n.id)}
+                onClick={handleClick(n.id)}
+                onMouseEnter={() => setHover(n.id)}
+                onMouseLeave={() => setHover(null)}
+              >
+                <circle
+                  r={n.r}
+                  fill={n.color}
+                  stroke={isActive ? "#fff" : "rgba(255,255,255,.25)"}
+                  strokeWidth={isActive ? 2.5 : 1}
+                />
+                {showLabel && (
+                  <text
+                    x={0}
+                    y={n.r + 13}
+                    textAnchor="middle"
+                    fill="rgba(255,255,255,.9)"
+                    fontSize={11}
+                    fontWeight={isActive ? 700 : 500}
+                    style={{ pointerEvents: "none", textShadow: "0 1px 4px rgba(0,0,0,.8)" }}
+                  >
+                    {n.card.concept.length > 16 ? n.card.concept.slice(0, 15) + "…" : n.card.concept}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </g>
+      </svg>
+
+      {/* 범례 */}
+      <div className="bm-legend">
+        {Object.entries(COURSE_SHORT).map(([course, short]) => (
+          <span key={course} className="bm-leg">
+            <i style={{ background: COURSE_COLOR[course as keyof typeof COURSE_COLOR] }} />
+            {short}
+          </span>
+        ))}
+      </div>
+
+      {/* 선택된 노드 정보 */}
+      {active && nodeById[active] && (
+        <div className="bm-info" onClick={(e) => e.stopPropagation()}>
+          <div className="bm-info-course" style={{ color: nodeById[active].color }}>
+            {COURSE_SHORT[nodeById[active].card.course]} · 연결 {nodeById[active].deg}
+          </div>
+          <div className="bm-info-hook">{nodeById[active].card.hook}</div>
+          <div className="bm-info-concept">{nodeById[active].card.concept}</div>
+          <button className="bm-info-open" onClick={() => onOpen(active)}>
+            카드 열기 →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
