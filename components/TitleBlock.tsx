@@ -7,9 +7,10 @@ const COHORT_INDUSTRIES = new Set(members.map((m) => m.industry)).size;
 interface Props {
   todayLabel: string;
   totalCards: number;
+  onEnter?: () => void; // 온톨로지 브레인맵(두 번째 뇌)으로 진입
 }
 
-export function TitleBlock({ todayLabel, totalCards }: Props) {
+export function TitleBlock({ todayLabel, totalCards, onEnter }: Props) {
   return (
     <section className="title-block wrap">
       <div className="vol">
@@ -33,6 +34,13 @@ export function TitleBlock({ todayLabel, totalCards }: Props) {
           <div className="title-sub">EMBA 17기의 두 번째 뇌</div>
         </div>
         <div className="title-by-block">
+          {onEnter && (
+            <button className="tby-enter" onClick={onEnter} type="button">
+              <span className="tbe-inf" aria-hidden="true">∞</span>
+              <span className="tbe-txt">듀얼브레인 접속</span>
+              <span className="tbe-sub">81장 인사이트 브레인맵 →</span>
+            </button>
+          )}
           <span className="tby-i">by</span>
           <span className="tby-b">17기 학술국</span>
           <span className="tby-en">YONSEI EMBA 17 · ACADEMIC OFFICE</span>
