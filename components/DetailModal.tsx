@@ -12,21 +12,7 @@ import {
   type CardProbe,
   type ProbeLeaf,
 } from "@/lib/probe";
-import { getVisual } from "@/lib/visuals";
 import { DBMark } from "./DBMark";
-
-// 단계별 삽화 — 모달 본문 중간에 자연 비율로 들어가는 일러스트.
-// 어색한 상단 크롭 대신 중앙 정렬 + 둥근 모서리 카드 형태.
-function StepFigure({ src, caption }: { src: string | null; caption?: string }) {
-  if (!src) return null;
-  return (
-    <figure className="step-fig">
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={src} alt="" loading="lazy" />
-      {caption && <figcaption>{caption}</figcaption>}
-    </figure>
-  );
-}
 
 const STEP_LABELS = [
   "문제 인식",
@@ -47,10 +33,6 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
   const card = useMemo(() => cards.find((c) => c.id === cardId), [cardId, cards]);
   const [step, setStep] = useState(0);
   const color = card ? COURSE_COLOR[card.course] || "#16150F" : "#16150F";
-  // 단계별 삽화 매핑 — slides[]가 있으면 단계별로 다른 이미지, 없으면 hero 1장(쉬운 이해 단계)만.
-  const visual = useMemo(() => (card ? getVisual(card.id) : null), [card]);
-  const stepImg = (i: number): string | null =>
-    visual?.slides?.[i] ?? null;
   const [savedIds, setSavedIds] = useState<string[]>(
     () => store.get<string[]>("emba17_saved") || []
   );
@@ -160,14 +142,13 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
         </div>
 
         <div className="step-stage">
-          {step === 0 && <StepProblem card={card} img={stepImg(1)} onNext={next} />}
-          {step === 1 && <StepHook card={card} color={color} img={stepImg(5)} onNext={next} />}
-          {step === 2 && <StepConcept card={card} color={color} img={stepImg(2) ?? visual?.hero ?? null} onNext={next} />}
+          {step === 0 && <StepProblem card={card} onNext={next} />}
+          {step === 1 && <StepHook card={card} color={color} onNext={next} />}
+          {step === 2 && <StepConcept card={card} color={color} onNext={next} />}
           {step === 3 && (
             <StepDecision
               card={card}
               color={color}
-              img={stepImg(4)}
               onSave={toggleSave}
               saved={isSaved}
               onNext={next}
@@ -208,13 +189,12 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
   );
 }
 
-function StepProblem({ card, img, onNext }: { card: Card; img: string | null; onNext: () => void }) {
+function StepProblem({ card, onNext }: { card: Card; onNext: () => void }) {
   return (
     <div className="step-content step-problem">
       <div className="eyebrow eyebrow-step">SCENE · 01 문제 인식</div>
       <div className="ask">이 상황, 익숙하지?</div>
       <p className="scene">{card.problem_scene}</p>
-      <StepFigure src={img} />
       <div className="problem-meta">
         <div className="pm-l">현실에서 우리는 이 문제를 보통 이렇게 만난다.</div>
         <button className="nextcue" onClick={onNext}>
@@ -228,18 +208,15 @@ function StepProblem({ card, img, onNext }: { card: Card; img: string | null; on
 function StepHook({
   card,
   color,
-  img,
   onNext,
 }: {
   card: Card;
   color: string;
-  img: string | null;
   onNext: () => void;
 }) {
   return (
     <div className="step-content step-hook" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">HOOK · 02 후킹 카드</div>
-      <StepFigure src={img} />
       <div className="poster">
         <div className="poster-meta">
           <div className="pm-course">{card.course}</div>
@@ -282,12 +259,10 @@ const SOURCE_LABEL: Record<string, string> = {
 function StepConcept({
   card,
   color,
-  img,
   onNext,
 }: {
   card: Card;
   color: string;
-  img: string | null;
   onNext: () => void;
 }) {
   return (
@@ -295,7 +270,6 @@ function StepConcept({
       <div className="eyebrow eyebrow-step">CONCEPT · 03 쉬운 이해</div>
       <h2 className="concept-name">{card.concept}</h2>
       <p className="concept-insight">{card.insight}</p>
-      <StepFigure src={img} />
       <div className="case">
         <div className="case-tag">CASE STUDY</div>
         <div className="case-title">{card.case_title}</div>
@@ -325,14 +299,12 @@ function StepConcept({
 function StepDecision({
   card,
   color,
-  img,
   onSave,
   saved,
   onNext,
 }: {
   card: Card;
   color: string;
-  img: string | null;
   onSave: () => void;
   saved: boolean;
   onNext: () => void;
@@ -357,7 +329,6 @@ function StepDecision({
   return (
     <div className="step-content step-decision" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">DECISION · 04 30초 안에 쓸 것</div>
-      <StepFigure src={img} />
       <div className="decision-block">
         <div className="db-lab">30초 안에 결정할 한 줄</div>
         <p className="db-text">{card.decision}</p>
@@ -397,15 +368,16 @@ function StepDecision({
   );
 }
 
-// ── 3단계 분기 진단(5-Why 축약형) ─────────────────────────────
-// 같은 카드로 시작해도, 두 질문 + 내 산업에 따라 최종 처방이 달라진다.
+// ── 분기 진단(스무고개) ─────────────────────────────
+// 같은 카드로 시작해도, 길목마다의 선택 + 내 산업에 따라 최종 처방이 달라진다.
+// 각 길목엔 이론 렌즈(lens)·교육 한 줄(teach)·선택지 의미(because)를 임베딩.
 function ProbeFlow({ card, color }: { card: Card; color: string }) {
   const probe = useMemo<CardProbe | null>(() => getProbe(card.id), [card.id]);
   const myIndustries = useMemo<Industry[]>(
     () => (store.get<Industry[]>("emba17_my_industries") || []) as Industry[],
     []
   );
-  // 진행 상태: "idle"(시작 전) → nodeId(2단계 질문) → "leaf:<id>"(결과)
+  // 진행 상태: "idle"(시작 전) → nodeId(질문) → "leaf:<id>"(결과)
   const [state, setState] = useState<string>("idle");
   const [trail, setTrail] = useState<string[]>([]); // 선택 라벨 자취
   const [overrideInd, setOverrideInd] = useState<string | null>(null);
@@ -446,6 +418,12 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
           ))}
         </div>
         <div className="probe-verdict">{leaf.verdict}</div>
+        {leaf.principle && (
+          <div className="probe-principle">
+            <span>원리</span>
+            {leaf.principle}
+          </div>
+        )}
         <p className="probe-common">{leaf.common}</p>
         <div className="probe-advice">
           <div className="padv-head">
@@ -495,7 +473,7 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
         className="probe-block intro"
         style={{ ["--c" as string]: color } as React.CSSProperties}
       >
-        <div className="probe-lab">🔍 산업별 심화 진단</div>
+        <div className="probe-lab">🔍 산업별 심화 진단 · 스무고개</div>
         <p className="probe-intro">{probe.intro}</p>
         <button
           className="probe-start"
@@ -511,18 +489,16 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
     );
   }
 
-  // 질문 화면 (root = Stage1, 그 외 = Stage2)
+  // 질문 화면 (root = 1단계, 그 외 = 이후 단계, 임의 깊이)
   const question = state === "root" ? probe.root : probe.nodes[state];
   if (!question) return null;
-  const stageNum = state === "root" ? 1 : 2;
+  const stageNum = trail.length + 1;
   return (
     <div
       className="probe-block"
       style={{ ["--c" as string]: color } as React.CSSProperties}
     >
-      <div className="probe-lab">
-        🔍 산업별 심화 진단 · {stageNum}/2 단계
-      </div>
+      <div className="probe-lab">🔍 산업별 심화 진단 · {stageNum}단계</div>
       {trail.length > 0 && (
         <div className="probe-trail">
           {trail.map((t, i) => (
@@ -532,7 +508,9 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
           ))}
         </div>
       )}
+      {question.lens && <div className="probe-lens">{question.lens}</div>}
       <div className="probe-q">{question.q}</div>
+      {question.teach && <p className="probe-teach">{question.teach}</p>}
       <div className="probe-opts">
         {question.options.map((opt, i) => (
           <button
@@ -548,7 +526,10 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
               }
             }}
           >
-            <span className="popt-txt">{opt.label}</span>
+            <span className="popt-body">
+              <span className="popt-txt">{opt.label}</span>
+              {opt.because && <span className="popt-because">{opt.because}</span>}
+            </span>
             <span className="popt-arr">→</span>
           </button>
         ))}
@@ -574,19 +555,24 @@ function StepOntology({
   onClose: () => void;
 }) {
   const related = useMemo(() => relatedCards(card, cards), [card, cards]);
+  const [hover, setHover] = useState<string | null>(null);
   // viewBox 확장 — 풀제목 라벨(foreignObject)이 안전히 들어가도록 좌우 여백 확보
   const W = 960;
   const H = 480;
   const cx = W / 2;
   const cy = H / 2;
-  const LBL_W = 180;   // 라벨 박스 너비 (제목 줄바꿈 한계)
-  const LBL_H = 64;    // 라벨 박스 높이 (제목 2줄 + 과목 1줄)
+  const LBL_W = 184; // 라벨 박스 너비 (제목 줄바꿈 한계)
+  const LBL_H = 70; // 라벨 박스 높이 (제목 2줄 + 과목 1줄)
   const positions = related.map((r, i) => {
     const angle =
       -Math.PI / 2 + (i - (related.length - 1) / 2) * (Math.PI / 3.2);
-    const r0 = Math.min(W, H) * 0.30;
+    const r0 = Math.min(W, H) * 0.3;
     return { x: cx + Math.cos(angle) * r0, y: cy + Math.sin(angle) * r0, ...r };
   });
+  const goTo = (id: string, via: string) => {
+    logEvent("connected_brain_click", { from_id: card.id, to_id: id, via });
+    onOpen(id);
+  };
   return (
     <div className="step-content step-onto" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">ONTOLOGY · 05 연결된 듀얼브레인</div>
@@ -598,6 +584,7 @@ function StepOntology({
           <span>다음 카드가, 당신의 두 번째 뇌를 닫는다.</span>
         </div>
       </div>
+      <div className="onto-hint">노드에 마우스를 올리면 제목이 커지고, 클릭하면 그 카드로 넘어갑니다.</div>
       <div className="constellation">
         <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
           <defs>
@@ -613,6 +600,7 @@ function StepOntology({
           <rect x="0" y="0" width={W} height={H} fill="url(#dotPattern)" />
           {positions.map((p, i) => {
             const dash = p.c.course === card.course ? "none" : "4 4";
+            const on = hover === p.c.id;
             return (
               <line
                 key={i}
@@ -620,9 +608,10 @@ function StepOntology({
                 y1={cy}
                 x2={p.x}
                 y2={p.y}
-                stroke="rgba(22,21,15,.35)"
-                strokeWidth="1.2"
+                stroke={on ? color : "rgba(22,21,15,.35)"}
+                strokeWidth={on ? 2 : 1.2}
                 strokeDasharray={dash}
+                style={{ transition: ".15s" }}
               />
             );
           })}
@@ -643,25 +632,21 @@ function StepOntology({
           </g>
           {positions.map((p) => {
             const col = COURSE_COLOR[p.c.course] || "#16150F";
-            // 라벨 위치 — 노드 기준 오른쪽/왼쪽/위/아래로 LBL_W·LBL_H 박스 배치.
             const isRight = p.x >= cx;
             const isTop = p.y < cy;
-            const lblX = isRight ? p.x + 20 : p.x - LBL_W - 20;
-            const lblY = isTop ? p.y - LBL_H - 8 : p.y + 14;
+            const lblX = isRight ? p.x + 22 : p.x - LBL_W - 22;
+            const lblY = isTop ? p.y - LBL_H - 6 : p.y + 12;
             return (
               <g
                 key={p.c.id}
-                className="onto-node"
-                onClick={() => {
-                  logEvent("connected_brain_click", {
-                    from_id: card.id,
-                    to_id: p.c.id,
-                    via: "graph",
-                  });
-                  onOpen(p.c.id);
-                }}
-                style={{ cursor: "pointer" }}
+                className={"onto-node" + (hover === p.c.id ? " on" : "")}
+                onClick={() => goTo(p.c.id, "graph")}
+                onMouseEnter={() => setHover(p.c.id)}
+                onMouseLeave={() => setHover((h) => (h === p.c.id ? null : h))}
               >
+                <title>{p.c.hook} — 클릭해서 이동</title>
+                {/* 큰 투명 히트영역 — 클릭/호버를 쉽게 */}
+                <circle cx={p.x} cy={p.y} r="30" fill="transparent" className="onto-hit" />
                 <circle
                   cx={p.x}
                   cy={p.y}
@@ -669,38 +654,25 @@ function StepOntology({
                   fill="#FFFCF6"
                   stroke={col}
                   strokeWidth="2"
+                  className="onto-ring"
                 />
-                <circle cx={p.x} cy={p.y} r="6" fill={col} />
+                <circle cx={p.x} cy={p.y} r="6" fill={col} className="onto-dot" />
                 <foreignObject
                   x={lblX}
                   y={lblY}
                   width={LBL_W}
                   height={LBL_H}
-                  style={{ overflow: "visible", pointerEvents: "none" }}
+                  style={{ overflow: "visible" }}
                 >
                   <div
+                    className="onto-lbl-box"
                     style={{
                       textAlign: isRight ? "left" : "right",
-                      wordBreak: "keep-all",
-                      lineHeight: 1.25,
-                      color: "#16150F",
-                      fontFamily: "var(--serif, 'Noto Serif KR', serif)",
-                      fontWeight: 700,
-                      fontSize: 13,
+                      transformOrigin: isRight ? "left center" : "right center",
                     }}
                   >
-                    <div>{p.c.hook}</div>
-                    <div
-                      style={{
-                        marginTop: 3,
-                        fontFamily: "var(--mono, 'JetBrains Mono', monospace)",
-                        fontSize: 10,
-                        fontWeight: 600,
-                        letterSpacing: 0.6,
-                        color: col,
-                        textTransform: "uppercase",
-                      }}
-                    >
+                    <div className="onto-lbl-hook">{p.c.hook}</div>
+                    <div className="onto-lbl-course" style={{ color: col }}>
                       {COURSE_SHORT[p.c.course]}
                     </div>
                   </div>
@@ -716,15 +688,10 @@ function StepOntology({
           return (
             <button
               key={r.c.id}
-              className="rel"
-              onClick={() => {
-                logEvent("connected_brain_click", {
-                  from_id: card.id,
-                  to_id: r.c.id,
-                  via: "list",
-                });
-                onOpen(r.c.id);
-              }}
+              className={"rel" + (hover === r.c.id ? " on" : "")}
+              onMouseEnter={() => setHover(r.c.id)}
+              onMouseLeave={() => setHover((h) => (h === r.c.id ? null : h))}
+              onClick={() => goTo(r.c.id, "list")}
             >
               <div className="rel-num" style={{ color: col }}>
                 {String(i + 1).padStart(2, "0")}
