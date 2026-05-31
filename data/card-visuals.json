@@ -8,6 +8,15 @@
   "mpo-two-factor-herzberg": {
     "hero": "/cards/mpo-two-factor-herzberg.webp",
     "hasText": false,
+    "slides": [
+      "/cards/mpo-two-factor-herzberg.webp",
+      "/cards/mpo-two-factor-herzberg-1.webp",
+      "/cards/mpo-two-factor-herzberg-2.webp",
+      "/cards/mpo-two-factor-herzberg-3.webp",
+      "/cards/mpo-two-factor-herzberg-4.webp",
+      "/cards/mpo-two-factor-herzberg-5.webp",
+      "/cards/mpo-two-factor-herzberg.webp"
+    ],
     "tone": [
       "#ece5d6",
       "#cbb9a6"
