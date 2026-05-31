@@ -22,24 +22,6 @@ export function Masthead({
   const isLibrary = pathname === "/library";
   return (
     <header className="masthead">
-      <style>{`
-        .masthead nav button.db-enter{
-          background: linear-gradient(120deg, var(--brain-l,#8C96BF), var(--accent,#d1809e));
-          color:#fff; border:none; border-radius:999px;
-          padding:10px 22px; font-size:14.5px; font-weight:800; letter-spacing:.005em;
-          cursor:pointer; animation: dbEnterPulse 2.6s ease-in-out infinite;
-          display:inline-flex; align-items:center; gap:7px; line-height:1;
-        }
-        .masthead nav button.db-enter .dbe-inf{ font-size:17px; line-height:1; transform:translateY(-.5px); }
-        .masthead nav button.db-enter:hover{ filter:brightness(1.08); transform:translateY(-1px); }
-        .masthead nav button.db-enter.on{ animation:none; filter:brightness(.96); }
-        @keyframes dbEnterPulse{
-          0%,100%{ box-shadow:0 2px 12px color-mix(in srgb,var(--accent,#d1809e) 34%,transparent); transform:scale(1); }
-          50%{ box-shadow:0 4px 26px color-mix(in srgb,var(--accent,#d1809e) 80%,transparent); transform:scale(1.035); }
-        }
-        @media (max-width:720px){ .masthead nav button.db-enter{ padding:8px 15px; font-size:13px } }
-        @media (prefers-reduced-motion: reduce){ .masthead nav button.db-enter{ animation:none } }
-      `}</style>
       <div className="wrap masthead-inner">
         <div className="brand">
           <DBMark size={36} className="masthead-mark" />
@@ -53,11 +35,11 @@ export function Masthead({
           </Link>
           {isHome && onGraphToggle && (
             <button
-              className={"db-enter" + (graphOpen ? " on" : "")}
+              className={graphOpen ? "on" : ""}
               onClick={onGraphToggle}
               title="온톨로지 브레인맵 — 두 번째 뇌에 접속"
             >
-              <span className="dbe-inf" aria-hidden="true">∞</span> 듀얼브레인 접속
+              ∞ 온톨로지
             </button>
           )}
           <Link href="/library" className={isLibrary ? "on" : ""}>

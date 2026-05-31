@@ -80,15 +80,16 @@ img,svg{display:block;max-width:100%}
 .title-by-block .tby-i{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--ink-faint);font-weight:400;line-height:1}
 .title-by-block .tby-b{font-family:var(--serif);font-weight:900;font-size:clamp(22px,2.6vw,30px);color:var(--ink);line-height:1.15;letter-spacing:-.012em;background:linear-gradient(120deg,var(--brain-l),var(--brain-r));-webkit-background-clip:text;background-clip:text;color:transparent}
 .title-by-block .tby-en{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-top:6px}
-/* 듀얼브레인 접속 CTA — by 17기 학술국 블록 위, 살아있는 점멸 */
-.tby-enter{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:16px;padding:11px 18px;border:none;border-radius:14px;cursor:pointer;color:#fff;background:linear-gradient(125deg,var(--brain-l,#8C96BF),var(--brain-r,#D1809E));box-shadow:0 6px 20px color-mix(in srgb,var(--brain-r,#D1809E) 36%,transparent);animation:tbyEnterPulse 2.8s ease-in-out infinite;transition:filter .15s,transform .15s;position:relative;overflow:hidden}
-.tby-enter:hover{filter:brightness(1.07);transform:translateY(-2px)}
-.tby-enter .tbe-inf{font-size:22px;line-height:1;font-weight:800;position:absolute;right:14px;top:10px;opacity:.55}
-.tby-enter .tbe-txt{font-family:var(--serif);font-weight:900;font-size:clamp(17px,1.9vw,21px);letter-spacing:-.01em;line-height:1.1;padding-right:24px}
-.tby-enter .tbe-sub{font-family:var(--mono);font-size:10px;letter-spacing:.08em;opacity:.92;margin-top:3px}
-@keyframes tbyEnterPulse{0%,100%{box-shadow:0 5px 16px color-mix(in srgb,var(--brain-r,#D1809E) 30%,transparent);transform:scale(1)}50%{box-shadow:0 8px 30px color-mix(in srgb,var(--brain-r,#D1809E) 70%,transparent);transform:scale(1.025)}}
-@media(max-width:720px){.tby-enter{width:100%;margin-bottom:12px;padding:10px 14px}}
-@media(prefers-reduced-motion:reduce){.tby-enter{animation:none}}
+/* 듀얼브레인 접속 CTA — by 17기 학술국 블록 위. 깊은 뉴런 색감으로 점멸(synapse). */
+.tby-enter{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;margin-bottom:18px;padding:12px 20px;border:1px solid rgba(120,110,170,.35);border-radius:14px;cursor:pointer;color:#ede9f6;background:linear-gradient(135deg,#211d3a 0%,#2e2347 45%,#3d2440 100%);box-shadow:0 6px 22px rgba(20,16,40,.45);animation:tbyEnterPulse 3.2s ease-in-out infinite;transition:filter .18s,transform .18s;position:relative;overflow:hidden}
+.tby-enter:hover{filter:brightness(1.18);transform:translateY(-2px)}
+.tby-enter .tbe-inf{font-size:22px;line-height:1;font-weight:800;position:absolute;right:14px;top:10px;color:#a99fe0;opacity:.7;animation:tbeSynapse 3.2s ease-in-out infinite}
+.tby-enter .tbe-txt{font-family:var(--serif);font-weight:900;font-size:clamp(17px,1.9vw,21px);letter-spacing:-.01em;line-height:1.1;padding-right:24px;color:#f3f0fa}
+.tby-enter .tbe-sub{font-family:var(--mono);font-size:10px;letter-spacing:.08em;margin-top:3px;color:#b3a9d6}
+@keyframes tbyEnterPulse{0%,100%{box-shadow:0 5px 16px rgba(20,16,40,.4),0 0 0 0 rgba(138,120,210,0)}50%{box-shadow:0 8px 30px rgba(20,16,40,.55),0 0 22px 2px rgba(138,120,210,.45)}}
+@keyframes tbeSynapse{0%,100%{opacity:.45;text-shadow:0 0 0 transparent}50%{opacity:1;text-shadow:0 0 12px rgba(169,159,224,.9)}}
+@media(max-width:720px){.tby-enter{width:100%;margin-bottom:12px;padding:11px 16px}}
+@media(prefers-reduced-motion:reduce){.tby-enter,.tby-enter .tbe-inf{animation:none}}
 @media(max-width:720px){.title-by-block{border-left:none;padding-left:0;padding-top:14px;margin-top:10px;border-top:1.5px solid var(--ink);width:100%}.title-by-block .tby-b{font-size:22px}}
 
 .byline{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:22px;border-bottom:1.5px solid var(--ink);flex-wrap:wrap}
