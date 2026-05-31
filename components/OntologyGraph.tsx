@@ -178,9 +178,9 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       e.preventDefault();
       const v = viewRef.current;
       const rect = svg.getBoundingClientRect();
-      if (!rect.width || !rect.height) return; // 레이아웃 전 0/0 → NaN 방지
-      const fx = (e.clientX - rect.left) / rect.width;
-      const fy = (e.clientY - rect.top) / rect.height;
+      // rect 측정 불가(0)면 화면 중심 기준 폴백 — NaN 방지 + 줌은 계속 동작
+      const fx = rect.width ? (e.clientX - rect.left) / rect.width : 0.5;
+      const fy = rect.height ? (e.clientY - rect.top) / rect.height : 0.5;
       const mx = v.x + fx * v.w;
       const my = v.y + fy * v.h;
       const scale = e.deltaY < 0 ? 0.85 : 1 / 0.85; // 위로 굴리면 확대
