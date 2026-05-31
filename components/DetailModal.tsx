@@ -12,8 +12,21 @@ import {
   type CardProbe,
   type ProbeLeaf,
 } from "@/lib/probe";
-import { hasVisual } from "@/lib/visuals";
+import { getVisual } from "@/lib/visuals";
 import { DBMark } from "./DBMark";
+
+// 단계별 삽화 — 모달 본문 중간에 자연 비율로 들어가는 일러스트.
+// 어색한 상단 크롭 대신 중앙 정렬 + 둥근 모서리 카드 형태.
+function StepFigure({ src, caption }: { src: string | null; caption?: string }) {
+  if (!src) return null;
+  return (
+    <figure className="step-fig">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="" loading="lazy" />
+      {caption && <figcaption>{caption}</figcaption>}
+    </figure>
+  );
+}
 
 const STEP_LABELS = [
   "문제 인식",
@@ -28,13 +41,16 @@ interface Props {
   cards: Card[];
   onClose: () => void;
   onOpen: (id: string) => void;
-  onCarousel?: (id: string) => void;
 }
 
-export function DetailModal({ cardId, cards, onClose, onOpen, onCarousel }: Props) {
+export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
   const card = useMemo(() => cards.find((c) => c.id === cardId), [cardId, cards]);
   const [step, setStep] = useState(0);
   const color = card ? COURSE_COLOR[card.course] || "#16150F" : "#16150F";
+  // 단계별 삽화 매핑 — slides[]가 있으면 단계별로 다른 이미지, 없으면 hero 1장(쉬운 이해 단계)만.
+  const visual = useMemo(() => (card ? getVisual(card.id) : null), [card]);
+  const stepImg = (i: number): string | null =>
+    visual?.slides?.[i] ?? null;
   const [savedIds, setSavedIds] = useState<string[]>(
     () => store.get<string[]>("emba17_saved") || []
   );
@@ -121,17 +137,6 @@ export function DetailModal({ cardId, cards, onClose, onOpen, onCarousel }: Prop
             <span className="dt-concept">{card.concept}</span>
           </div>
           <div className="dt-actions">
-            {onCarousel && (hasVisual(card.id) || getProbe(card.id)) && (
-              <button
-                className="dt-carousel"
-                onClick={() => {
-                  logEvent("carousel_launch", { card_id: card.id });
-                  onCarousel(card.id);
-                }}
-              >
-                ✨ 카드뉴스
-              </button>
-            )}
             <button className="dt-close" onClick={onClose} aria-label="닫기">
               ×
             </button>
@@ -155,13 +160,14 @@ export function DetailModal({ cardId, cards, onClose, onOpen, onCarousel }: Prop
         </div>
 
         <div className="step-stage">
-          {step === 0 && <StepProblem card={card} onNext={next} />}
-          {step === 1 && <StepHook card={card} color={color} onNext={next} />}
-          {step === 2 && <StepConcept card={card} color={color} onNext={next} />}
+          {step === 0 && <StepProblem card={card} img={stepImg(1)} onNext={next} />}
+          {step === 1 && <StepHook card={card} color={color} img={stepImg(5)} onNext={next} />}
+          {step === 2 && <StepConcept card={card} color={color} img={stepImg(2) ?? visual?.hero ?? null} onNext={next} />}
           {step === 3 && (
             <StepDecision
               card={card}
               color={color}
+              img={stepImg(4)}
               onSave={toggleSave}
               saved={isSaved}
               onNext={next}
@@ -202,12 +208,13 @@ export function DetailModal({ cardId, cards, onClose, onOpen, onCarousel }: Prop
   );
 }
 
-function StepProblem({ card, onNext }: { card: Card; onNext: () => void }) {
+function StepProblem({ card, img, onNext }: { card: Card; img: string | null; onNext: () => void }) {
   return (
     <div className="step-content step-problem">
       <div className="eyebrow eyebrow-step">SCENE · 01 문제 인식</div>
       <div className="ask">이 상황, 익숙하지?</div>
       <p className="scene">{card.problem_scene}</p>
+      <StepFigure src={img} />
       <div className="problem-meta">
         <div className="pm-l">현실에서 우리는 이 문제를 보통 이렇게 만난다.</div>
         <button className="nextcue" onClick={onNext}>
@@ -221,15 +228,18 @@ function StepProblem({ card, onNext }: { card: Card; onNext: () => void }) {
 function StepHook({
   card,
   color,
+  img,
   onNext,
 }: {
   card: Card;
   color: string;
+  img: string | null;
   onNext: () => void;
 }) {
   return (
     <div className="step-content step-hook" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">HOOK · 02 후킹 카드</div>
+      <StepFigure src={img} />
       <div className="poster">
         <div className="poster-meta">
           <div className="pm-course">{card.course}</div>
@@ -272,10 +282,12 @@ const SOURCE_LABEL: Record<string, string> = {
 function StepConcept({
   card,
   color,
+  img,
   onNext,
 }: {
   card: Card;
   color: string;
+  img: string | null;
   onNext: () => void;
 }) {
   return (
@@ -283,6 +295,7 @@ function StepConcept({
       <div className="eyebrow eyebrow-step">CONCEPT · 03 쉬운 이해</div>
       <h2 className="concept-name">{card.concept}</h2>
       <p className="concept-insight">{card.insight}</p>
+      <StepFigure src={img} />
       <div className="case">
         <div className="case-tag">CASE STUDY</div>
         <div className="case-title">{card.case_title}</div>
@@ -312,12 +325,14 @@ function StepConcept({
 function StepDecision({
   card,
   color,
+  img,
   onSave,
   saved,
   onNext,
 }: {
   card: Card;
   color: string;
+  img: string | null;
   onSave: () => void;
   saved: boolean;
   onNext: () => void;
@@ -342,6 +357,7 @@ function StepDecision({
   return (
     <div className="step-content step-decision" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">DECISION · 04 30초 안에 쓸 것</div>
+      <StepFigure src={img} />
       <div className="decision-block">
         <div className="db-lab">30초 안에 결정할 한 줄</div>
         <p className="db-text">{card.decision}</p>
