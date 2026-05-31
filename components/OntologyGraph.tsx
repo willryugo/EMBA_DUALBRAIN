@@ -73,13 +73,6 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     return { nodes0, links };
   }, [cards]);
 
-  const [nodes, setNodes] = useState<SimNode[]>(nodes0);
-  const [active, setActive] = useState<string | null>(null);
-  const [hover, setHover] = useState<string | null>(null);
-  const draggingRef = useRef<string | null>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
-  const lastClickRef = useRef<{ id: string; t: number }>({ id: "", t: 0 });
-
   // 인접 맵 (강조용)
   const adj = useMemo(() => {
     const m: Record<string, Set<string>> = {};
@@ -90,64 +83,89 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     return m;
   }, [links]);
 
-  // ── force simulation (런타임, 의존성 0) ──
-  useEffect(() => {
-    const ns = nodes0.map((n) => ({ ...n }));
-    const idx: Record<string, number> = {};
-    ns.forEach((n, i) => (idx[n.id] = i));
-    let frame = 0;
-    let raf = 0;
-    let alpha = 1;
-
-    const tick = () => {
-      // 반발력 (모든 쌍)
-      for (let i = 0; i < ns.length; i++) {
-        for (let j = i + 1; j < ns.length; j++) {
-          const a = ns[i], b = ns[j];
-          let dx = a.x - b.x, dy = a.y - b.y;
-          let d2 = dx * dx + dy * dy;
-          if (d2 < 1) d2 = 1;
-          const d = Math.sqrt(d2);
-          const minD = a.r + b.r + 14;
-          // 일반 반발 + 충돌 방지
-          let f = (5200 * alpha) / d2;
-          if (d < minD) f += (minD - d) * 0.9;
-          const fx = (dx / d) * f, fy = (dy / d) * f;
-          a.vx += fx; a.vy += fy;
-          b.vx -= fx; b.vy -= fy;
-        }
-      }
-      // 스프링 (엣지)
-      links.forEach((l) => {
-        const a = ns[idx[l.s]], b = ns[idx[l.t]];
-        if (!a || !b) return;
-        let dx = b.x - a.x, dy = b.y - a.y;
-        let d = Math.sqrt(dx * dx + dy * dy) || 1;
-        const target = 120;
-        const f = (d - target) * 0.04 * alpha;
+  // ── 물리 1스텝 (공용) ──
+  const stepPhysics = (ns: SimNode[], idx: Record<string, number>, alpha: number) => {
+    for (let i = 0; i < ns.length; i++) {
+      for (let j = i + 1; j < ns.length; j++) {
+        const a = ns[i], b = ns[j];
+        let dx = a.x - b.x, dy = a.y - b.y;
+        let d2 = dx * dx + dy * dy;
+        if (d2 < 1) d2 = 1;
+        const d = Math.sqrt(d2);
+        const minD = a.r + b.r + 14;
+        let f = (5200 * alpha) / d2;
+        if (d < minD) f += (minD - d) * 0.9;
         const fx = (dx / d) * f, fy = (dy / d) * f;
         a.vx += fx; a.vy += fy;
         b.vx -= fx; b.vy -= fy;
-      });
-      // 중심 인력 + 감쇠 + 적용
-      ns.forEach((n) => {
-        if (draggingRef.current === n.id) { n.vx = 0; n.vy = 0; return; }
-        n.vx += (W / 2 - n.x) * 0.0016 * alpha;
-        n.vy += (H / 2 - n.y) * 0.0016 * alpha;
-        n.vx *= 0.86; n.vy *= 0.86;
-        n.x += n.vx; n.y += n.vy;
-        n.x = Math.max(n.r + 8, Math.min(W - n.r - 8, n.x));
-        n.y = Math.max(n.r + 8, Math.min(H - n.r - 8, n.y));
-      });
-      alpha *= 0.992;
-      frame++;
-      setNodes(ns.map((n) => ({ ...n })));
-      if (frame < 600 && alpha > 0.02) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
+      }
+    }
+    links.forEach((l) => {
+      const a = ns[idx[l.s]], b = ns[idx[l.t]];
+      if (!a || !b) return;
+      let dx = b.x - a.x, dy = b.y - a.y;
+      let d = Math.sqrt(dx * dx + dy * dy) || 1;
+      const f = (d - 120) * 0.04 * alpha;
+      const fx = (dx / d) * f, fy = (dy / d) * f;
+      a.vx += fx; a.vy += fy;
+      b.vx -= fx; b.vy -= fy;
+    });
+    ns.forEach((n) => {
+      if (draggingRef.current === n.id) { n.vx = 0; n.vy = 0; return; }
+      n.vx += (W / 2 - n.x) * 0.0016 * alpha;
+      n.vy += (H / 2 - n.y) * 0.0016 * alpha;
+      n.vx *= 0.86; n.vy *= 0.86;
+      n.x += n.vx; n.y += n.vy;
+      n.x = Math.max(n.r + 8, Math.min(W - n.r - 8, n.x));
+      n.y = Math.max(n.r + 8, Math.min(H - n.r - 8, n.y));
+    });
+  };
+
+  // ── 최종 배치를 화면 뒤에서 미리 다 계산 (튀는 과정 안 보임) ──
+  const settled = useMemo(() => {
+    const ns = nodes0.map((n) => ({ ...n }));
+    const idx: Record<string, number> = {};
+    ns.forEach((n, i) => (idx[n.id] = i));
+    let alpha = 1;
+    for (let s = 0; s < 320; s++) {
+      stepPhysics(ns, idx, alpha);
+      alpha *= 0.985;
+    }
+    return ns;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes0, links]);
+
+  const [nodes, setNodes] = useState<SimNode[]>(settled);
+  const [ready, setReady] = useState(false);
+  const [active, setActive] = useState<string | null>(null);
+  const [hover, setHover] = useState<string | null>(null);
+  const draggingRef = useRef<string | null>(null);
+  const dragRafRef = useRef<number>(0);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const lastClickRef = useRef<{ id: string; t: number }>({ id: "", t: 0 });
+
+  // 마운트 직후 페이드인 (최종 배치만 부드럽게 등장)
+  useEffect(() => {
+    setNodes(settled.map((n) => ({ ...n })));
+    const t = setTimeout(() => setReady(true), 30);
+    return () => clearTimeout(t);
+  }, [settled]);
+
+  // ── 드래그 중에만 가벼운 라이브 물리 (주변 노드가 반응) ──
+  const runDragLoop = () => {
+    cancelAnimationFrame(dragRafRef.current);
+    const loop = () => {
+      setNodes((prev) => {
+        const ns = prev.map((n) => ({ ...n }));
+        const idx: Record<string, number> = {};
+        ns.forEach((n, i) => (idx[n.id] = i));
+        stepPhysics(ns, idx, 0.5);
+        return ns;
+      });
+      if (draggingRef.current) dragRafRef.current = requestAnimationFrame(loop);
+    };
+    dragRafRef.current = requestAnimationFrame(loop);
+  };
 
   // 드래그
   const toSvg = (e: React.PointerEvent) => {
@@ -162,6 +180,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     e.stopPropagation();
     draggingRef.current = id;
     (e.target as Element).setPointerCapture?.(e.pointerId);
+    runDragLoop();
   };
   const onMove = (e: React.PointerEvent) => {
     if (!draggingRef.current) return;
@@ -170,7 +189,23 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       prev.map((n) => (n.id === draggingRef.current ? { ...n, x: p.x, y: p.y, vx: 0, vy: 0 } : n))
     );
   };
-  const onUp = () => { draggingRef.current = null; };
+  const onUp = () => {
+    if (!draggingRef.current) return;
+    draggingRef.current = null;
+    // 놓은 뒤 잠깐만 더 정착시키고 멈춤
+    let extra = 0;
+    const settle = () => {
+      setNodes((prev) => {
+        const ns = prev.map((n) => ({ ...n }));
+        const idx: Record<string, number> = {};
+        ns.forEach((n, i) => (idx[n.id] = i));
+        stepPhysics(ns, idx, 0.3);
+        return ns;
+      });
+      if (++extra < 40 && !draggingRef.current) requestAnimationFrame(settle);
+    };
+    requestAnimationFrame(settle);
+  };
 
   const handleClick = (id: string) => (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -212,6 +247,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
         onPointerMove={onMove}
         onPointerUp={onUp}
         onPointerLeave={onUp}
+        style={{ opacity: ready ? 1 : 0, transition: "opacity .5s ease" }}
       >
         {/* 엣지 */}
         <g>
