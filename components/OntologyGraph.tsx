@@ -346,6 +346,38 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     n.x >= view.x - 60 && n.x <= view.x + view.w + 60 &&
     n.y >= view.y - 60 && n.y <= view.y + view.h + 60;
 
+  // ── 연결 근거 계산: 두 카드가 왜 이어졌나(같은 과목 / 공유 도메인 / 공유 산업 / 주제 연결) ──
+  const connectionBasis = (a: Card, b: Card) => {
+    const sameCourse = a.course === b.course;
+    const sharedD = (a.domain || []).filter((d) => (b.domain || []).includes(d));
+    const sharedI = (a.industry || []).filter(
+      (i) => i !== UNIVERSAL && (b.industry || []).includes(i)
+    );
+    return { sameCourse, sharedD, sharedI };
+  };
+  // 선택 노드의 이웃들을 근거별로 집계
+  const activeBasis = useMemo(() => {
+    if (!active) return null;
+    const a = cards.find((c) => c.id === active);
+    if (!a) return null;
+    const neigh = [...(adj[active] || [])]
+      .map((id) => cards.find((c) => c.id === id))
+      .filter((c): c is Card => Boolean(c));
+    let sameCourse = 0, sharedDom = 0, sharedInd = 0, theme = 0;
+    const sample: { concept: string; tag: string; color: string }[] = [];
+    for (const b of neigh) {
+      const { sameCourse: sc, sharedD, sharedI } = connectionBasis(a, b);
+      let tag = "주제 연결";
+      if (sc) { sameCourse++; tag = "같은 과목"; }
+      else if (sharedD.length) { sharedDom++; tag = sharedD[0]; }
+      else if (sharedI.length) { sharedInd++; tag = sharedI[0]; }
+      else theme++;
+      if (sample.length < 4)
+        sample.push({ concept: b.concept, tag, color: COURSE_COLOR[b.course] || "#9a8" });
+    }
+    return { total: neigh.length, sameCourse, sharedDom, sharedInd, theme, sample };
+  }, [active, cards, adj]);
+
   // 나의 산업군 모드 관련도: 0=무관, 1=공통(범용), 2=내 산업 특정
   const industryTier = (c: Card): 0 | 1 | 2 => {
     if (colorMode !== "industry") return 2;
@@ -386,7 +418,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       <div className="bm-head">
         <h2>두 번째 뇌의 지도</h2>
         <div className="bm-hint">
-          휠 = 확대 · 드래그 = 이동 · 클릭 = 연결망 · 더블클릭 = 카드 · ESC/빈곳 = 선택 해제
+          선 = 의미 이웃(같은 과목·공유 도메인·공유 산업·주제) · 클릭하면 연결 근거 표시 · 더블클릭 = 카드
         </div>
         <button className="bm-close" onClick={onClose}>← 매거진으로</button>
       </div>
@@ -568,8 +600,38 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
           <div className="bm-info-course" style={{ color: nodeById[active].color }}>
             {COURSE_SHORT[nodeById[active].card.course]} · 연결 {nodeById[active].deg}
           </div>
-          <div className="bm-info-hook">{nodeById[active].card.hook}</div>
+          <div className="bm-info-hook">
+            {nodeById[active].card.hook.replace(/\*/g, "").replace(/\n/g, " ")}
+          </div>
           <div className="bm-info-concept">{nodeById[active].card.concept}</div>
+          {activeBasis && activeBasis.total > 0 && (
+            <div className="bm-basis">
+              <div className="bm-basis-lab">이 연결은 왜? — 의미 이웃 {activeBasis.total}장</div>
+              <div className="bm-basis-tags">
+                {activeBasis.sameCourse > 0 && (
+                  <span className="bm-basis-tag">같은 과목 {activeBasis.sameCourse}</span>
+                )}
+                {activeBasis.sharedDom > 0 && (
+                  <span className="bm-basis-tag">공유 도메인 {activeBasis.sharedDom}</span>
+                )}
+                {activeBasis.sharedInd > 0 && (
+                  <span className="bm-basis-tag">공유 산업 {activeBasis.sharedInd}</span>
+                )}
+                {activeBasis.theme > 0 && (
+                  <span className="bm-basis-tag theme">주제 연결 {activeBasis.theme}</span>
+                )}
+              </div>
+              <ul className="bm-basis-list">
+                {activeBasis.sample.map((s, i) => (
+                  <li key={i}>
+                    <span className="bm-basis-dot" style={{ background: s.color }} />
+                    <span className="bm-basis-concept">{s.concept}</span>
+                    <span className="bm-basis-why">{s.tag}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <button className="bm-info-open" onClick={() => onOpen(active)}>
             카드 열기 →
           </button>

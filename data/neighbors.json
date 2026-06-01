@@ -1,173 +1,997 @@
 {
+  "ethics-groupthink": [
+    "mpo-leadership-influence",
+    "mpo-terracog",
+    "mpo-radical-candor",
+    "eth-whistleblower",
+    "ms-decision-tree",
+    "mpo-implicit-bias",
+    "eth-can-people-change",
+    "ms-monte-carlo",
+    "ms-analytics-intuition",
+    "eth-ethics-comms",
+    "eco-prisoners-dilemma",
+    "mkt-workshop-decisions"
+  ],
+  "mpo-intrinsic-motivation": [
+    "mpo-two-factor-herzberg",
+    "mpo-radical-candor",
+    "mpo-burnout-prevention",
+    "mpo-pay-secrecy",
+    "mpo-rob-parson",
+    "mkt-customer-needs-matrix",
+    "mpo-org-design",
+    "mpo-leadership-influence"
+  ],
+  "ba-cac-trap": [
+    "mkt-customer-lifetime-value",
+    "mkt-b2b-solution-sales",
+    "acc-revenue-recognition",
+    "ms-portfolio-diversification",
+    "mkt-channel-conflict",
+    "acc-working-capital",
+    "eco-economies-of-scale",
+    "mkt-brand-equity",
+    "eco-marginal-thinking",
+    "eco-network-effects"
+  ],
+  "ms-analytics-intuition": [
+    "ms-decision-tree",
+    "ba-correlation-causation",
+    "ba-three-tier-analytics",
+    "ba-confidence-interval",
+    "ms-monte-carlo",
+    "ethics-groupthink",
+    "ms-sensitivity-analysis",
+    "ba-explainability-tradeoff",
+    "mpo-terracog",
+    "mkt-workshop-decisions"
+  ],
+  "mpo-leadership-influence": [
+    "mpo-radical-candor",
+    "mpo-kotter-eight-steps",
+    "ethics-groupthink",
+    "eth-ethics-comms",
+    "mpo-org-design",
+    "mpo-weak-ties",
+    "mpo-burnout-prevention",
+    "eth-can-people-change",
+    "mpo-intrinsic-motivation",
+    "mpo-two-factor-herzberg",
+    "mpo-terracog",
+    "mpo-personality-big-five"
+  ],
+  "ms-queueing-mmc": [
+    "ms-lp-dantzig",
+    "ms-network-shortest-path",
+    "ms-newsvendor",
+    "ms-fashion-seasonality",
+    "ms-wyndor-product-mix",
+    "ms-sensitivity-analysis",
+    "ba-feature-engineering",
+    "eco-economies-of-scale"
+  ],
+  "eth-carroll-csr": [
+    "eth-porter-kramer-csv",
+    "eth-greenwashing",
+    "eth-stakeholder-mapping",
+    "mkt-regulated-brand",
+    "eth-subcontractor-management",
+    "eth-can-people-change",
+    "mpo-burnout-prevention",
+    "acc-three-statements",
+    "eco-public-goods"
+  ],
+  "ba-supervised-unsupervised": [
+    "ba-cluster-segmentation",
+    "ba-ai-prevention-pattern",
+    "ba-three-tier-analytics",
+    "ba-overfitting",
+    "ba-feature-engineering",
+    "ba-explainability-tradeoff",
+    "mkt-customer-lifetime-value",
+    "ba-anscombe-visualization"
+  ],
+  "mkt-stp": [
+    "mkt-position-before-pitch",
+    "mkt-customer-needs-matrix",
+    "ba-cluster-segmentation",
+    "mkt-customer-lifetime-value",
+    "mkt-brand-equity",
+    "mkt-4p-to-4c",
+    "mkt-b2b-solution-sales",
+    "mkt-brand-extension",
+    "eco-price-elasticity",
+    "eco-supply-demand"
+  ],
+  "mpo-rob-parson": [
+    "mpo-recruitment-vs-promote",
+    "mpo-radical-candor",
+    "mpo-personality-big-five",
+    "mpo-pay-secrecy",
+    "mpo-two-factor-herzberg",
+    "mpo-burnout-prevention",
+    "mpo-org-design",
+    "mpo-implicit-bias",
+    "mpo-intrinsic-motivation",
+    "mpo-martha-rinaldi"
+  ],
+  "acc-accrual-basis": [
+    "acc-working-capital",
+    "acc-three-statements",
+    "acc-revenue-recognition",
+    "eth-tmon-wemakeprice",
+    "eco-marginal-thinking",
+    "acc-depreciation-strategy",
+    "ms-portfolio-diversification",
+    "acc-audit-opinion-types",
+    "acc-ifrs-vs-kgaap"
+  ],
+  "eco-price-elasticity": [
+    "eco-supply-demand",
+    "ms-newsvendor",
+    "mkt-stp",
+    "mkt-customer-needs-matrix",
+    "eco-prisoners-dilemma",
+    "mkt-brand-equity",
+    "mkt-customer-lifetime-value",
+    "mkt-4p-to-4c",
+    "eco-marginal-thinking",
+    "ms-fashion-seasonality"
+  ],
+  "mpo-recruitment-vs-promote": [
+    "mpo-rob-parson",
+    "mpo-weak-ties",
+    "mpo-personality-big-five",
+    "mpo-kotter-eight-steps",
+    "mpo-implicit-bias",
+    "mpo-radical-candor",
+    "mpo-burnout-prevention",
+    "mpo-pay-secrecy",
+    "mpo-two-factor-herzberg",
+    "mpo-martha-rinaldi"
+  ],
+  "mpo-two-factor-herzberg": [
+    "mpo-intrinsic-motivation",
+    "mpo-pay-secrecy",
+    "mpo-burnout-prevention",
+    "mpo-radical-candor",
+    "mpo-rob-parson",
+    "mpo-org-design",
+    "mpo-leadership-influence",
+    "mpo-recruitment-vs-promote",
+    "mpo-martha-rinaldi"
+  ],
+  "mpo-pay-secrecy": [
+    "mpo-two-factor-herzberg",
+    "mpo-rob-parson",
+    "mpo-burnout-prevention",
+    "mpo-implicit-bias",
+    "mpo-recruitment-vs-promote",
+    "acc-three-statements",
+    "eth-stakeholder-mapping",
+    "mpo-org-design",
+    "mpo-intrinsic-motivation",
+    "mpo-martha-rinaldi"
+  ],
+  "mpo-terracog": [
+    "mpo-org-design",
+    "ethics-groupthink",
+    "eco-information-asymmetry",
+    "mpo-kotter-eight-steps",
+    "ms-decision-tree",
+    "mpo-radical-candor",
+    "mpo-leadership-influence",
+    "ms-analytics-intuition",
+    "eth-ethics-comms",
+    "mkt-workshop-decisions",
+    "mkt-b2b-solution-sales"
+  ],
+  "mpo-martha-rinaldi": [
+    "mpo-burnout-prevention",
+    "mpo-weak-ties",
+    "mpo-radical-candor",
+    "mpo-two-factor-herzberg",
+    "mpo-org-design",
+    "mpo-rob-parson",
+    "mpo-recruitment-vs-promote",
+    "mpo-pay-secrecy"
+  ],
+  "mpo-weak-ties": [
+    "mpo-recruitment-vs-promote",
+    "mpo-martha-rinaldi",
+    "mpo-leadership-influence",
+    "mpo-burnout-prevention",
+    "eco-network-effects",
+    "mkt-b2b-solution-sales",
+    "mpo-implicit-bias",
+    "mpo-org-design"
+  ],
+  "ba-three-tier-analytics": [
+    "ba-supervised-unsupervised",
+    "ba-ai-prevention-pattern",
+    "ms-analytics-intuition",
+    "ba-correlation-causation",
+    "ms-decision-tree",
+    "ba-feature-engineering",
+    "ba-confidence-interval",
+    "ms-monte-carlo",
+    "ba-cluster-segmentation",
+    "mkt-position-before-pitch",
+    "ba-anscombe-visualization",
+    "ba-overfitting"
+  ],
+  "ba-ai-prevention-pattern": [
+    "ba-supervised-unsupervised",
+    "ba-three-tier-analytics",
+    "ba-feature-engineering",
+    "ba-overfitting",
+    "ba-explainability-tradeoff",
+    "ms-sensitivity-analysis",
+    "ms-monte-carlo",
+    "ms-decision-tree"
+  ],
+  "ba-correlation-causation": [
+    "ba-survivorship-bias",
+    "ba-anscombe-visualization",
+    "ba-confidence-interval",
+    "ms-analytics-intuition",
+    "ba-overfitting",
+    "ms-decision-tree",
+    "ba-three-tier-analytics",
+    "eco-information-asymmetry",
+    "mpo-implicit-bias",
+    "ba-explainability-tradeoff"
+  ],
+  "ba-cluster-segmentation": [
+    "ba-supervised-unsupervised",
+    "mkt-stp",
+    "mkt-customer-needs-matrix",
+    "mkt-customer-lifetime-value",
+    "ba-feature-engineering",
+    "ba-anscombe-visualization",
+    "mkt-b2b-solution-sales",
+    "ba-three-tier-analytics"
+  ],
+  "eth-can-people-change": [
+    "eth-ethics-comms",
+    "eth-carroll-csr",
+    "mpo-burnout-prevention",
+    "mpo-leadership-influence",
+    "mpo-implicit-bias",
+    "eth-stakeholder-mapping",
+    "mpo-org-design",
+    "ethics-groupthink",
+    "mpo-kotter-eight-steps",
+    "eth-porter-kramer-csv",
+    "eth-conflict-of-interest",
+    "eth-whistleblower"
+  ],
+  "eth-ethics-comms": [
+    "eth-can-people-change",
+    "mpo-leadership-influence",
+    "mpo-radical-candor",
+    "mpo-org-design",
+    "mpo-terracog",
+    "eth-whistleblower",
+    "ethics-groupthink",
+    "mpo-kotter-eight-steps",
+    "eth-medical-device-incentive"
+  ],
+  "eth-tmon-wemakeprice": [
+    "eth-stakeholder-mapping",
+    "eth-whistleblower",
+    "acc-working-capital",
+    "acc-accrual-basis",
+    "eth-conflict-of-interest",
+    "eth-audit-independence",
+    "acc-audit-opinion-types",
+    "ms-mega-project-overrun",
+    "acc-ifrs-vs-kgaap"
+  ],
+  "ms-lp-dantzig": [
+    "ms-wyndor-product-mix",
+    "ms-sensitivity-analysis",
+    "ms-network-shortest-path",
+    "ms-queueing-mmc",
+    "ms-newsvendor",
+    "ba-feature-engineering",
+    "eco-comparative-advantage",
+    "ms-monte-carlo",
+    "eco-public-goods"
+  ],
+  "ms-portfolio-diversification": [
+    "eco-comparative-advantage",
+    "eth-stakeholder-mapping",
+    "mkt-channel-conflict",
+    "ba-cac-trap",
+    "ms-monte-carlo",
+    "ms-sensitivity-analysis",
+    "mkt-brand-extension",
+    "eco-network-effects",
+    "acc-accrual-basis",
+    "ms-wyndor-product-mix",
+    "eco-economies-of-scale",
+    "acc-working-capital"
+  ],
+  "ms-wyndor-product-mix": [
+    "ms-lp-dantzig",
+    "eco-comparative-advantage",
+    "ms-sensitivity-analysis",
+    "ms-portfolio-diversification",
+    "ms-newsvendor",
+    "eco-marginal-thinking",
+    "eco-economies-of-scale",
+    "acc-depreciation-strategy",
+    "ms-queueing-mmc",
+    "ms-network-shortest-path"
+  ],
+  "eco-marginal-thinking": [
+    "eco-opportunity-cost",
+    "ms-newsvendor",
+    "eco-price-elasticity",
+    "ms-wyndor-product-mix",
+    "acc-accrual-basis",
+    "ba-cac-trap",
+    "mkt-customer-lifetime-value",
+    "acc-working-capital",
+    "eco-supply-demand",
+    "eco-economies-of-scale",
+    "eco-comparative-advantage"
+  ],
+  "eco-opportunity-cost": [
+    "eco-marginal-thinking",
+    "eco-comparative-advantage",
+    "mkt-workshop-decisions",
+    "mpo-org-design",
+    "ms-decision-tree",
+    "eco-public-goods",
+    "mkt-position-before-pitch",
+    "acc-working-capital"
+  ],
+  "eco-prisoners-dilemma": [
+    "eco-network-effects",
+    "eco-information-asymmetry",
+    "eco-public-goods",
+    "mkt-channel-conflict",
+    "mkt-regulated-brand",
+    "eco-price-elasticity",
+    "mkt-pharmacist-relationship",
+    "ethics-groupthink",
+    "eco-supply-demand"
+  ],
+  "mkt-position-before-pitch": [
+    "mkt-stp",
+    "mkt-customer-needs-matrix",
+    "mkt-4p-to-4c",
+    "mkt-workshop-decisions",
+    "mkt-brand-equity",
+    "mkt-customer-lifetime-value",
+    "ba-three-tier-analytics",
+    "eco-comparative-advantage",
+    "eco-opportunity-cost",
+    "eco-supply-demand"
+  ],
+  "mkt-customer-needs-matrix": [
+    "mkt-stp",
+    "mkt-4p-to-4c",
+    "mkt-customer-lifetime-value",
+    "mkt-position-before-pitch",
+    "ba-cluster-segmentation",
+    "mkt-b2b-solution-sales",
+    "mkt-brand-equity",
+    "mkt-pharmacist-relationship",
+    "mpo-intrinsic-motivation",
+    "eco-price-elasticity",
+    "eco-supply-demand",
+    "mkt-brand-extension"
+  ],
+  "mkt-workshop-decisions": [
+    "mpo-terracog",
+    "ms-decision-tree",
+    "mpo-kotter-eight-steps",
+    "ms-analytics-intuition",
+    "mpo-radical-candor",
+    "mkt-position-before-pitch",
+    "mpo-org-design",
+    "ethics-groupthink",
+    "eco-opportunity-cost"
+  ],
+  "acc-three-statements": [
+    "acc-accrual-basis",
+    "acc-working-capital",
+    "acc-revenue-recognition",
+    "acc-ifrs-vs-kgaap",
+    "acc-depreciation-strategy",
+    "acc-audit-opinion-types",
+    "eth-audit-independence",
+    "ba-confidence-interval",
+    "eth-carroll-csr",
+    "mpo-pay-secrecy"
+  ],
+  "acc-ifrs-vs-kgaap": [
+    "acc-three-statements",
+    "acc-revenue-recognition",
+    "acc-depreciation-strategy",
+    "acc-accrual-basis",
+    "acc-audit-opinion-types",
+    "eth-audit-independence",
+    "eth-tmon-wemakeprice",
+    "acc-working-capital"
+  ],
+  "mpo-personality-big-five": [
+    "mpo-recruitment-vs-promote",
+    "mpo-rob-parson",
+    "mpo-implicit-bias",
+    "mpo-radical-candor",
+    "mpo-kotter-eight-steps",
+    "mpo-org-design",
+    "mpo-leadership-influence",
+    "mpo-burnout-prevention"
+  ],
+  "mpo-kotter-eight-steps": [
+    "mpo-org-design",
+    "mpo-leadership-influence",
+    "mpo-radical-candor",
+    "eth-can-people-change",
+    "mpo-recruitment-vs-promote",
+    "eth-ethics-comms",
+    "mpo-burnout-prevention",
+    "ethics-groupthink",
+    "mpo-terracog",
+    "mkt-workshop-decisions",
+    "mpo-personality-big-five",
+    "eco-public-goods"
+  ],
+  "mpo-org-design": [
+    "mpo-terracog",
+    "mpo-kotter-eight-steps",
+    "mpo-rob-parson",
+    "mpo-pay-secrecy",
+    "mpo-leadership-influence",
+    "mpo-two-factor-herzberg",
+    "mkt-workshop-decisions",
+    "mpo-radical-candor",
+    "mpo-intrinsic-motivation",
+    "mpo-martha-rinaldi",
+    "mpo-weak-ties",
+    "eth-can-people-change"
+  ],
+  "mpo-implicit-bias": [
+    "mpo-personality-big-five",
+    "mpo-recruitment-vs-promote",
+    "eth-can-people-change",
+    "mpo-pay-secrecy",
+    "eth-stakeholder-mapping",
+    "mpo-org-design",
+    "ba-correlation-causation",
+    "eth-conflict-of-interest",
+    "ethics-groupthink",
+    "mpo-rob-parson",
+    "mpo-weak-ties",
+    "ba-survivorship-bias"
+  ],
+  "mpo-burnout-prevention": [
+    "mpo-two-factor-herzberg",
+    "mpo-radical-candor",
+    "mpo-intrinsic-motivation",
+    "mpo-martha-rinaldi",
+    "mpo-pay-secrecy",
+    "mpo-leadership-influence",
+    "mpo-org-design",
+    "mpo-recruitment-vs-promote",
+    "eth-carroll-csr",
+    "mpo-rob-parson",
+    "mpo-weak-ties",
+    "eth-can-people-change"
+  ],
+  "mpo-radical-candor": [
+    "mpo-leadership-influence",
+    "mpo-rob-parson",
+    "mpo-two-factor-herzberg",
+    "mpo-burnout-prevention",
+    "eth-ethics-comms",
+    "mpo-personality-big-five",
+    "mpo-kotter-eight-steps",
+    "mpo-intrinsic-motivation",
+    "ethics-groupthink",
+    "mpo-recruitment-vs-promote",
+    "mpo-terracog",
+    "mpo-martha-rinaldi"
+  ],
+  "ba-anscombe-visualization": [
+    "ba-correlation-causation",
+    "ba-survivorship-bias",
+    "ba-confidence-interval",
+    "ba-three-tier-analytics",
+    "ba-overfitting",
+    "ms-monte-carlo",
+    "ba-feature-engineering",
+    "ms-sensitivity-analysis",
+    "ba-supervised-unsupervised",
+    "ba-cluster-segmentation"
+  ],
+  "ba-overfitting": [
+    "ba-feature-engineering",
+    "ba-confidence-interval",
+    "ba-supervised-unsupervised",
+    "ba-explainability-tradeoff",
+    "ba-survivorship-bias",
+    "ms-monte-carlo",
+    "ba-three-tier-analytics",
+    "ba-ai-prevention-pattern",
+    "ba-correlation-causation",
+    "ba-anscombe-visualization",
+    "ms-sensitivity-analysis"
+  ],
+  "ba-survivorship-bias": [
+    "ba-correlation-causation",
+    "ba-anscombe-visualization",
+    "ms-mega-project-overrun",
+    "mpo-implicit-bias",
+    "ba-confidence-interval",
+    "ms-monte-carlo",
+    "eth-greenwashing",
+    "ba-explainability-tradeoff",
+    "ba-overfitting"
+  ],
+  "ba-confidence-interval": [
+    "ms-monte-carlo",
+    "ms-sensitivity-analysis",
+    "ba-overfitting",
+    "ba-correlation-causation",
+    "ms-decision-tree",
+    "ba-anscombe-visualization",
+    "ms-mega-project-overrun",
+    "ba-feature-engineering",
+    "ms-analytics-intuition",
+    "ba-three-tier-analytics",
+    "acc-three-statements",
+    "ba-survivorship-bias"
+  ],
+  "ba-feature-engineering": [
+    "ba-overfitting",
+    "ba-supervised-unsupervised",
+    "ba-explainability-tradeoff",
+    "ba-three-tier-analytics",
+    "ba-ai-prevention-pattern",
+    "ba-anscombe-visualization",
+    "ba-cluster-segmentation",
+    "ms-monte-carlo",
+    "ms-queueing-mmc",
+    "ms-lp-dantzig",
+    "ba-confidence-interval",
+    "ms-network-shortest-path"
+  ],
+  "ba-explainability-tradeoff": [
+    "ba-overfitting",
+    "ba-supervised-unsupervised",
+    "ba-feature-engineering",
+    "eth-conflict-of-interest",
+    "acc-audit-opinion-types",
+    "ba-correlation-causation",
+    "mpo-implicit-bias",
+    "eth-whistleblower",
+    "ms-analytics-intuition",
+    "ba-ai-prevention-pattern",
+    "ba-survivorship-bias",
+    "eth-audit-independence"
+  ],
+  "eth-porter-kramer-csv": [
+    "eth-carroll-csr",
+    "eth-stakeholder-mapping",
+    "eth-greenwashing",
+    "mkt-regulated-brand",
+    "eth-can-people-change",
+    "eth-medical-device-incentive",
+    "eth-conflict-of-interest",
+    "mkt-customer-lifetime-value",
+    "eco-public-goods"
+  ],
+  "eth-stakeholder-mapping": [
+    "eth-carroll-csr",
+    "eth-porter-kramer-csv",
+    "eth-tmon-wemakeprice",
+    "eth-greenwashing",
+    "eth-conflict-of-interest",
+    "mpo-org-design",
+    "eth-whistleblower",
+    "ms-portfolio-diversification",
+    "mpo-pay-secrecy",
+    "eth-can-people-change",
+    "mpo-implicit-bias",
+    "ms-decision-tree"
+  ],
+  "eth-conflict-of-interest": [
+    "eth-audit-independence",
+    "eth-whistleblower",
+    "acc-audit-opinion-types",
+    "mpo-implicit-bias",
+    "eth-medical-device-incentive",
+    "eth-stakeholder-mapping",
+    "eth-can-people-change",
+    "ms-mega-project-overrun",
+    "eth-tmon-wemakeprice",
+    "ba-explainability-tradeoff",
+    "eth-porter-kramer-csv"
+  ],
+  "eth-whistleblower": [
+    "eth-tmon-wemakeprice",
+    "eth-ethics-comms",
+    "eth-conflict-of-interest",
+    "ethics-groupthink",
+    "eth-stakeholder-mapping",
+    "mpo-radical-candor",
+    "eth-can-people-change",
+    "acc-audit-opinion-types",
+    "ba-explainability-tradeoff",
+    "eco-information-asymmetry",
+    "eth-medical-device-incentive",
+    "eth-subcontractor-management"
+  ],
+  "eth-greenwashing": [
+    "eth-porter-kramer-csv",
+    "eth-carroll-csr",
+    "eth-stakeholder-mapping",
+    "mkt-brand-equity",
+    "mkt-regulated-brand",
+    "ba-survivorship-bias",
+    "ms-mega-project-overrun",
+    "eth-medical-device-incentive",
+    "eth-subcontractor-management"
+  ],
+  "ms-sensitivity-analysis": [
+    "ms-monte-carlo",
+    "ms-decision-tree",
+    "ba-confidence-interval",
+    "ms-lp-dantzig",
+    "ms-wyndor-product-mix",
+    "ms-mega-project-overrun",
+    "acc-revenue-recognition",
+    "ba-overfitting",
+    "ms-analytics-intuition",
+    "ms-queueing-mmc",
+    "ba-ai-prevention-pattern",
+    "ms-portfolio-diversification"
+  ],
+  "ms-monte-carlo": [
+    "ms-decision-tree",
+    "ms-sensitivity-analysis",
+    "ba-confidence-interval",
+    "ms-newsvendor",
+    "ba-overfitting",
+    "ms-mega-project-overrun",
+    "ms-portfolio-diversification",
+    "ms-fashion-seasonality",
+    "ethics-groupthink",
+    "ms-analytics-intuition",
+    "ba-three-tier-analytics",
+    "ba-ai-prevention-pattern"
+  ],
+  "ms-decision-tree": [
+    "ms-monte-carlo",
+    "ms-sensitivity-analysis",
+    "ba-confidence-interval",
+    "ms-analytics-intuition",
+    "mkt-workshop-decisions",
+    "eth-stakeholder-mapping",
+    "ms-newsvendor",
+    "mpo-terracog",
+    "ethics-groupthink",
+    "ba-three-tier-analytics",
+    "ba-ai-prevention-pattern",
+    "ba-correlation-causation"
+  ],
+  "ms-newsvendor": [
+    "ms-fashion-seasonality",
+    "eco-price-elasticity",
+    "ms-monte-carlo",
+    "ms-decision-tree",
+    "ms-sensitivity-analysis",
+    "eco-marginal-thinking",
+    "ms-wyndor-product-mix",
+    "acc-working-capital",
+    "ms-queueing-mmc",
+    "ms-lp-dantzig",
+    "eco-supply-demand"
+  ],
+  "ms-network-shortest-path": [
+    "ms-queueing-mmc",
+    "ms-lp-dantzig",
+    "ms-wyndor-product-mix",
+    "eco-economies-of-scale",
+    "ba-feature-engineering",
+    "ms-mega-project-overrun",
+    "ms-sensitivity-analysis",
+    "mkt-b2b-solution-sales"
+  ],
+  "eco-supply-demand": [
+    "eco-price-elasticity",
+    "eco-marginal-thinking",
+    "mkt-customer-needs-matrix",
+    "mkt-stp",
+    "eco-prisoners-dilemma",
+    "mkt-position-before-pitch",
+    "ms-newsvendor",
+    "acc-revenue-recognition"
+  ],
+  "eco-economies-of-scale": [
+    "eco-comparative-advantage",
+    "ms-mega-project-overrun",
+    "eco-network-effects",
+    "acc-depreciation-strategy",
+    "ms-wyndor-product-mix",
+    "eco-marginal-thinking",
+    "ms-portfolio-diversification",
+    "ms-network-shortest-path",
+    "ba-cac-trap",
+    "ms-queueing-mmc"
+  ],
+  "eco-network-effects": [
+    "eco-economies-of-scale",
+    "eco-prisoners-dilemma",
+    "mkt-customer-lifetime-value",
+    "ba-cac-trap",
+    "mkt-brand-equity",
+    "mpo-weak-ties",
+    "eco-information-asymmetry",
+    "mkt-b2b-solution-sales",
+    "ms-portfolio-diversification",
+    "mkt-brand-extension"
+  ],
+  "eco-information-asymmetry": [
+    "eco-prisoners-dilemma",
+    "mkt-b2b-solution-sales",
+    "acc-audit-opinion-types",
+    "eth-audit-independence",
+    "mpo-terracog",
+    "eth-whistleblower",
+    "ba-correlation-causation",
+    "mkt-pharmacist-relationship",
+    "eco-network-effects"
+  ],
+  "eco-public-goods": [
+    "eco-prisoners-dilemma",
+    "eco-comparative-advantage",
+    "ms-lp-dantzig",
+    "eth-stakeholder-mapping",
+    "mkt-regulated-brand",
+    "eth-carroll-csr",
+    "eth-porter-kramer-csv",
+    "mpo-kotter-eight-steps",
+    "eco-opportunity-cost"
+  ],
+  "eco-comparative-advantage": [
+    "eco-opportunity-cost",
+    "ms-portfolio-diversification",
+    "eco-economies-of-scale",
+    "ms-wyndor-product-mix",
+    "mkt-brand-extension",
+    "mkt-position-before-pitch",
+    "acc-depreciation-strategy",
+    "eco-marginal-thinking",
+    "ms-lp-dantzig",
+    "eco-public-goods"
+  ],
+  "mkt-4p-to-4c": [
+    "mkt-customer-needs-matrix",
+    "mkt-stp",
+    "mkt-customer-lifetime-value",
+    "mkt-brand-equity",
+    "mkt-position-before-pitch",
+    "mkt-pharmacist-relationship",
+    "eco-price-elasticity",
+    "mkt-channel-conflict"
+  ],
+  "mkt-brand-equity": [
+    "mkt-brand-extension",
+    "mkt-customer-lifetime-value",
+    "mkt-stp",
+    "mkt-regulated-brand",
+    "eth-greenwashing",
+    "mkt-4p-to-4c",
+    "mkt-customer-needs-matrix",
+    "mkt-position-before-pitch",
+    "ba-cac-trap",
+    "eco-price-elasticity",
+    "eco-network-effects",
+    "mkt-pharmacist-relationship"
+  ],
+  "mkt-customer-lifetime-value": [
+    "ba-cac-trap",
+    "mkt-brand-equity",
+    "mkt-stp",
+    "mkt-b2b-solution-sales",
+    "mkt-pharmacist-relationship",
+    "eco-network-effects",
+    "acc-revenue-recognition",
+    "ba-cluster-segmentation",
+    "ba-supervised-unsupervised",
+    "eco-price-elasticity",
+    "eco-marginal-thinking",
+    "mkt-position-before-pitch"
+  ],
+  "acc-working-capital": [
+    "acc-accrual-basis",
+    "acc-three-statements",
+    "acc-revenue-recognition",
+    "ms-newsvendor",
+    "eth-tmon-wemakeprice",
+    "acc-depreciation-strategy",
+    "eco-marginal-thinking",
+    "ms-portfolio-diversification",
+    "ba-cac-trap",
+    "eco-opportunity-cost",
+    "acc-ifrs-vs-kgaap",
+    "ms-fashion-seasonality"
+  ],
+  "acc-revenue-recognition": [
+    "acc-accrual-basis",
+    "acc-working-capital",
+    "acc-three-statements",
+    "mkt-customer-lifetime-value",
+    "mkt-b2b-solution-sales",
+    "acc-ifrs-vs-kgaap",
+    "acc-depreciation-strategy",
+    "acc-audit-opinion-types",
+    "ba-cac-trap",
+    "ms-sensitivity-analysis",
+    "eco-supply-demand",
+    "ms-mega-project-overrun"
+  ],
+  "mkt-pharmacist-relationship": [
+    "mkt-b2b-solution-sales",
+    "mkt-channel-conflict",
+    "mkt-regulated-brand",
+    "eth-medical-device-incentive",
+    "mkt-4p-to-4c",
+    "mkt-customer-lifetime-value",
+    "eco-information-asymmetry",
+    "mkt-brand-equity",
+    "eco-prisoners-dilemma",
+    "mkt-customer-needs-matrix"
+  ],
+  "mkt-brand-extension": [
+    "mkt-brand-equity",
+    "eco-comparative-advantage",
+    "mkt-stp",
+    "mkt-regulated-brand",
+    "eco-network-effects",
+    "mkt-customer-lifetime-value",
+    "mkt-customer-needs-matrix",
+    "ms-portfolio-diversification",
+    "mkt-channel-conflict"
+  ],
+  "mkt-b2b-solution-sales": [
+    "mkt-pharmacist-relationship",
+    "mkt-channel-conflict",
+    "mkt-customer-lifetime-value",
+    "mkt-customer-needs-matrix",
+    "ba-cac-trap",
+    "mpo-terracog",
+    "eco-information-asymmetry",
+    "ms-network-shortest-path",
+    "mkt-stp",
+    "mpo-weak-ties",
+    "ba-cluster-segmentation",
+    "eco-network-effects"
+  ],
+  "acc-audit-opinion-types": [
+    "eth-audit-independence",
+    "acc-three-statements",
+    "acc-ifrs-vs-kgaap",
+    "eth-tmon-wemakeprice",
+    "eth-whistleblower",
+    "acc-revenue-recognition",
+    "eco-information-asymmetry",
+    "eth-conflict-of-interest",
+    "acc-accrual-basis",
+    "ba-explainability-tradeoff",
+    "acc-depreciation-strategy"
+  ],
+  "eth-medical-device-incentive": [
+    "mkt-pharmacist-relationship",
+    "mkt-channel-conflict",
+    "eth-conflict-of-interest",
+    "mkt-regulated-brand",
+    "eth-whistleblower",
+    "eth-can-people-change",
+    "eth-subcontractor-management",
+    "eth-ethics-comms",
+    "eth-porter-kramer-csv",
+    "eth-greenwashing"
+  ],
+  "eth-subcontractor-management": [
+    "eth-stakeholder-mapping",
+    "eth-medical-device-incentive",
+    "eth-greenwashing",
+    "ms-mega-project-overrun",
+    "eth-carroll-csr",
+    "mpo-burnout-prevention",
+    "eth-can-people-change",
+    "eth-whistleblower"
+  ],
+  "ms-fashion-seasonality": [
+    "ms-newsvendor",
+    "ms-monte-carlo",
+    "ms-sensitivity-analysis",
+    "eco-price-elasticity",
+    "ms-decision-tree",
+    "mkt-channel-conflict",
+    "acc-working-capital",
+    "ba-feature-engineering",
+    "ms-queueing-mmc"
+  ],
+  "mkt-channel-conflict": [
+    "mkt-pharmacist-relationship",
+    "mkt-b2b-solution-sales",
+    "ms-portfolio-diversification",
+    "mkt-regulated-brand",
+    "eco-prisoners-dilemma",
+    "mkt-4p-to-4c",
+    "mkt-brand-extension",
+    "ba-cac-trap",
+    "eth-medical-device-incentive",
+    "ms-fashion-seasonality"
+  ],
+  "mkt-regulated-brand": [
+    "mkt-brand-equity",
+    "eth-greenwashing",
+    "mkt-brand-extension",
+    "mkt-pharmacist-relationship",
+    "mkt-channel-conflict",
+    "eth-medical-device-incentive",
+    "mkt-customer-lifetime-value",
+    "eco-public-goods",
+    "eth-carroll-csr",
+    "eco-prisoners-dilemma",
+    "eth-porter-kramer-csv"
+  ],
+  "eth-audit-independence": [
+    "acc-audit-opinion-types",
+    "eth-conflict-of-interest",
+    "eth-tmon-wemakeprice",
+    "eth-whistleblower",
+    "acc-ifrs-vs-kgaap",
+    "eth-stakeholder-mapping",
+    "acc-three-statements",
+    "ba-explainability-tradeoff",
+    "eco-information-asymmetry"
+  ],
+  "ms-mega-project-overrun": [
+    "ms-sensitivity-analysis",
+    "ms-monte-carlo",
+    "ms-decision-tree",
+    "eth-subcontractor-management",
+    "ba-survivorship-bias",
+    "ms-network-shortest-path",
+    "acc-revenue-recognition",
+    "ba-confidence-interval",
+    "eth-tmon-wemakeprice",
+    "eth-conflict-of-interest",
+    "eth-greenwashing",
+    "eco-economies-of-scale"
+  ],
+  "acc-depreciation-strategy": [
+    "acc-three-statements",
+    "acc-ifrs-vs-kgaap",
+    "acc-revenue-recognition",
+    "acc-working-capital",
+    "eco-economies-of-scale",
+    "ms-wyndor-product-mix",
+    "acc-accrual-basis",
+    "acc-audit-opinion-types",
+    "eco-comparative-advantage"
+  ],
   "_meta": {
-    "version": 1,
+    "version": 2,
     "generated_at": "2026-05-25",
     "generated_by": "Claude (offline pre-compute)",
     "purpose": "각 카드별 의미 이웃 top-8. 단순 same-course/domain/industry를 넘어 주제적으로 가까운 카드들을 직접 큐레이션. related.ts와 온톨로지 그래프가 활용.",
     "regen_workflow": "worker/REINDEX.md",
     "card_count": 81,
-    "neighbors_per_card": 8
-  },
-
-  "ethics-groupthink": ["mpo-leadership-influence", "mpo-terracog", "mpo-radical-candor", "eth-whistleblower", "ms-decision-tree", "mpo-implicit-bias", "eth-can-people-change", "ms-monte-carlo"],
-
-  "mpo-intrinsic-motivation": ["mpo-two-factor-herzberg", "mpo-radical-candor", "mpo-burnout-prevention", "mpo-pay-secrecy", "mpo-rob-parson", "mkt-customer-needs-matrix", "mpo-org-design", "mpo-leadership-influence"],
-
-  "ba-cac-trap": ["mkt-customer-lifetime-value", "mkt-b2b-solution-sales", "acc-revenue-recognition", "ms-portfolio-diversification", "mkt-channel-conflict", "acc-working-capital", "eco-economies-of-scale", "mkt-brand-equity"],
-
-  "ms-analytics-intuition": ["ms-decision-tree", "ba-correlation-causation", "ba-three-tier-analytics", "ba-confidence-interval", "ms-monte-carlo", "ethics-groupthink", "ms-sensitivity-analysis", "ba-explainability-tradeoff"],
-
-  "mpo-leadership-influence": ["mpo-radical-candor", "mpo-kotter-eight-steps", "ethics-groupthink", "eth-ethics-comms", "mpo-org-design", "mpo-weak-ties", "mpo-burnout-prevention", "eth-can-people-change"],
-
-  "ms-queueing-mmc": ["ms-lp-dantzig", "ms-network-shortest-path", "ms-newsvendor", "ms-fashion-seasonality", "ms-wyndor-product-mix", "ms-sensitivity-analysis", "ba-feature-engineering", "eco-economies-of-scale"],
-
-  "eth-carroll-csr": ["eth-porter-kramer-csv", "eth-greenwashing", "eth-stakeholder-mapping", "mkt-regulated-brand", "eth-subcontractor-management", "eth-can-people-change", "mpo-burnout-prevention", "acc-three-statements"],
-
-  "ba-supervised-unsupervised": ["ba-cluster-segmentation", "ba-ai-prevention-pattern", "ba-three-tier-analytics", "ba-overfitting", "ba-feature-engineering", "ba-explainability-tradeoff", "mkt-customer-lifetime-value", "ba-anscombe-visualization"],
-
-  "mkt-stp": ["mkt-position-before-pitch", "mkt-customer-needs-matrix", "ba-cluster-segmentation", "mkt-customer-lifetime-value", "mkt-brand-equity", "mkt-4p-to-4c", "mkt-b2b-solution-sales", "mkt-brand-extension"],
-
-  "mpo-rob-parson": ["mpo-recruitment-vs-promote", "mpo-radical-candor", "mpo-personality-big-five", "mpo-pay-secrecy", "mpo-two-factor-herzberg", "mpo-burnout-prevention", "mpo-org-design", "mpo-implicit-bias"],
-
-  "acc-accrual-basis": ["acc-working-capital", "acc-three-statements", "acc-revenue-recognition", "eth-tmon-wemakeprice", "eco-marginal-thinking", "acc-depreciation-strategy", "ms-portfolio-diversification", "acc-audit-opinion-types"],
-
-  "eco-price-elasticity": ["eco-supply-demand", "ms-newsvendor", "mkt-stp", "mkt-customer-needs-matrix", "eco-prisoners-dilemma", "mkt-brand-equity", "mkt-customer-lifetime-value", "mkt-4p-to-4c"],
-
-  "mpo-recruitment-vs-promote": ["mpo-rob-parson", "mpo-weak-ties", "mpo-personality-big-five", "mpo-kotter-eight-steps", "mpo-implicit-bias", "mpo-radical-candor", "mpo-burnout-prevention", "mpo-pay-secrecy"],
-
-  "mpo-two-factor-herzberg": ["mpo-intrinsic-motivation", "mpo-pay-secrecy", "mpo-burnout-prevention", "mpo-radical-candor", "mpo-rob-parson", "mpo-org-design", "mpo-leadership-influence", "mpo-recruitment-vs-promote"],
-
-  "mpo-pay-secrecy": ["mpo-two-factor-herzberg", "mpo-rob-parson", "mpo-burnout-prevention", "mpo-implicit-bias", "mpo-recruitment-vs-promote", "acc-three-statements", "eth-stakeholder-mapping", "mpo-org-design"],
-
-  "mpo-terracog": ["mpo-org-design", "ethics-groupthink", "eco-information-asymmetry", "mpo-kotter-eight-steps", "ms-decision-tree", "mpo-radical-candor", "mpo-leadership-influence", "ms-analytics-intuition"],
-
-  "mpo-martha-rinaldi": ["mpo-burnout-prevention", "mpo-weak-ties", "mpo-radical-candor", "mpo-two-factor-herzberg", "mpo-org-design", "mpo-rob-parson", "mpo-recruitment-vs-promote", "mpo-pay-secrecy"],
-
-  "mpo-weak-ties": ["mpo-recruitment-vs-promote", "mpo-martha-rinaldi", "mpo-leadership-influence", "mpo-burnout-prevention", "eco-network-effects", "mkt-b2b-solution-sales", "mpo-implicit-bias", "mpo-org-design"],
-
-  "ba-three-tier-analytics": ["ba-supervised-unsupervised", "ba-ai-prevention-pattern", "ms-analytics-intuition", "ba-correlation-causation", "ms-decision-tree", "ba-feature-engineering", "ba-confidence-interval", "ms-monte-carlo"],
-
-  "ba-ai-prevention-pattern": ["ba-supervised-unsupervised", "ba-three-tier-analytics", "ba-feature-engineering", "ba-overfitting", "ba-explainability-tradeoff", "ms-sensitivity-analysis", "ms-monte-carlo", "ms-decision-tree"],
-
-  "ba-correlation-causation": ["ba-survivorship-bias", "ba-anscombe-visualization", "ba-confidence-interval", "ms-analytics-intuition", "ba-overfitting", "ms-decision-tree", "ba-three-tier-analytics", "eco-information-asymmetry"],
-
-  "ba-cluster-segmentation": ["ba-supervised-unsupervised", "mkt-stp", "mkt-customer-needs-matrix", "mkt-customer-lifetime-value", "ba-feature-engineering", "ba-anscombe-visualization", "mkt-b2b-solution-sales", "ba-three-tier-analytics"],
-
-  "eth-can-people-change": ["eth-ethics-comms", "eth-carroll-csr", "mpo-burnout-prevention", "mpo-leadership-influence", "mpo-implicit-bias", "eth-stakeholder-mapping", "mpo-org-design", "ethics-groupthink"],
-
-  "eth-ethics-comms": ["eth-can-people-change", "mpo-leadership-influence", "mpo-radical-candor", "mpo-org-design", "mpo-terracog", "eth-whistleblower", "ethics-groupthink", "mpo-kotter-eight-steps"],
-
-  "eth-tmon-wemakeprice": ["eth-stakeholder-mapping", "eth-whistleblower", "acc-working-capital", "acc-accrual-basis", "eth-conflict-of-interest", "eth-audit-independence", "acc-audit-opinion-types", "ms-mega-project-overrun"],
-
-  "ms-lp-dantzig": ["ms-wyndor-product-mix", "ms-sensitivity-analysis", "ms-network-shortest-path", "ms-queueing-mmc", "ms-newsvendor", "ba-feature-engineering", "eco-comparative-advantage", "ms-monte-carlo"],
-
-  "ms-portfolio-diversification": ["eco-comparative-advantage", "eth-stakeholder-mapping", "mkt-channel-conflict", "ba-cac-trap", "ms-monte-carlo", "ms-sensitivity-analysis", "mkt-brand-extension", "eco-network-effects"],
-
-  "ms-wyndor-product-mix": ["ms-lp-dantzig", "eco-comparative-advantage", "ms-sensitivity-analysis", "ms-portfolio-diversification", "ms-newsvendor", "eco-marginal-thinking", "eco-economies-of-scale", "acc-depreciation-strategy"],
-
-  "eco-marginal-thinking": ["eco-opportunity-cost", "ms-newsvendor", "eco-price-elasticity", "ms-wyndor-product-mix", "acc-accrual-basis", "ba-cac-trap", "mkt-customer-lifetime-value", "acc-working-capital"],
-
-  "eco-opportunity-cost": ["eco-marginal-thinking", "eco-comparative-advantage", "mkt-workshop-decisions", "mpo-org-design", "ms-decision-tree", "eco-public-goods", "mkt-position-before-pitch", "acc-working-capital"],
-
-  "eco-prisoners-dilemma": ["eco-network-effects", "eco-information-asymmetry", "eco-public-goods", "mkt-channel-conflict", "mkt-regulated-brand", "eco-price-elasticity", "mkt-pharmacist-relationship", "ethics-groupthink"],
-
-  "mkt-position-before-pitch": ["mkt-stp", "mkt-customer-needs-matrix", "mkt-4p-to-4c", "mkt-workshop-decisions", "mkt-brand-equity", "mkt-customer-lifetime-value", "ba-three-tier-analytics", "eco-comparative-advantage"],
-
-  "mkt-customer-needs-matrix": ["mkt-stp", "mkt-4p-to-4c", "mkt-customer-lifetime-value", "mkt-position-before-pitch", "ba-cluster-segmentation", "mkt-b2b-solution-sales", "mkt-brand-equity", "mkt-pharmacist-relationship"],
-
-  "mkt-workshop-decisions": ["mpo-terracog", "ms-decision-tree", "mpo-kotter-eight-steps", "ms-analytics-intuition", "mpo-radical-candor", "mkt-position-before-pitch", "mpo-org-design", "ethics-groupthink"],
-
-  "acc-three-statements": ["acc-accrual-basis", "acc-working-capital", "acc-revenue-recognition", "acc-ifrs-vs-kgaap", "acc-depreciation-strategy", "acc-audit-opinion-types", "eth-audit-independence", "ba-confidence-interval"],
-
-  "acc-ifrs-vs-kgaap": ["acc-three-statements", "acc-revenue-recognition", "acc-depreciation-strategy", "acc-accrual-basis", "acc-audit-opinion-types", "eth-audit-independence", "eth-tmon-wemakeprice", "acc-working-capital"],
-
-  "mpo-personality-big-five": ["mpo-recruitment-vs-promote", "mpo-rob-parson", "mpo-implicit-bias", "mpo-radical-candor", "mpo-kotter-eight-steps", "mpo-org-design", "mpo-leadership-influence", "mpo-burnout-prevention"],
-
-  "mpo-kotter-eight-steps": ["mpo-org-design", "mpo-leadership-influence", "mpo-radical-candor", "eth-can-people-change", "mpo-recruitment-vs-promote", "eth-ethics-comms", "mpo-burnout-prevention", "ethics-groupthink"],
-
-  "mpo-org-design": ["mpo-terracog", "mpo-kotter-eight-steps", "mpo-rob-parson", "mpo-pay-secrecy", "mpo-leadership-influence", "mpo-two-factor-herzberg", "mkt-workshop-decisions", "mpo-radical-candor"],
-
-  "mpo-implicit-bias": ["mpo-personality-big-five", "mpo-recruitment-vs-promote", "eth-can-people-change", "mpo-pay-secrecy", "eth-stakeholder-mapping", "mpo-org-design", "ba-correlation-causation", "eth-conflict-of-interest"],
-
-  "mpo-burnout-prevention": ["mpo-two-factor-herzberg", "mpo-radical-candor", "mpo-intrinsic-motivation", "mpo-martha-rinaldi", "mpo-pay-secrecy", "mpo-leadership-influence", "mpo-org-design", "mpo-recruitment-vs-promote"],
-
-  "mpo-radical-candor": ["mpo-leadership-influence", "mpo-rob-parson", "mpo-two-factor-herzberg", "mpo-burnout-prevention", "eth-ethics-comms", "mpo-personality-big-five", "mpo-kotter-eight-steps", "mpo-intrinsic-motivation"],
-
-  "ba-anscombe-visualization": ["ba-correlation-causation", "ba-survivorship-bias", "ba-confidence-interval", "ba-three-tier-analytics", "ba-overfitting", "ms-monte-carlo", "ba-feature-engineering", "ms-sensitivity-analysis"],
-
-  "ba-overfitting": ["ba-feature-engineering", "ba-confidence-interval", "ba-supervised-unsupervised", "ba-explainability-tradeoff", "ba-survivorship-bias", "ms-monte-carlo", "ba-three-tier-analytics", "ba-ai-prevention-pattern"],
-
-  "ba-survivorship-bias": ["ba-correlation-causation", "ba-anscombe-visualization", "ms-mega-project-overrun", "mpo-implicit-bias", "ba-confidence-interval", "ms-monte-carlo", "eth-greenwashing", "ba-explainability-tradeoff"],
-
-  "ba-confidence-interval": ["ms-monte-carlo", "ms-sensitivity-analysis", "ba-overfitting", "ba-correlation-causation", "ms-decision-tree", "ba-anscombe-visualization", "ms-mega-project-overrun", "ba-feature-engineering"],
-
-  "ba-feature-engineering": ["ba-overfitting", "ba-supervised-unsupervised", "ba-explainability-tradeoff", "ba-three-tier-analytics", "ba-ai-prevention-pattern", "ba-anscombe-visualization", "ba-cluster-segmentation", "ms-monte-carlo"],
-
-  "ba-explainability-tradeoff": ["ba-overfitting", "ba-supervised-unsupervised", "ba-feature-engineering", "eth-conflict-of-interest", "acc-audit-opinion-types", "ba-correlation-causation", "mpo-implicit-bias", "eth-whistleblower"],
-
-  "eth-porter-kramer-csv": ["eth-carroll-csr", "eth-stakeholder-mapping", "eth-greenwashing", "mkt-regulated-brand", "eth-can-people-change", "eth-medical-device-incentive", "eth-conflict-of-interest", "mkt-customer-lifetime-value"],
-
-  "eth-stakeholder-mapping": ["eth-carroll-csr", "eth-porter-kramer-csv", "eth-tmon-wemakeprice", "eth-greenwashing", "eth-conflict-of-interest", "mpo-org-design", "eth-whistleblower", "ms-portfolio-diversification"],
-
-  "eth-conflict-of-interest": ["eth-audit-independence", "eth-whistleblower", "acc-audit-opinion-types", "mpo-implicit-bias", "eth-medical-device-incentive", "eth-stakeholder-mapping", "eth-can-people-change", "ms-mega-project-overrun"],
-
-  "eth-whistleblower": ["eth-tmon-wemakeprice", "eth-ethics-comms", "eth-conflict-of-interest", "ethics-groupthink", "eth-stakeholder-mapping", "mpo-radical-candor", "eth-can-people-change", "acc-audit-opinion-types"],
-
-  "eth-greenwashing": ["eth-porter-kramer-csv", "eth-carroll-csr", "eth-stakeholder-mapping", "mkt-brand-equity", "mkt-regulated-brand", "ba-survivorship-bias", "ms-mega-project-overrun", "eth-medical-device-incentive"],
-
-  "ms-sensitivity-analysis": ["ms-monte-carlo", "ms-decision-tree", "ba-confidence-interval", "ms-lp-dantzig", "ms-wyndor-product-mix", "ms-mega-project-overrun", "acc-revenue-recognition", "ba-overfitting"],
-
-  "ms-monte-carlo": ["ms-decision-tree", "ms-sensitivity-analysis", "ba-confidence-interval", "ms-newsvendor", "ba-overfitting", "ms-mega-project-overrun", "ms-portfolio-diversification", "ms-fashion-seasonality"],
-
-  "ms-decision-tree": ["ms-monte-carlo", "ms-sensitivity-analysis", "ba-confidence-interval", "ms-analytics-intuition", "mkt-workshop-decisions", "eth-stakeholder-mapping", "ms-newsvendor", "mpo-terracog"],
-
-  "ms-newsvendor": ["ms-fashion-seasonality", "eco-price-elasticity", "ms-monte-carlo", "ms-decision-tree", "ms-sensitivity-analysis", "eco-marginal-thinking", "ms-wyndor-product-mix", "acc-working-capital"],
-
-  "ms-network-shortest-path": ["ms-queueing-mmc", "ms-lp-dantzig", "ms-wyndor-product-mix", "eco-economies-of-scale", "ba-feature-engineering", "ms-mega-project-overrun", "ms-sensitivity-analysis", "mkt-b2b-solution-sales"],
-
-  "eco-supply-demand": ["eco-price-elasticity", "eco-marginal-thinking", "mkt-customer-needs-matrix", "mkt-stp", "eco-prisoners-dilemma", "mkt-position-before-pitch", "ms-newsvendor", "acc-revenue-recognition"],
-
-  "eco-economies-of-scale": ["eco-comparative-advantage", "ms-mega-project-overrun", "eco-network-effects", "acc-depreciation-strategy", "ms-wyndor-product-mix", "eco-marginal-thinking", "ms-portfolio-diversification", "ms-network-shortest-path"],
-
-  "eco-network-effects": ["eco-economies-of-scale", "eco-prisoners-dilemma", "mkt-customer-lifetime-value", "ba-cac-trap", "mkt-brand-equity", "mpo-weak-ties", "eco-information-asymmetry", "mkt-b2b-solution-sales"],
-
-  "eco-information-asymmetry": ["eco-prisoners-dilemma", "mkt-b2b-solution-sales", "acc-audit-opinion-types", "eth-audit-independence", "mpo-terracog", "eth-whistleblower", "ba-correlation-causation", "mkt-pharmacist-relationship"],
-
-  "eco-public-goods": ["eco-prisoners-dilemma", "eco-comparative-advantage", "ms-lp-dantzig", "eth-stakeholder-mapping", "mkt-regulated-brand", "eth-carroll-csr", "eth-porter-kramer-csv", "mpo-kotter-eight-steps"],
-
-  "eco-comparative-advantage": ["eco-opportunity-cost", "ms-portfolio-diversification", "eco-economies-of-scale", "ms-wyndor-product-mix", "mkt-brand-extension", "mkt-position-before-pitch", "acc-depreciation-strategy", "eco-marginal-thinking"],
-
-  "mkt-4p-to-4c": ["mkt-customer-needs-matrix", "mkt-stp", "mkt-customer-lifetime-value", "mkt-brand-equity", "mkt-position-before-pitch", "mkt-pharmacist-relationship", "eco-price-elasticity", "mkt-channel-conflict"],
-
-  "mkt-brand-equity": ["mkt-brand-extension", "mkt-customer-lifetime-value", "mkt-stp", "mkt-regulated-brand", "eth-greenwashing", "mkt-4p-to-4c", "mkt-customer-needs-matrix", "mkt-position-before-pitch"],
-
-  "mkt-customer-lifetime-value": ["ba-cac-trap", "mkt-brand-equity", "mkt-stp", "mkt-b2b-solution-sales", "mkt-pharmacist-relationship", "eco-network-effects", "acc-revenue-recognition", "ba-cluster-segmentation"],
-
-  "acc-working-capital": ["acc-accrual-basis", "acc-three-statements", "acc-revenue-recognition", "ms-newsvendor", "eth-tmon-wemakeprice", "acc-depreciation-strategy", "eco-marginal-thinking", "ms-portfolio-diversification"],
-
-  "acc-revenue-recognition": ["acc-accrual-basis", "acc-working-capital", "acc-three-statements", "mkt-customer-lifetime-value", "mkt-b2b-solution-sales", "acc-ifrs-vs-kgaap", "acc-depreciation-strategy", "acc-audit-opinion-types"],
-
-  "mkt-pharmacist-relationship": ["mkt-b2b-solution-sales", "mkt-channel-conflict", "mkt-regulated-brand", "eth-medical-device-incentive", "mkt-4p-to-4c", "mkt-customer-lifetime-value", "eco-information-asymmetry", "mkt-brand-equity"],
-
-  "mkt-brand-extension": ["mkt-brand-equity", "eco-comparative-advantage", "mkt-stp", "mkt-regulated-brand", "eco-network-effects", "mkt-customer-lifetime-value", "mkt-customer-needs-matrix", "ms-portfolio-diversification"],
-
-  "mkt-b2b-solution-sales": ["mkt-pharmacist-relationship", "mkt-channel-conflict", "mkt-customer-lifetime-value", "mkt-customer-needs-matrix", "ba-cac-trap", "mpo-terracog", "eco-information-asymmetry", "ms-network-shortest-path"],
-
-  "acc-audit-opinion-types": ["eth-audit-independence", "acc-three-statements", "acc-ifrs-vs-kgaap", "eth-tmon-wemakeprice", "eth-whistleblower", "acc-revenue-recognition", "eco-information-asymmetry", "eth-conflict-of-interest"],
-
-  "eth-medical-device-incentive": ["mkt-pharmacist-relationship", "mkt-channel-conflict", "eth-conflict-of-interest", "mkt-regulated-brand", "eth-whistleblower", "eth-can-people-change", "eth-subcontractor-management", "eth-ethics-comms"],
-
-  "eth-subcontractor-management": ["eth-stakeholder-mapping", "eth-medical-device-incentive", "eth-greenwashing", "ms-mega-project-overrun", "eth-carroll-csr", "mpo-burnout-prevention", "eth-can-people-change", "eth-whistleblower"],
-
-  "ms-fashion-seasonality": ["ms-newsvendor", "ms-monte-carlo", "ms-sensitivity-analysis", "eco-price-elasticity", "ms-decision-tree", "mkt-channel-conflict", "acc-working-capital", "ba-feature-engineering"],
-
-  "mkt-channel-conflict": ["mkt-pharmacist-relationship", "mkt-b2b-solution-sales", "ms-portfolio-diversification", "mkt-regulated-brand", "eco-prisoners-dilemma", "mkt-4p-to-4c", "mkt-brand-extension", "ba-cac-trap"],
-
-  "mkt-regulated-brand": ["mkt-brand-equity", "eth-greenwashing", "mkt-brand-extension", "mkt-pharmacist-relationship", "mkt-channel-conflict", "eth-medical-device-incentive", "mkt-customer-lifetime-value", "eco-public-goods"],
-
-  "eth-audit-independence": ["acc-audit-opinion-types", "eth-conflict-of-interest", "eth-tmon-wemakeprice", "eth-whistleblower", "acc-ifrs-vs-kgaap", "eth-stakeholder-mapping", "acc-three-statements", "ba-explainability-tradeoff"],
-
-  "ms-mega-project-overrun": ["ms-sensitivity-analysis", "ms-monte-carlo", "ms-decision-tree", "eth-subcontractor-management", "ba-survivorship-bias", "ms-network-shortest-path", "acc-revenue-recognition", "ba-confidence-interval"],
-
-  "acc-depreciation-strategy": ["acc-three-statements", "acc-ifrs-vs-kgaap", "acc-revenue-recognition", "acc-working-capital", "eco-economies-of-scale", "ms-wyndor-product-mix", "acc-accrual-basis", "acc-audit-opinion-types"]
+    "neighbors_per_card": 8,
+    "symmetrized_at": "2026-06-01",
+    "note": " v2: 단방향 링크를 상호 링크로 대칭화(카드당 최대12)."
+  }
 }

@@ -1166,3 +1166,15 @@ mark.hl {
   .stepbar .step .l{ font-size:9.5px; }
   .stepbar .step .n{ font-size:9px; }
 }
+
+/* ── 브레인맵: 연결 근거(이 연결은 왜?) 패널 ── */
+.bm-basis{margin:12px 0 14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.14)}
+.bm-basis-lab{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;color:rgba(255,255,255,.55);margin-bottom:8px}
+.bm-basis-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.bm-basis-tag{font-size:10.5px;font-weight:700;color:#16150F;background:rgba(255,255,255,.82);border-radius:999px;padding:3px 9px}
+.bm-basis-tag.theme{background:rgba(255,255,255,.22);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.bm-basis-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.bm-basis-list li{display:flex;align-items:center;gap:8px;font-size:12px;color:rgba(255,255,255,.82)}
+.bm-basis-dot{width:7px;height:7px;border-radius:50%;flex:none}
+.bm-basis-concept{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bm-basis-why{font-size:10px;color:rgba(255,255,255,.5);flex:none}
