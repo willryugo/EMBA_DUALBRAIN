@@ -178,6 +178,8 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   const viewRef = useRef(view);
   viewRef.current = view;
   const panRef = useRef<{ cx: number; cy: number; vx: number; vy: number } | null>(null);
+  // 두 손가락 핀치 줌(터치) — 진행 중엔 팬/드래그 무시
+  const pinchRef = useRef<{ dist: number; cx: number; cy: number } | null>(null);
 
   // 색칠 모드: 과목 색 ↔ 나의 산업군 강조
   const [colorMode, setColorMode] = useState<"course" | "industry">("course");
@@ -223,6 +225,65 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     return () => svg.removeEventListener("wheel", onWheel);
   }, []);
 
+  // 핀치 줌 (터치 두 손가락) — viewBox를 두 손가락 중점 기준으로 확대/축소 + 이동.
+  // touch-action:none이라 네이티브 줌이 막혀 있어 직접 처리한다.
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const dist = (a: Touch, b: Touch) =>
+      Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        // 핀치 시작 — 진행 중이던 팬/노드 드래그 취소
+        draggingRef.current = null;
+        panRef.current = null;
+        const [a, b] = [e.touches[0], e.touches[1]];
+        pinchRef.current = {
+          dist: dist(a, b) || 1,
+          cx: (a.clientX + b.clientX) / 2,
+          cy: (a.clientY + b.clientY) / 2,
+        };
+      }
+    };
+    const onMoveT = (e: TouchEvent) => {
+      if (e.touches.length !== 2 || !pinchRef.current) return;
+      e.preventDefault();
+      const rect = svg.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      const [a, b] = [e.touches[0], e.touches[1]];
+      const nd = dist(a, b) || 1;
+      const ncx = (a.clientX + b.clientX) / 2;
+      const ncy = (a.clientY + b.clientY) / 2;
+      const v = viewRef.current;
+      const fx = (ncx - rect.left) / rect.width;
+      const fy = (ncy - rect.top) / rect.height;
+      const mx = v.x + fx * v.w; // 중점의 현재 svg 좌표
+      const my = v.y + fy * v.h;
+      const scale = pinchRef.current.dist / nd; // 손가락 벌리면 nd↑ → scale<1 → 확대
+      let nw = v.w * scale;
+      nw = Math.max(W * 0.1, Math.min(W * 1.5, nw)); // 휠 줌과 동일 한계
+      const nh = nw * (H / W);
+      // 중점 이동량만큼 팬도 같이(두 손가락을 끌면 이동)
+      const panDx = ((ncx - pinchRef.current.cx) / rect.width) * nw;
+      const panDy = ((ncy - pinchRef.current.cy) / rect.height) * nh;
+      setView({ x: mx - fx * nw - panDx, y: my - fy * nh - panDy, w: nw, h: nh });
+      pinchRef.current = { dist: nd, cx: ncx, cy: ncy };
+    };
+    const onEndT = (e: TouchEvent) => {
+      if (e.touches.length < 2) pinchRef.current = null;
+    };
+    svg.addEventListener("touchstart", onStart, { passive: false });
+    svg.addEventListener("touchmove", onMoveT, { passive: false });
+    svg.addEventListener("touchend", onEndT);
+    svg.addEventListener("touchcancel", onEndT);
+    return () => {
+      svg.removeEventListener("touchstart", onStart);
+      svg.removeEventListener("touchmove", onMoveT);
+      svg.removeEventListener("touchend", onEndT);
+      svg.removeEventListener("touchcancel", onEndT);
+    };
+  }, []);
+
   // ESC: 선택 있으면 해제(매거진으로 안 나감), 없을 때만 닫기
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -265,6 +326,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     };
   };
   const onDown = (id: string) => (e: React.PointerEvent) => {
+    if (pinchRef.current) return; // 핀치 중엔 노드 드래그 금지
     e.stopPropagation();
     draggingRef.current = id;
     (e.target as Element).setPointerCapture?.(e.pointerId);
@@ -272,10 +334,11 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   };
   // 빈 공간 드래그 = 화면 이동(팬)
   const onSvgDown = (e: React.PointerEvent) => {
-    if (draggingRef.current) return;
+    if (draggingRef.current || pinchRef.current) return;
     panRef.current = { cx: e.clientX, cy: e.clientY, vx: viewRef.current.x, vy: viewRef.current.y };
   };
   const onMove = (e: React.PointerEvent) => {
+    if (pinchRef.current) return; // 핀치 중엔 팬/드래그 무시
     if (draggingRef.current) {
       const p = toSvg(e);
       setNodes((prev) =>
