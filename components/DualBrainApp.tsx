@@ -111,6 +111,17 @@ export function DualBrainApp() {
     if (bm === "b2b" || bm === "b2c" || bm === "all") setBizMode(bm);
   }, []);
 
+  // 첫 방문 산업 모달(GlobalGates)·Tweaks 편집은 별도 트리라 저장만으론 여기 상태가 안 바뀐다.
+  // CustomEvent로 즉시 동기화 — 새로고침 없이 '내 산업'이 바로 반영되게.
+  useEffect(() => {
+    const onInd = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (Array.isArray(detail)) setMyIndustries(detail as Industry[]);
+    };
+    window.addEventListener("emba17:industries-changed", onInd);
+    return () => window.removeEventListener("emba17:industries-changed", onInd);
+  }, []);
+
   // 테마·폰트 라이브 반영
   useEffect(() => {
     applyTheme(tweaks.theme);

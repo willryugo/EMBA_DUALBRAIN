@@ -116,7 +116,7 @@ export function TweaksPanel({
       {editIndustry && (
         <IndustryModal
           mode="edit"
-          initial={myInd[0] ?? null}
+          initial={myInd}
           onClose={() => {
             setEditIndustry(false);
             refreshInd();

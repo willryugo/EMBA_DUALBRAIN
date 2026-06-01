@@ -9,19 +9,32 @@ interface Props {
   onClose: () => void;
   /** 편집 모드 — Tweaks에서 다시 열 때. 기존 선택값을 미리 채움. */
   mode?: "first" | "edit";
-  initial?: Industry | null;
+  initial?: Industry[];
 }
 
-// 산업 선택 모달. 첫 방문 시 자동 + Tweaks에서 재편집 가능.
+// 산업 선택 모달. 첫 방문 시 자동 + Tweaks에서 재편집 가능. 복수 선택 가능.
 // 개인 식별 없이 산업만 부착해 추천·심화 진단·로그 분석의 차원 확보.
-export function IndustryModal({ onClose, mode = "first", initial = null }: Props) {
-  const [selected, setSelected] = useState<Industry | null>(initial);
+export function IndustryModal({ onClose, mode = "first", initial = [] }: Props) {
+  const [selected, setSelected] = useState<Industry[]>(initial);
   const isEdit = mode === "edit";
 
   const choices = INDUSTRIES.filter((i) => i !== UNIVERSAL);
 
+  const toggle = (i: Industry) =>
+    setSelected((prev) =>
+      prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
+    );
+
   const save = (industries: Industry[]) => {
     store.set("emba17_my_industries", industries);
+    // 다른 컴포넌트 트리(DualBrainApp)도 즉시 반영 — GlobalGates/Tweaks와 분리돼 있어 이벤트로 동기화.
+    try {
+      window.dispatchEvent(
+        new CustomEvent("emba17:industries-changed", { detail: industries })
+      );
+    } catch {
+      /* 구형 환경 무시 */
+    }
     onClose();
   };
 
@@ -46,7 +59,7 @@ export function IndustryModal({ onClose, mode = "first", initial = null }: Props
         <h2 className="im-title">어느 산업에 계신가요?</h2>
         <p className="im-deck">
           '내 산업만' 필터와 추천, 그리고 카드 심화 진단의 <b>산업별 처방</b>이 이
-          값으로 맞춰집니다.
+          값으로 맞춰집니다. <b>여러 개 골라도 됩니다.</b>
           <br />
           개인 정보는 받지 않습니다 — 산업만.
         </p>
@@ -55,8 +68,8 @@ export function IndustryModal({ onClose, mode = "first", initial = null }: Props
             <button
               key={i}
               type="button"
-              className={"im-chip " + (selected === i ? "on" : "")}
-              onClick={() => setSelected(i)}
+              className={"im-chip " + (selected.includes(i) ? "on" : "")}
+              onClick={() => toggle(i)}
             >
               {i}
             </button>
@@ -74,10 +87,14 @@ export function IndustryModal({ onClose, mode = "first", initial = null }: Props
           <button
             type="button"
             className="im-save"
-            disabled={!selected}
-            onClick={() => selected && save([selected])}
+            disabled={selected.length === 0}
+            onClick={() => selected.length > 0 && save(selected)}
           >
-            {isEdit ? "저장 →" : "저장하고 시작 →"}
+            {selected.length > 1
+              ? `${selected.length}개 선택 · ${isEdit ? "저장" : "시작"} →`
+              : isEdit
+                ? "저장 →"
+                : "저장하고 시작 →"}
           </button>
         </div>
       </div>
