@@ -68,14 +68,17 @@ export function DualBrainApp() {
   const [myIndustries, setMyIndustries] = useState<Industry[]>(MY_INDUSTRIES_DEFAULT);
   const [bizMode, setBizMode] = useState<"all" | "b2b" | "b2c">("all");
   const [tweaksOpen, setTweaksOpen] = useState(false);
-  // 관리자 전용 노출: ?admin=1 활성(이 브라우저에 저장) / ?admin=0 해제. (추후 비밀번호 게이트로 교체)
+  // 관리자 전용 노출(Tweaks). 1순위: 로그인 시 저장된 역할(emba17_role==="admin", 관리자 비번 0604).
+  // 보조: ?admin=1/0 수동 override(개발·데모용). 역할은 민감정보 아님 — 입장 차단은 서버 쿠키가 담당.
   const [adminMode, setAdminMode] = useState(false);
   useEffect(() => {
     try {
       const sp = new URLSearchParams(window.location.search);
       if (sp.get("admin") === "1") localStorage.setItem("emba17_admin", "1");
       if (sp.get("admin") === "0") localStorage.removeItem("emba17_admin");
-      setAdminMode(localStorage.getItem("emba17_admin") === "1");
+      const byRole = localStorage.getItem("emba17_role") === "admin";
+      const byOverride = localStorage.getItem("emba17_admin") === "1";
+      setAdminMode(byRole || byOverride);
     } catch {}
   }, []);
   const [today, setToday] = useState("");
