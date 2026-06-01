@@ -694,13 +694,14 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 .case-body{font-size:14px;line-height:1.66;color:var(--ink-soft)}
 
 .step-decision{gap:0}
-.decision-block{background:var(--ink);color:#FFFCF6;padding:24px 26px;margin-bottom:20px;position:relative}
-.decision-block::before{content:"30''";position:absolute;top:18px;right:22px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--accent);font-weight:600}
-.db-lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(255,252,246,.5);font-weight:600;margin-bottom:8px}
-.db-text{font-family:var(--serif);font-weight:700;font-size:22px;line-height:1.35;letter-spacing:-.008em}
-.quote-block{background:var(--paper);border:1px dashed var(--line-3);padding:18px 22px;margin-bottom:20px;position:relative}
+/* 30초 결론 — 실제 사례(.case) 톤 흡수: 연한 카드색 배경 + 카드색 테두리. 검은 박스 제거 → 카드 전체와 톤 통일 */
+.decision-block{background:color-mix(in srgb, var(--c) 10%, var(--paper));border:1.5px solid var(--c);border-left:5px solid var(--c);color:var(--ink);padding:22px 24px;margin-bottom:18px;position:relative}
+.decision-block::before{content:"30''";position:absolute;top:18px;right:22px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--c);font-weight:700}
+.db-lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:var(--c);font-weight:700;margin-bottom:8px}
+.db-text{font-family:var(--serif);font-weight:800;font-size:22px;line-height:1.35;letter-spacing:-.008em;color:var(--ink)}
+.quote-block{background:var(--paper);border:1px solid var(--line-2);border-left:5px solid var(--c);padding:18px 22px;margin-bottom:18px;position:relative}
 .qb-lab{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);font-weight:600;margin-bottom:6px}
-.qb-text{font-family:var(--serif);font-style:italic;font-weight:700;font-size:19px;line-height:1.42;color:var(--ink);margin-bottom:10px;padding-left:14px;border-left:3px solid var(--c)}
+.qb-text{font-family:var(--serif);font-style:italic;font-weight:700;font-size:19px;line-height:1.42;color:var(--ink);margin-bottom:10px}
 .qb-copy{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--ink-soft);border:1px solid var(--line-2);padding:5px 10px;transition:.13s}
 .qb-copy:hover{background:var(--ink);color:#FFFCF6;border-color:var(--ink)}
 .check-block{margin-bottom:14px}
@@ -1153,8 +1154,11 @@ mark.hl {
 }
 
 /* ── 8단계 모달: 결론 리드 + 스무고개 단계 안내 ── */
-.decision-lead{ font-family:var(--serif); font-style:italic; font-size:15px; color:var(--ink-soft); margin-bottom:16px; line-height:1.5; word-break:keep-all; }
+.decision-lead{ font-family:var(--serif); font-style:italic; font-size:15px; color:var(--ink-soft); margin-bottom:16px; line-height:1.5; word-break:keep-all; padding-left:14px; border-left:3px solid var(--c); }
 .decision-lead b{ color:var(--ink); font-style:normal; font-weight:800; }
+/* 결론 페이지 eyebrow도 카드색으로 — 실제사례·스무고개 단계와 톤 일치 */
+.step-decision .eyebrow-step{ color:var(--c); }
+.step-decision .eyebrow-step::before{ background:var(--c); }
 .probe-after-note{ margin-top:14px; font-size:12.5px; color:var(--ink-faint); line-height:1.5; word-break:keep-all; }
 .probe-after-note b{ color:var(--accent); font-weight:800; }
 /* 단계가 많아져 스텝바가 좁아짐 — 라벨 더 작게 + 가로 스크롤 허용 */
