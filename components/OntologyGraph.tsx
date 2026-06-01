@@ -94,6 +94,9 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   // 드래그 상태 ref — stepPhysics가 settled(useMemo)에서 호출되므로
   // 반드시 stepPhysics 정의보다 위에 선언해야 TDZ ReferenceError가 안 난다.
   const draggingRef = useRef<string | null>(null);
+  // 탭(클릭)과 드래그 구분 — 누르기만 했을 땐 물리 안 돌리고 하이라이트만. 일정 거리 이상 움직여야 드래그로 승격.
+  const pressRef = useRef<{ id: string; cx: number; cy: number } | null>(null);
+  const didDragRef = useRef(false);
 
   // ── 물리 1스텝 (공용) ──
   const stepPhysics = (ns: SimNode[], idx: Record<string, number>, alpha: number) => {
@@ -180,6 +183,9 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   const panRef = useRef<{ cx: number; cy: number; vx: number; vy: number } | null>(null);
   // 두 손가락 핀치 줌(터치) — 진행 중엔 팬/드래그 무시
   const pinchRef = useRef<{ dist: number; cx: number; cy: number } | null>(null);
+  // 핀치 중 setView를 프레임당 1회로 합쳐(rAF) 리렌더 폭주 방지 → 부드럽게
+  const pinchViewRef = useRef<{ x: number; y: number; w: number; h: number } | null>(null);
+  const pinchRafRef = useRef(0);
 
   // 색칠 모드: 과목 색 ↔ 나의 산업군 강조
   const [colorMode, setColorMode] = useState<"course" | "industry">("course");
@@ -232,17 +238,23 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
     if (!svg) return;
     const dist = (a: Touch, b: Touch) =>
       Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    const flush = () => {
+      pinchRafRef.current = 0;
+      if (pinchViewRef.current) setView(pinchViewRef.current);
+    };
     const onStart = (e: TouchEvent) => {
       if (e.touches.length === 2) {
-        // 핀치 시작 — 진행 중이던 팬/노드 드래그 취소
+        // 핀치 시작 — 진행 중이던 팬/노드 드래그·탭 취소
         draggingRef.current = null;
         panRef.current = null;
+        pressRef.current = null;
         const [a, b] = [e.touches[0], e.touches[1]];
         pinchRef.current = {
           dist: dist(a, b) || 1,
           cx: (a.clientX + b.clientX) / 2,
           cy: (a.clientY + b.clientY) / 2,
         };
+        pinchViewRef.current = { ...viewRef.current }; // 동기 누적용 스냅샷
       }
     };
     const onMoveT = (e: TouchEvent) => {
@@ -254,7 +266,8 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       const nd = dist(a, b) || 1;
       const ncx = (a.clientX + b.clientX) / 2;
       const ncy = (a.clientY + b.clientY) / 2;
-      const v = viewRef.current;
+      // 기준은 동기 누적 ref(리렌더 지연과 무관). 없으면 현재 view.
+      const v = pinchViewRef.current ?? viewRef.current;
       const fx = (ncx - rect.left) / rect.width;
       const fy = (ncy - rect.top) / rect.height;
       const mx = v.x + fx * v.w; // 중점의 현재 svg 좌표
@@ -266,11 +279,23 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       // 중점 이동량만큼 팬도 같이(두 손가락을 끌면 이동)
       const panDx = ((ncx - pinchRef.current.cx) / rect.width) * nw;
       const panDy = ((ncy - pinchRef.current.cy) / rect.height) * nh;
-      setView({ x: mx - fx * nw - panDx, y: my - fy * nh - panDy, w: nw, h: nh });
+      pinchViewRef.current = { x: mx - fx * nw - panDx, y: my - fy * nh - panDy, w: nw, h: nh };
       pinchRef.current = { dist: nd, cx: ncx, cy: ncy };
+      // 프레임당 1회만 실제 setView
+      if (!pinchRafRef.current) pinchRafRef.current = requestAnimationFrame(flush);
     };
     const onEndT = (e: TouchEvent) => {
-      if (e.touches.length < 2) pinchRef.current = null;
+      if (e.touches.length < 2) {
+        pinchRef.current = null;
+        if (pinchRafRef.current) {
+          cancelAnimationFrame(pinchRafRef.current);
+          pinchRafRef.current = 0;
+        }
+        if (pinchViewRef.current) {
+          setView(pinchViewRef.current); // 마지막 상태 확정
+          pinchViewRef.current = null;
+        }
+      }
     };
     svg.addEventListener("touchstart", onStart, { passive: false });
     svg.addEventListener("touchmove", onMoveT, { passive: false });
@@ -281,6 +306,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
       svg.removeEventListener("touchmove", onMoveT);
       svg.removeEventListener("touchend", onEndT);
       svg.removeEventListener("touchcancel", onEndT);
+      if (pinchRafRef.current) cancelAnimationFrame(pinchRafRef.current);
     };
   }, []);
 
@@ -328,9 +354,10 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   const onDown = (id: string) => (e: React.PointerEvent) => {
     if (pinchRef.current) return; // 핀치 중엔 노드 드래그 금지
     e.stopPropagation();
-    draggingRef.current = id;
+    // 아직 드래그 아님 — 누르기만 기록. 움직임이 임계값 넘으면 onMove에서 드래그로 승격.
+    pressRef.current = { id, cx: e.clientX, cy: e.clientY };
+    didDragRef.current = false;
     (e.target as Element).setPointerCapture?.(e.pointerId);
-    runDragLoop();
   };
   // 빈 공간 드래그 = 화면 이동(팬)
   const onSvgDown = (e: React.PointerEvent) => {
@@ -339,6 +366,16 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   };
   const onMove = (e: React.PointerEvent) => {
     if (pinchRef.current) return; // 핀치 중엔 팬/드래그 무시
+    // 누르고 있던 노드를 임계값(5px) 넘게 움직이면 그제서야 드래그로 승격 — 물리 시작
+    if (!draggingRef.current && pressRef.current) {
+      const dx = e.clientX - pressRef.current.cx;
+      const dy = e.clientY - pressRef.current.cy;
+      if (dx * dx + dy * dy > 25) {
+        draggingRef.current = pressRef.current.id;
+        didDragRef.current = true;
+        runDragLoop();
+      }
+    }
     if (draggingRef.current) {
       const p = toSvg(e);
       setNodes((prev) =>
@@ -358,7 +395,8 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   };
   const onUp = () => {
     panRef.current = null;
-    if (!draggingRef.current) return;
+    pressRef.current = null;
+    if (!draggingRef.current) return; // 드래그 없이 뗐으면(=탭) 물리 안 돌림 — 클릭이 하이라이트만
     draggingRef.current = null;
     // 놓은 뒤 잠깐만 더 정착시키고 멈춤
     let extra = 0;
@@ -377,6 +415,10 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
 
   const handleClick = (id: string) => (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (didDragRef.current) {
+      didDragRef.current = false;
+      return; // 방금 드래그였으면 클릭(하이라이트 토글) 무시
+    }
     const now = Date.now();
     if (lastClickRef.current.id === id && now - lastClickRef.current.t < 400) {
       onOpen(id); // 더블클릭 = 카드 열기
