@@ -19,7 +19,7 @@ type StepKey =
   | "problem" | "hook" | "concept" | "apply" | "case" | "probe" | "decision" | "connect";
 const STEP_LABEL: Record<StepKey, string> = {
   problem: "문제 인식",
-  hook: "후킹 카드",
+  hook: "지식 한방",
   concept: "핵심 개념",
   apply: "실전 적용",
   case: "실제 사례",
@@ -246,7 +246,7 @@ function StepHook({
 }) {
   return (
     <div className="step-content step-hook" style={{ ["--c" as string]: color } as React.CSSProperties}>
-      <div className="eyebrow eyebrow-step">HOOK · 후킹 카드</div>
+      <div className="eyebrow eyebrow-step">KNOWLEDGE · 지식 한방</div>
       <div className="poster">
         <div className="poster-meta">
           <div className="pm-course">{card.course}</div>

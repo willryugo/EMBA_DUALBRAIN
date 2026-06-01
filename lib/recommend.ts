@@ -1,5 +1,5 @@
 import type { Card, Domain, Industry } from "./types";
-import { UNIVERSAL } from "./manifest";
+import { UNIVERSAL, COURSE_SHORT } from "./manifest";
 import aliasesJson from "@/data/aliases.json";
 
 // 오프라인 사전 계산된 카드별 검색 별칭.
@@ -203,6 +203,12 @@ export function recommendCards(
       { text: c.quote, w: 1 },
       { text: (c.checklist || []).join(" "), w: 1 },
       { text: c.case_body, w: 0.5 },
+      // ★ 메타 매칭 — "경영과학", "마케팅", "제약" 같은 과목/산업 단어 한 방으로도 걸리게
+      { text: COURSE_SHORT[c.course], w: 3 },              // 과목 약칭(경영과학·마케팅·회계…)
+      { text: c.course, w: 1.5 },                          // 영문 과목명
+      { text: (c.domain || []).join(" "), w: 2 },          // 도메인(마케팅·재무·회계…)
+      { text: (c.industry || []).join(" "), w: 2 },        // 산업(제약·바이오·헬스케어…)
+      { text: c.professor || "", w: 1 },                   // 교수명
     ];
 
     let s = 0;
