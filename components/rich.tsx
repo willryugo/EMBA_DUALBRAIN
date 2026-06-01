@@ -33,3 +33,55 @@ export function rich(text?: string | null): React.ReactNode {
     </React.Fragment>
   ));
 }
+
+// 본문 블록 렌더러 — 단락/불릿/핵심강조를 구조화해서 시각적으로 끊어 보여준다.
+//  빈 줄 또는 일반 줄 → 단락 <p class="rb-p">
+//  "- " / "• " 로 시작 → 불릿 리스트 <ul class="rb-list">  (실전 적용 플레이북 등)
+//  "> " 로 시작        → 핵심 강조 박스 <div class="rb-key"> (카드색 좌측 바 + 배경)
+//  인라인 *단어* → 하이라이트. 마크업 없으면 그냥 한 단락으로 안전 렌더.
+export function RichBlocks({ text }: { text?: string | null }): React.ReactNode {
+  if (!text) return null;
+  const lines = text.split("\n").map((l) => l.trim());
+  const blocks: React.ReactNode[] = [];
+  let i = 0;
+  let k = 0;
+  const isBullet = (l: string) => l.startsWith("- ") || l.startsWith("• ");
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line === "") {
+      i++;
+      continue;
+    }
+    if (isBullet(line)) {
+      const items: string[] = [];
+      while (i < lines.length && isBullet(lines[i])) {
+        items.push(lines[i].replace(/^[-•]\s+/, ""));
+        i++;
+      }
+      blocks.push(
+        <ul key={k++} className="rb-list">
+          {items.map((it, j) => (
+            <li key={j}>{parseMarks(it)}</li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+    if (line.startsWith("> ")) {
+      blocks.push(
+        <div key={k++} className="rb-key">
+          {parseMarks(line.slice(2))}
+        </div>
+      );
+      i++;
+      continue;
+    }
+    blocks.push(
+      <p key={k++} className="rb-p">
+        {parseMarks(line)}
+      </p>
+    );
+    i++;
+  }
+  return <>{blocks}</>;
+}

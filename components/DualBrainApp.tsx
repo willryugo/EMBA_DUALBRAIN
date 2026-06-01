@@ -82,6 +82,12 @@ export function DualBrainApp() {
     } catch {}
   }, []);
   const [today, setToday] = useState("");
+  // 방문(새로고침)마다 바뀌는 시드 — 상단 대표 카드를 과목별로 순환시킨다. 0=첫 페인트(하이드레이션 안전).
+  const [visitNonce, setVisitNonce] = useState(0);
+  useEffect(() => {
+    const n = typeof performance !== "undefined" ? performance.now() : 1;
+    setVisitNonce((Math.floor(n * 1000) % 100000) + 1);
+  }, []);
 
   // 마운트 후 1회: localStorage 복원
   useEffect(() => {
@@ -219,6 +225,20 @@ export function DualBrainApp() {
     filter.myOnly ||
     filter.savedOnly;
 
+  // 방문마다 '대표 과목'을 순환 — 같은 카드만 맨 위에 고정되던 문제 해결.
+  // 한 번은 조직(HR), 한 번은 마케팅, 한 번은 회계… 식으로 상단 feat 카드가 매 새로고침마다 바뀐다.
+  // 필터 적용 중이거나 첫 페인트(visitNonce=0)면 원래 순서 유지(하이드레이션 안전).
+  const displayCards = useMemo(() => {
+    if (filterActive || visitNonce === 0) return filtered;
+    const courses: string[] = [];
+    for (const c of filtered) if (!courses.includes(c.course)) courses.push(c.course);
+    if (courses.length < 2) return filtered;
+    const lead = courses[visitNonce % courses.length];
+    const k = filtered.findIndex((c) => c.course === lead);
+    if (k <= 0) return filtered;
+    return filtered.slice(k).concat(filtered.slice(0, k));
+  }, [filtered, filterActive, visitNonce]);
+
   return (
     <>
       <Masthead
@@ -315,7 +335,7 @@ export function DualBrainApp() {
               <button onClick={resetFilters}>필터 초기화 →</button>
             </div>
           ) : (
-            filtered.map((c, i) => (
+            displayCards.map((c, i) => (
               <MagCard
                 key={c.id}
                 card={c}

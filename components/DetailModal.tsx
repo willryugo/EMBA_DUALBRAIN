@@ -13,7 +13,7 @@ import {
   type ProbeLeaf,
 } from "@/lib/probe";
 import { DBMark } from "./DBMark";
-import { rich } from "./rich";
+import { rich, RichBlocks } from "./rich";
 
 type StepKey =
   | "problem" | "hook" | "concept" | "apply" | "case" | "probe" | "decision" | "connect";
@@ -299,7 +299,7 @@ function StepConcept({
     <div className="step-content step-concept" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">CONCEPT · 핵심 개념</div>
       <h2 className="concept-name">{card.concept}</h2>
-      <p className="concept-insight">{card.insight}</p>
+      <div className="concept-insight rb">{<RichBlocks text={card.insight} />}</div>
       <button className="nextcue" onClick={onNext}>
         그래서 현장에선 어떻게 <span>→</span>
       </button>
@@ -312,7 +312,7 @@ function StepApply({ card, color }: { card: Card; color: string }) {
     <div className="step-content step-concept" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">PLAYBOOK · 실전 적용</div>
       <h2 className="concept-name">현장에선 이렇게 쓴다</h2>
-      <p className="concept-insight">{card.application}</p>
+      <div className="concept-insight rb">{<RichBlocks text={card.application} />}</div>
     </div>
   );
 }
@@ -324,7 +324,7 @@ function StepCase({ card, color }: { card: Card; color: string }) {
       <div className="case">
         <div className="case-tag">CASE STUDY</div>
         <div className="case-title">{card.case_title}</div>
-        <p className="case-body">{card.case_body}</p>
+        <div className="case-body rb">{<RichBlocks text={card.case_body} />}</div>
       </div>
       {card.sources && card.sources.length > 0 && (
         <div className="sources">
