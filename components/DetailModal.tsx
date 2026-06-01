@@ -15,13 +15,26 @@ import {
 import { DBMark } from "./DBMark";
 import { rich } from "./rich";
 
-const STEP_LABELS = [
-  "문제 인식",
-  "후킹 카드",
-  "쉬운 이해",
-  "30초 결정",
-  "연결된 듀얼브레인",
-];
+type StepKey =
+  | "problem" | "hook" | "concept" | "apply" | "case" | "probe" | "decision" | "connect";
+const STEP_LABEL: Record<StepKey, string> = {
+  problem: "문제 인식",
+  hook: "후킹 카드",
+  concept: "핵심 개념",
+  apply: "실전 적용",
+  case: "실제 사례",
+  probe: "스무고개 진단",
+  decision: "30초 결론",
+  connect: "연결된 듀얼브레인",
+};
+// 스무고개(probe)가 있는 카드만 6번째 단계를 끼워 넣는다(없으면 7단계).
+function buildSteps(hasProbe: boolean): StepKey[] {
+  return [
+    "problem", "hook", "concept", "apply", "case",
+    ...(hasProbe ? (["probe"] as StepKey[]) : []),
+    "decision", "connect",
+  ];
+}
 
 interface Props {
   cardId: string;
@@ -47,6 +60,13 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
     setSavedIds(next);
     store.set("emba17_saved", next);
   };
+
+  // 카드별 동적 단계 — 스무고개 유무에 따라 8단계/7단계
+  const probeAvail = card ? getProbe(card.id) != null : false;
+  const STEP_DEFS = useMemo(() => buildSteps(probeAvail), [probeAvail]);
+  const lastIdx = STEP_DEFS.length - 1;
+  const lastIdxRef = useRef(lastIdx);
+  lastIdxRef.current = lastIdx;
 
   useEffect(() => {
     setStep(0);
@@ -78,7 +98,7 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
     const fn = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
       else if (e.key === "ArrowLeft") setStep((s) => Math.max(0, s - 1));
-      else if (e.key === "ArrowRight") setStep((s) => Math.min(4, s + 1));
+      else if (e.key === "ArrowRight") setStep((s) => Math.min(lastIdxRef.current, s + 1));
     };
     window.addEventListener("keydown", fn);
     return () => window.removeEventListener("keydown", fn);
@@ -94,14 +114,16 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
     const dx = t.clientX - touch.current.x;
     const dy = t.clientY - touch.current.y;
     if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0) setStep((s) => Math.min(4, s + 1));
+      if (dx < 0) setStep((s) => Math.min(lastIdxRef.current, s + 1));
       else setStep((s) => Math.max(0, s - 1));
     }
   };
 
   if (!card) return null;
-  const next = () => setStep((s) => Math.min(4, s + 1));
+  const next = () => setStep((s) => Math.min(lastIdx, s + 1));
   const back = () => setStep((s) => Math.max(0, s - 1));
+  const safeStep = Math.min(step, lastIdx);
+  const stepKey = STEP_DEFS[safeStep];
 
   return (
     <div
@@ -127,26 +149,29 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
         </div>
 
         <div className="stepbar">
-          {STEP_LABELS.map((label, i) => (
+          {STEP_DEFS.map((key, i) => (
             <button
-              key={i}
+              key={key}
               className={
-                "step " + (i === step ? "on" : "") + (i < step ? " done" : "")
+                "step " + (i === safeStep ? "on" : "") + (i < safeStep ? " done" : "")
               }
               onClick={() => setStep(i)}
             >
               <span className="n">{String(i + 1).padStart(2, "0")}</span>
-              <span className="l">{label}</span>
+              <span className="l">{STEP_LABEL[key]}</span>
               <span className="bar"></span>
             </button>
           ))}
         </div>
 
         <div className="step-stage">
-          {step === 0 && <StepProblem card={card} onNext={next} />}
-          {step === 1 && <StepHook card={card} color={color} onNext={next} />}
-          {step === 2 && <StepConcept card={card} color={color} onNext={next} />}
-          {step === 3 && (
+          {stepKey === "problem" && <StepProblem card={card} onNext={next} />}
+          {stepKey === "hook" && <StepHook card={card} color={color} onNext={next} />}
+          {stepKey === "concept" && <StepConcept card={card} color={color} onNext={next} />}
+          {stepKey === "apply" && <StepApply card={card} color={color} />}
+          {stepKey === "case" && <StepCase card={card} color={color} />}
+          {stepKey === "probe" && <StepProbe card={card} color={color} />}
+          {stepKey === "decision" && (
             <StepDecision
               card={card}
               color={color}
@@ -155,7 +180,7 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
               onNext={next}
             />
           )}
-          {step === 4 && (
+          {stepKey === "connect" && (
             <StepOntology
               card={card}
               cards={cards}
@@ -167,24 +192,24 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
         </div>
 
         <div className="detail-nav">
-          <button className="dn-btn" onClick={back} disabled={step === 0}>
+          <button className="dn-btn" onClick={back} disabled={safeStep === 0}>
             ← 이전
           </button>
           <div className="dn-dots">
-            {STEP_LABELS.map((_, i) => (
+            {STEP_DEFS.map((key, i) => (
               <button
-                key={i}
+                key={key}
                 className={
-                  "dot " + (i === step ? "on" : "") + (i < step ? " done" : "")
+                  "dot " + (i === safeStep ? "on" : "") + (i < safeStep ? " done" : "")
                 }
                 onClick={() => setStep(i)}
               ></button>
             ))}
           </div>
           <button
-            className={"dn-btn dn-next" + (step < 4 ? " pulse" : "")}
+            className={"dn-btn dn-next" + (safeStep < lastIdx ? " pulse" : "")}
             onClick={next}
-            disabled={step === 4}
+            disabled={safeStep === lastIdx}
           >
             다음 →
           </button>
@@ -197,7 +222,7 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
 function StepProblem({ card, onNext }: { card: Card; onNext: () => void }) {
   return (
     <div className="step-content step-problem">
-      <div className="eyebrow eyebrow-step">SCENE · 01 문제 인식</div>
+      <div className="eyebrow eyebrow-step">SCENE · 문제 인식</div>
       <div className="ask">이 상황, 익숙하지?</div>
       <p className="scene">{rich(card.problem_scene)}</p>
       <div className="problem-meta">
@@ -221,7 +246,7 @@ function StepHook({
 }) {
   return (
     <div className="step-content step-hook" style={{ ["--c" as string]: color } as React.CSSProperties}>
-      <div className="eyebrow eyebrow-step">HOOK · 02 후킹 카드</div>
+      <div className="eyebrow eyebrow-step">HOOK · 후킹 카드</div>
       <div className="poster">
         <div className="poster-meta">
           <div className="pm-course">{card.course}</div>
@@ -272,9 +297,30 @@ function StepConcept({
 }) {
   return (
     <div className="step-content step-concept" style={{ ["--c" as string]: color } as React.CSSProperties}>
-      <div className="eyebrow eyebrow-step">CONCEPT · 03 쉬운 이해</div>
+      <div className="eyebrow eyebrow-step">CONCEPT · 핵심 개념</div>
       <h2 className="concept-name">{card.concept}</h2>
       <p className="concept-insight">{card.insight}</p>
+      <button className="nextcue" onClick={onNext}>
+        그래서 현장에선 어떻게 <span>→</span>
+      </button>
+    </div>
+  );
+}
+
+function StepApply({ card, color }: { card: Card; color: string }) {
+  return (
+    <div className="step-content step-concept" style={{ ["--c" as string]: color } as React.CSSProperties}>
+      <div className="eyebrow eyebrow-step">PLAYBOOK · 실전 적용</div>
+      <h2 className="concept-name">현장에선 이렇게 쓴다</h2>
+      <p className="concept-insight">{card.application}</p>
+    </div>
+  );
+}
+
+function StepCase({ card, color }: { card: Card; color: string }) {
+  return (
+    <div className="step-content step-concept" style={{ ["--c" as string]: color } as React.CSSProperties}>
+      <div className="eyebrow eyebrow-step">CASE · 실제 사례</div>
       <div className="case">
         <div className="case-tag">CASE STUDY</div>
         <div className="case-title">{card.case_title}</div>
@@ -294,9 +340,24 @@ function StepConcept({
           </ul>
         </div>
       )}
-      <button className="nextcue" onClick={onNext}>
-        그래서 내일 회의에서 뭘 할까 <span>→</span>
-      </button>
+    </div>
+  );
+}
+
+function StepProbe({ card, color }: { card: Card; color: string }) {
+  return (
+    <div className="step-content step-decision" style={{ ["--c" as string]: color } as React.CSSProperties}>
+      <div className="eyebrow eyebrow-step">DIAGNOSE · 스무고개 진단</div>
+      <div className="probe-spotlight" style={{ ["--c" as string]: color } as React.CSSProperties}>
+        <span className="ps-flag">⬇ 여기까지 왔다면 꼭</span>
+        <div className="ps-sub">
+          같은 개념도 <b>내 산업·내 상황</b>에선 답이 달라집니다 — 스무고개로 30초 만에 좁혀보세요.
+        </div>
+        <ProbeFlow card={card} color={color} />
+      </div>
+      <div className="probe-after-note">
+        진단이 끝나면 <b>다음 →</b> 으로 — 마지막엔 변하지 않는 ‘30초 결론’이 기다립니다.
+      </div>
     </div>
   );
 }
@@ -333,19 +394,10 @@ function StepDecision({
   };
   return (
     <div className="step-content step-decision" style={{ ["--c" as string]: color } as React.CSSProperties}>
-      <div className="eyebrow eyebrow-step">DECISION · 04 30초 안에 쓸 것</div>
-      {getProbe(card.id) && (
-        <div
-          className="probe-spotlight"
-          style={{ ["--c" as string]: color } as React.CSSProperties}
-        >
-          <span className="ps-flag">⬇ 여기까지 왔다면 꼭</span>
-          <div className="ps-sub">
-            같은 개념도 <b>내 산업·내 상황</b>에선 답이 달라집니다 — 스무고개로 30초 만에 좁혀보세요.
-          </div>
-          <ProbeFlow card={card} color={color} />
-        </div>
-      )}
+      <div className="eyebrow eyebrow-step">DECISION · 30초 결론</div>
+      <div className="decision-lead">
+        스무고개로 길이 갈렸더라도 — <b>마지막엔 이 한 줄로 닫는다.</b>
+      </div>
       <div className="decision-block">
         <div className="db-lab">30초 안에 결정할 한 줄</div>
         <p className="db-text">{card.decision}</p>

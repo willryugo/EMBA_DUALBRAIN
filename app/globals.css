@@ -1151,3 +1151,18 @@ mark.hl {
   .onto-headline{ font-size:18px; line-height:1.3; }
   .onto-hint{ font-size:11px; }
 }
+
+/* ── 8단계 모달: 결론 리드 + 스무고개 단계 안내 ── */
+.decision-lead{ font-family:var(--serif); font-style:italic; font-size:15px; color:var(--ink-soft); margin-bottom:16px; line-height:1.5; word-break:keep-all; }
+.decision-lead b{ color:var(--ink); font-style:normal; font-weight:800; }
+.probe-after-note{ margin-top:14px; font-size:12.5px; color:var(--ink-faint); line-height:1.5; word-break:keep-all; }
+.probe-after-note b{ color:var(--accent); font-weight:800; }
+/* 단계가 많아져 스텝바가 좁아짐 — 라벨 더 작게 + 가로 스크롤 허용 */
+.stepbar{ overflow-x:auto; scrollbar-width:none; }
+.stepbar::-webkit-scrollbar{ display:none; }
+.stepbar .step{ flex:1 0 auto; min-width:64px; }
+@media(max-width:600px){
+  .stepbar .step{ min-width:54px; padding:11px 3px 9px; }
+  .stepbar .step .l{ font-size:9.5px; }
+  .stepbar .step .n{ font-size:9px; }
+}
