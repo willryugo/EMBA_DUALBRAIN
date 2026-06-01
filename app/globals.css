@@ -382,17 +382,21 @@ img,svg{display:block;max-width:100%}
   .aibox-search textarea{flex:1 1 160px}
   .aibox-search .go{flex:1 0 100%;width:auto;justify-content:center}
 
-  .pain-section{margin-top:18px;padding-top:14px}
-  .pain-head{margin-bottom:10px;gap:6px}
-  .ph-eyebrow{font-size:10px;letter-spacing:.18em}
-  .ph-lead{font-size:12.5px;line-height:1.4}
+  .pain-section{margin-top:16px;padding-top:13px}
+  .pain-head{margin-bottom:9px;gap:5px}
+  .ph-eyebrow{font-size:10px;letter-spacing:.16em}
+  .ph-rotate{display:none}              /* "· 접속할 때마다 새로고침" 등 부가설명 숨김 */
+  .ph-lead{display:none}                /* 긴 안내문장 — STEP 1/2 라벨로 대체 */
+  .pain-step2{font-size:10px;letter-spacing:.1em}
+  .pain-step2 .ps-arr{display:none}
+  .pi-cta{display:none}                 /* 항목마다 반복되던 "인사이트 3장 →" 숨김 */
   .pain-tabs{margin-bottom:0}
-  .pain-tab{min-width:78px;padding:9px 8px 8px}
+  .pain-tab{min-width:74px;padding:8px 7px 7px}
   .pain-tab .pt-n{font-size:9px}
-  .pain-tab .pt-k{font-size:14px}
-  .pain-tab .pt-e{font-size:8.5px;letter-spacing:.14em}
-  .pi-text{font-size:13.5px;line-height:1.42}
-  .pain-item:nth-child(odd),.pain-item:nth-child(even){padding:11px 4px}
+  .pain-tab .pt-k{font-size:13.5px}
+  .pain-tab .pt-e{font-size:8px;letter-spacing:.12em}
+  .pi-text{font-size:13px;line-height:1.4}
+  .pain-item:nth-child(odd),.pain-item:nth-child(even){padding:10px 4px}
 
   .section-head{margin:26px 0 12px}
   .section-head h2{font-size:18px}
@@ -405,9 +409,10 @@ img,svg{display:block;max-width:100%}
   .count{margin:18px 2px 10px;font-size:10px}
   .count b{font-size:15px}
 
-  .mag{grid-template-columns:repeat(2,1fr) !important;gap:10px;padding-bottom:80px}
-  .mag .card{grid-column:span 2 !important;padding:16px 14px 14px;min-height:200px}
-  .mag .card.feat,.mag .card.wide,.mag .card.qt,.mag .card.stat,.mag .card.spread,.mag .card.manifesto{grid-column:span 2 !important}
+  .mag{grid-template-columns:repeat(2,1fr) !important;gap:9px;padding-bottom:80px}
+  .mag .card{grid-column:span 1 !important;padding:14px 13px 12px;min-height:172px}
+  .mag .card.qt,.mag .card.stat{grid-column:span 1 !important}
+  .mag .card.feat,.mag .card.wide,.mag .card.spread,.mag .card.manifesto{grid-column:span 2 !important}
   .mag .card.tall{grid-row:auto !important}
 
   .mag .card .crow{margin-bottom:9px;padding-right:30px}
@@ -973,22 +978,7 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 .tc-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:auto;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-soft)}
 .tc-foot .tc-arrow{font-family:var(--mono);font-weight:700;color:var(--c,var(--brain-l));white-space:nowrap}
 @media(max-width:1080px){.teamcase-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:720px){.teamcase{padding:18px 16px 20px;box-shadow:5px 5px 0 color-mix(in srgb,var(--brain-l) 32%,var(--ink))}.teamcase-grid{grid-template-columns:1fr;gap:10px}.tc-card{min-height:auto}.tc-title{font-size:18px}.tc-lead{font-size:13px}}
-
-/* ── 스무고개 진단 카드 (DEEP DIVE) — 강조 ── */
-.deepdive{margin-top:22px;border:1.5px dashed var(--brain-l);background:color-mix(in srgb,var(--brain-l) 5%,var(--paper));padding:22px 24px 24px;position:relative}
-.deepdive-head{margin-bottom:14px}
-.dd-eyebrow{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--brain-l);margin-bottom:7px}
-.dd-title{font-family:var(--serif);font-weight:900;font-size:clamp(18px,2.2vw,24px);letter-spacing:-.01em;color:var(--ink);word-break:keep-all;line-height:1.25}
-.dd-lead{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--ink-soft);margin-top:7px;word-break:keep-all}
-.dd-lead b{font-style:normal;font-weight:800;color:var(--ink)}
-.deepdive-chips{display:flex;flex-wrap:wrap;gap:8px}
-.dd-chip{display:inline-flex;align-items:center;gap:8px;background:var(--paper);border:1px solid var(--line-2);border-radius:999px;padding:7px 13px;cursor:pointer;transition:.14s;text-align:left}
-.dd-chip:hover{border-color:var(--c,var(--ink));transform:translateY(-1px);box-shadow:0 4px 12px color-mix(in srgb,var(--c,var(--ink)) 22%,transparent)}
-.dd-chip .dd-dot{width:7px;height:7px;border-radius:50%;background:var(--c,var(--brain-l));flex:none}
-.dd-chip .dd-name{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap}
-.dd-chip .dd-course{font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.06em;color:var(--ink-faint);text-transform:uppercase}
-@media(max-width:720px){.deepdive{padding:16px 16px 18px}.dd-chip .dd-name{font-size:12px;white-space:normal}.dd-title{font-size:17px}}
+@media(max-width:720px){.teamcase{padding:16px 13px 18px;box-shadow:5px 5px 0 color-mix(in srgb,var(--brain-l) 32%,var(--ink))}.teamcase-grid{grid-template-columns:repeat(2,1fr);gap:8px}.tc-card{min-height:auto;padding:13px 13px 12px}.tc-badge{font-size:10px;padding:2px 7px}.tc-case{font-size:9px;letter-spacing:.04em}.tc-hook{font-size:14px;line-height:1.26}.tc-foot{font-size:10.5px}.tc-foot>span:first-child{display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}.tc-arrow{white-space:nowrap}.tc-title{font-size:17px}.tc-lead{font-size:12.5px}.teamcase-head{margin-bottom:14px}}
 
 /* ── 모바일 마스트헤드 오버플로 방지 ── */
 @media(max-width:600px){

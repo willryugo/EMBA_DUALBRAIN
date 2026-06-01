@@ -11,10 +11,9 @@ import type {
   OwnerPainCategory,
   TweakState,
 } from "@/lib/types";
-import { MY_INDUSTRIES_DEFAULT, UNIVERSAL, COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
+import { MY_INDUSTRIES_DEFAULT, UNIVERSAL, COURSE_COLOR } from "@/lib/manifest";
 import { applyFont, applyTheme } from "@/lib/themes";
 import { store } from "@/lib/storage";
-import { hasProbe } from "@/lib/probe";
 
 import { Masthead } from "./Masthead";
 import { TitleBlock } from "./TitleBlock";
@@ -275,31 +274,6 @@ export function DualBrainApp() {
                 </button>
               );
             })}
-          </div>
-        </section>
-
-        <section className="deepdive">
-          <div className="deepdive-head">
-            <div className="dd-eyebrow">🔍 스무고개 진단 카드 · DEEP DIVE</div>
-            <h2 className="dd-title">내 산업까지 좁혀주는 ‘스무고개’ 진단이 있는 카드</h2>
-            <p className="dd-lead">
-              카드를 열고 <b>4단계 · 30초 결정</b>까지 내려가면, 질문에 답할수록{" "}
-              <b>내 산업 맞춤 처방</b>으로 좁혀집니다. (제약·건설·회계 등 5조 본업 직격 포함)
-            </p>
-          </div>
-          <div className="deepdive-chips">
-            {CARDS.filter((c) => hasProbe(c.id)).map((c) => (
-              <button
-                key={c.id}
-                className="dd-chip"
-                style={{ ["--c" as string]: COURSE_COLOR[c.course] } as React.CSSProperties}
-                onClick={() => setOpenId(c.id)}
-              >
-                <span className="dd-dot" />
-                <span className="dd-name">{c.concept}</span>
-                <span className="dd-course">{COURSE_SHORT[c.course]}</span>
-              </button>
-            ))}
           </div>
         </section>
 
