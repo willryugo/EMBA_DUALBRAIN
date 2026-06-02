@@ -350,21 +350,20 @@ img,svg{display:block;max-width:100%}
 
 @media(max-width:1080px){.mag{grid-template-columns:repeat(6,1fr)}.mag .card,.mag .card.feat,.mag .card.wide,.mag .card.qt,.mag .card.stat,.mag .card.manifesto{grid-column:span 3}.mag .card.feat{grid-column:span 6;grid-row:auto}.mag .card.tall{grid-row:auto}}
 @media(max-width:720px){
-  .title-block{padding:12px 0 12px}
-  .title-block .vol{margin-bottom:6px;font-size:9px;letter-spacing:.14em;gap:6px}
-  .title-block .vol b{font-size:9px}
-  .title-block .vol > span:nth-of-type(2),
-  .title-block .vol > span:nth-of-type(3),
-  .title-block .vol .dot:nth-of-type(2){display:none}
-  .title-block h1{font-size:42px;line-height:.92;letter-spacing:-.028em}
-  .title-block h1 .t-emba{font-size:.5em;vertical-align:.22em}
-  .title-block .title-sub{font-size:13px;margin-top:6px;display:none}
-  .title-stage{padding:14px 4px 6px 6px;min-height:auto;overflow:hidden}
-  .title-bgmark{opacity:.16;left:0}
-  .title-bgmark .db-mark{transform:scale(.4);transform-origin:left center}
+  /* 메인 로고(타이틀)는 웹과 동일하게 — 비율만 모바일에 맞춤 (요소 숨김 X) */
+  .title-block{padding:14px 0 14px}
+  .title-block .vol{margin-bottom:10px;font-size:9.5px;letter-spacing:.13em;gap:8px}
+  .title-block .vol b{font-size:9.5px}
+  .title-block h1{font-size:clamp(40px,12vw,56px);line-height:.92;letter-spacing:-.03em}
+  .title-block .title-sub{font-size:13px;margin-top:7px;display:block}
+  .title-stage{padding:16px 6px 8px 10px;min-height:120px;overflow:visible}
+  .title-bgmark{opacity:.42;left:-10px}
+  .title-bgmark .db-mark{transform:scale(.52);transform-origin:left center}
+  .byline{display:flex}
+  /* by-block(큰 '듀얼브레인 접속' 버튼)은 모바일에선 숨김 — 그래프 진입은 상단 네비 온톨로지로 */
   .title-by-block{display:none}
-  .byline{display:none}
-  .title-block .deck{font-size:13.5px;line-height:1.42;max-width:100%;margin-top:8px}
+  /* 본문 카피는 계속 컴팩트(긴 문장 숨김) */
+  .title-block .deck{font-size:13.5px;line-height:1.45;max-width:100%;margin-top:10px}
   .title-block .deck br{display:none}
   .title-block .deck b{display:inline}
   .title-block .deck .deck-em-wrap{display:none}
@@ -1020,8 +1019,11 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 @media(max-width:600px){
   .brand .name span{display:none}
   .masthead nav .nav-mobile{display:none}
-  .masthead nav{gap:10px;font-size:11.5px}
+  .masthead nav{gap:9px;font-size:11.5px;align-items:center}
   .masthead-inner{gap:10px}
+  /* 온톨로지(브레인맵 진입)를 우측 상단에 또렷한 알약 버튼으로 — 적절한 비중 */
+  .masthead nav button{padding:5px 11px;border-radius:999px;border:1px solid color-mix(in srgb,var(--brain-l) 40%,var(--line-2));background:color-mix(in srgb,var(--brain-l) 9%,var(--paper));color:var(--ink);font-weight:700;line-height:1}
+  .masthead nav button.on{border-color:var(--brain-l);background:color-mix(in srgb,var(--brain-l) 18%,var(--paper));color:var(--ink)}
 }
 @media(max-width:400px){
   .masthead nav{gap:8px;font-size:11px}
