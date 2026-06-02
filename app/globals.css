@@ -391,12 +391,30 @@ img,svg{display:block;max-width:100%}
   .pain-step2 .ps-arr{display:none}
   .pi-cta{display:none}                 /* 항목마다 반복되던 "인사이트 3장 →" 숨김 */
   .pain-tabs{margin-bottom:0}
-  .pain-tab{min-width:74px;padding:8px 7px 7px}
-  .pain-tab .pt-n{font-size:9px}
-  .pain-tab .pt-k{font-size:13.5px}
-  .pain-tab .pt-e{font-size:8px;letter-spacing:.12em}
-  .pi-text{font-size:13px;line-height:1.4}
-  .pain-item:nth-child(odd),.pain-item:nth-child(even){padding:10px 4px}
+  .pain-tab{min-width:0;flex:1;padding:8px 3px 7px}   /* 5개(돈·결정·시장·사람·전략) 한 줄에 균등 분할 */
+  .pain-tab .pt-n{font-size:8.5px}
+  .pain-tab .pt-k{font-size:13px}
+  .pain-tab .pt-e{display:none}                       /* 영문 라벨 숨겨 5탭 컴팩트 */
+  /* 질문은 한 줄로 — 넘치면 말줄임 */
+  .pi-text{font-size:13px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .pain-item:nth-child(odd),.pain-item:nth-child(even){padding:9px 4px}
+  .pi-dot{margin-top:6px}
+
+  /* ── 결과(두 번째 뇌의 답) 모바일 컴팩트 ── */
+  .airesult{margin-top:14px;padding-top:14px}
+  .airesult-tag{font-size:9.5px;margin-bottom:6px}
+  .airesult-q{font-size:14px;margin-bottom:9px;padding-left:11px;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+  .airesult .reason{font-size:13px;line-height:1.5;margin-bottom:11px;-webkit-line-clamp:3;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+  .airesult .ai-card{min-height:auto;padding:11px 13px;gap:5px}
+  .airesult .ai-card .n{font-size:9.5px}
+  .airesult .ai-card .ah{font-size:14.5px;line-height:1.3;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+  .airesult .ai-card .ac{font-size:10px}
+  .ai-related{margin-top:14px;padding-top:11px}
+  .ai-related-head{font-size:12.5px;margin-bottom:7px}
+  .ai-related-chip{padding:7px 10px}
+  .ai-related-chip .arc-hook{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .ai-expand{gap:5px}
+  .ai-exp-chip{font-size:10px;padding:3px 7px}
 
   .section-head{margin:26px 0 12px}
   .section-head h2{font-size:18px}
