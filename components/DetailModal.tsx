@@ -730,8 +730,15 @@ function StepOntology({
             const col = COURSE_COLOR[p.c.course] || "#16150F";
             const isRight = p.x >= cx;
             const isTop = p.y < cy;
-            const lblX = isRight ? p.x + 22 : p.x - LBL_W - 22;
-            const lblY = isTop ? p.y - LBL_H - 6 : p.y + 12;
+            // 라벨 박스를 viewBox 안으로 클램프 — 가장자리 노드에서 위/우로 삐져나가던 것 방지
+            const lblX = Math.max(
+              6,
+              Math.min(W - LBL_W - 6, isRight ? p.x + 22 : p.x - LBL_W - 22)
+            );
+            const lblY = Math.max(
+              6,
+              Math.min(H - LBL_H - 6, isTop ? p.y - LBL_H - 6 : p.y + 12)
+            );
             return (
               <g
                 key={p.c.id}

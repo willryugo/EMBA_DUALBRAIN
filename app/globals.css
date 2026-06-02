@@ -359,17 +359,17 @@ img,svg{display:block;max-width:100%}
 
 @media(max-width:1080px){.mag{grid-template-columns:repeat(6,1fr)}.mag .card,.mag .card.feat,.mag .card.wide,.mag .card.qt,.mag .card.stat,.mag .card.manifesto{grid-column:span 3}.mag .card.feat{grid-column:span 6;grid-row:auto}.mag .card.tall{grid-row:auto}}
 @media(max-width:720px){
-  /* 메인 로고(타이틀)는 웹과 동일하게 — 비율만 모바일에 맞춤 (요소 숨김 X) */
-  .title-block{padding:14px 0 14px}
+  /* 메인 로고(타이틀) — 적당한 크기로 */
+  .title-block{padding:14px 0 22px}
   .title-block .vol{margin-bottom:10px;font-size:9.5px;letter-spacing:.13em;gap:8px}
   .title-block .vol b{font-size:9.5px}
   .title-block .vol > span:last-child{display:none}   /* 'JUN 2, 2026 ISSUE' 삭제 */
   .title-block .vol .dot ~ .dot{display:none}          /* 날짜 앞 두 번째 점도 삭제 */
-  .title-block h1{font-size:clamp(44px,13.5vw,62px);line-height:.92;letter-spacing:-.03em}
-  .title-block .title-sub{font-size:13.5px;margin-top:7px;display:block}
-  .title-stage{padding:18px 6px 10px 12px;min-height:130px;overflow:visible}
-  .title-bgmark{opacity:.45;left:-8px}
-  .title-bgmark .db-mark{transform:scale(.6);transform-origin:left center}
+  .title-block h1{font-size:clamp(34px,9.5vw,44px);line-height:.94;letter-spacing:-.028em}
+  .title-block .title-sub{font-size:12.5px;margin-top:6px;display:block}
+  .title-stage{padding:12px 6px 8px 10px;min-height:96px;overflow:visible}
+  .title-bgmark{opacity:.42;left:-8px}
+  .title-bgmark .db-mark{transform:scale(.46);transform-origin:left center}
   .byline{display:none}                               /* 'DUAL·BRAIN — VOL.01·52명의 두 번째 뇌' 삭제 */
   /* 큰 '듀얼브레인 접속' 버튼을 로고 아래에 노출 — by 텍스트는 숨김. 그래프 진입 통일 */
   .title-by-block{display:flex;flex-direction:column;align-items:stretch;border-left:none;border-top:none;padding:0;margin-top:12px;width:100%}
@@ -1089,7 +1089,7 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 .onto-lbl-course{ font-size:11.5px; }
 .onto-lbl-box{ opacity:.92; transition:transform .16s ease, opacity .16s ease; }
 .onto-node:hover .onto-lbl-box,
-.onto-node.on .onto-lbl-box{ opacity:1; transform:scale(1.42); }
+.onto-node.on .onto-lbl-box{ opacity:1; transform:scale(1.18); }
 .onto-lbl-hook mark.hl{ padding:0 .04em; }
 @media (max-width:600px){
   .probe-spotlight{ padding:15px 12px 8px; }
