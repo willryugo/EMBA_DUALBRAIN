@@ -55,7 +55,7 @@ img,svg{display:block;max-width:100%}
 .masthead nav button:hover{color:var(--ink)}
 .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.05em;display:flex;gap:14px}
 .mast-meta span{white-space:nowrap}
-@media(max-width:720px){.mast-meta{display:none}.masthead nav{gap:12px;font-size:12px}.brand .name{font-size:15px}}
+@media(max-width:720px){.mast-meta{display:none}.masthead nav{gap:12px;font-size:12px;flex:none;margin-left:auto}.brand{flex:1 1 auto;min-width:0}.brand .name{font-size:15px;overflow:hidden;text-overflow:ellipsis;min-width:0}}
 .masthead-mark{margin-right:2px}
 
 /* ───── Title block ───── */
@@ -395,8 +395,10 @@ img,svg{display:block;max-width:100%}
   .pain-tab .pt-n{font-size:8.5px}
   .pain-tab .pt-k{font-size:13px}
   .pain-tab .pt-e{display:none}                       /* 영문 라벨 숨겨 5탭 컴팩트 */
-  /* 질문은 한 줄로 — 넘치면 말줄임 */
-  .pi-text{font-size:13px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  /* 질문은 한 줄로 — 넘치면 말줄임. 그리드 칸·플렉스가 줄어들 수 있게 min-width:0 + overflow 필수 */
+  .pain-items{min-width:0}
+  .pain-item{min-width:0;overflow:hidden}
+  .pi-text{font-size:13px;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1 1 0}
   .pain-item:nth-child(odd),.pain-item:nth-child(even){padding:9px 4px}
   .pi-dot{margin-top:6px}
 
