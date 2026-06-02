@@ -1,3 +1,5 @@
+"use client";
+import { useState } from "react";
 import { DBMark } from "./DBMark";
 import members from "@/data/members.json";
 import type { Industry } from "@/lib/types";
@@ -39,6 +41,8 @@ export function TitleBlock({
   bizMode = "all",
   onBizMode,
 }: Props) {
+  // 모바일: 산업군 칩을 접어두고(선택한 것만 표시) 펼치기/접기. 데스크탑은 CSS로 항상 펼침.
+  const [indOpen, setIndOpen] = useState(false);
   return (
     <section className="title-block wrap">
       <div className="vol">
@@ -111,7 +115,7 @@ export function TitleBlock({
               {totalCards} 카드 · {COHORT_INDUSTRIES} 산업군
             </span>
           </div>
-          <div className="ind-pick-chips">
+          <div className={"ind-pick-chips" + (indOpen ? " open" : "")}>
             <button
               className={"ind-pick-chip all" + (myIndustries.length === 0 ? " on" : "")}
               onClick={() => onToggleIndustry("__ALL__" as Industry)}
@@ -132,6 +136,14 @@ export function TitleBlock({
                 </button>
               );
             })}
+            <button
+              type="button"
+              className="ind-pick-toggle"
+              onClick={() => setIndOpen((o) => !o)}
+              aria-expanded={indOpen}
+            >
+              {indOpen ? "접기 ▴" : "산업군 펼치기 ▾"}
+            </button>
           </div>
           <div className="ind-pick-hint">
             {bizMode !== "all"

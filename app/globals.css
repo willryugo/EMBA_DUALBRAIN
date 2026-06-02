@@ -55,7 +55,7 @@ img,svg{display:block;max-width:100%}
 .masthead nav button:hover{color:var(--ink)}
 .mast-meta{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.05em;display:flex;gap:14px}
 .mast-meta span{white-space:nowrap}
-@media(max-width:720px){.mast-meta{display:none}.masthead nav{gap:12px;font-size:12px;flex:none;margin-left:auto}.brand{flex:1 1 auto;min-width:0}.brand .name{font-size:15px;overflow:hidden;text-overflow:ellipsis;min-width:0}}
+@media(max-width:720px){.mast-meta{display:none}.masthead nav{gap:14px;font-size:12px;flex:none;margin-left:auto}.masthead nav button{display:none}/* 온톨로지 진입은 타이틀의 '듀얼브레인 접속' 버튼으로 통일 */.brand{flex:1 1 auto;min-width:0}.brand .name{font-size:15px;overflow:hidden;text-overflow:ellipsis;min-width:0}}
 .masthead-mark{margin-right:2px}
 
 /* ───── Title block ───── */
@@ -131,13 +131,22 @@ img,svg{display:block;max-width:100%}
 .ind-pick-chip.all{font-weight:800}
 .ind-pick-chip.all.on{background:var(--ink);box-shadow:0 4px 14px color-mix(in srgb,var(--ink) 30%,transparent)}
 .ind-pick-hint{margin-top:9px;font-size:11.5px;color:var(--ink-faint);font-style:italic}
+.ind-pick-toggle{display:none}  /* 데스크탑은 항상 펼침 — 토글 숨김 */
 .ph-rotate{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;color:var(--accent);margin-left:8px;text-transform:none}
 /* B2B / B2C 세그먼트 */
 .biz-seg{display:inline-flex;gap:2px;padding:2px;background:var(--bg);border:1px solid var(--line-2);border-radius:999px}
 .biz-seg-btn{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink-soft);background:transparent;border:none;border-radius:999px;padding:4px 12px;cursor:pointer;transition:.13s}
 .biz-seg-btn:hover{color:var(--ink)}
 .biz-seg-btn.on{color:#fff;background:linear-gradient(120deg,var(--brain-l),var(--brain-r))}
-@media(max-width:720px){.ind-pick{margin-top:16px;padding-top:14px}.ind-pick-chip{font-size:12px;padding:7px 12px}.ind-pick-meta{display:none}}
+@media(max-width:720px){
+  .ind-pick{margin-top:16px;padding-top:14px}
+  .ind-pick-chip{font-size:12px;padding:7px 12px}
+  .ind-pick-meta{display:none}
+  /* 접힘 기본 — 선택한 칩(+전체)만 보이고, 토글로 펼침 */
+  .ind-pick-toggle{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--brain-r);background:color-mix(in srgb,var(--brain-r) 8%,var(--paper));border:1px dashed color-mix(in srgb,var(--brain-r) 45%,var(--line-2));border-radius:999px;padding:7px 13px;cursor:pointer}
+  .ind-pick-chips:not(.open) .ind-pick-chip:not(.on){display:none}
+  .ind-pick-chips:not(.open) ~ .ind-pick-hint{display:none}
+}
 
 /* ───── Section header ───── */
 .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:18px;margin:46px 0 18px;padding-bottom:10px;border-bottom:2px solid var(--ink)}
@@ -354,16 +363,20 @@ img,svg{display:block;max-width:100%}
   .title-block{padding:14px 0 14px}
   .title-block .vol{margin-bottom:10px;font-size:9.5px;letter-spacing:.13em;gap:8px}
   .title-block .vol b{font-size:9.5px}
-  .title-block h1{font-size:clamp(40px,12vw,56px);line-height:.92;letter-spacing:-.03em}
-  .title-block .title-sub{font-size:13px;margin-top:7px;display:block}
-  .title-stage{padding:16px 6px 8px 10px;min-height:120px;overflow:visible}
-  .title-bgmark{opacity:.42;left:-10px}
-  .title-bgmark .db-mark{transform:scale(.52);transform-origin:left center}
-  .byline{display:flex}
-  /* by-block(큰 '듀얼브레인 접속' 버튼)은 모바일에선 숨김 — 그래프 진입은 상단 네비 온톨로지로 */
-  .title-by-block{display:none}
-  /* 본문 카피는 계속 컴팩트(긴 문장 숨김) */
-  .title-block .deck{font-size:13.5px;line-height:1.45;max-width:100%;margin-top:10px}
+  .title-block .vol > span:last-child{display:none}   /* 'JUN 2, 2026 ISSUE' 삭제 */
+  .title-block .vol .dot ~ .dot{display:none}          /* 날짜 앞 두 번째 점도 삭제 */
+  .title-block h1{font-size:clamp(44px,13.5vw,62px);line-height:.92;letter-spacing:-.03em}
+  .title-block .title-sub{font-size:13.5px;margin-top:7px;display:block}
+  .title-stage{padding:18px 6px 10px 12px;min-height:130px;overflow:visible}
+  .title-bgmark{opacity:.45;left:-8px}
+  .title-bgmark .db-mark{transform:scale(.6);transform-origin:left center}
+  .byline{display:none}                               /* 'DUAL·BRAIN — VOL.01·52명의 두 번째 뇌' 삭제 */
+  /* 큰 '듀얼브레인 접속' 버튼을 로고 아래에 노출 — by 텍스트는 숨김. 그래프 진입 통일 */
+  .title-by-block{display:flex;flex-direction:column;align-items:stretch;border-left:none;border-top:none;padding:0;margin-top:12px;width:100%}
+  .title-by-block .tby-info{display:none}
+  .tby-enter{width:100%;padding:12px 18px}
+  /* '회의 30분 전, 다시 꺼내 쓴다.'는 byline 자리로 올라옴 — 긴 문장은 컴팩트 */
+  .title-block .deck{font-size:14px;line-height:1.45;max-width:100%;margin-top:14px}
   .title-block .deck br{display:none}
   .title-block .deck b{display:inline}
   .title-block .deck .deck-em-wrap{display:none}
@@ -1019,11 +1032,8 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 @media(max-width:600px){
   .brand .name span{display:none}
   .masthead nav .nav-mobile{display:none}
-  .masthead nav{gap:9px;font-size:11.5px;align-items:center}
+  .masthead nav{gap:13px;font-size:11.5px}
   .masthead-inner{gap:10px}
-  /* 온톨로지(브레인맵 진입)를 우측 상단에 또렷한 알약 버튼으로 — 적절한 비중 */
-  .masthead nav button{padding:5px 11px;border-radius:999px;border:1px solid color-mix(in srgb,var(--brain-l) 40%,var(--line-2));background:color-mix(in srgb,var(--brain-l) 9%,var(--paper));color:var(--ink);font-weight:700;line-height:1}
-  .masthead nav button.on{border-color:var(--brain-l);background:color-mix(in srgb,var(--brain-l) 18%,var(--paper));color:var(--ink)}
 }
 @media(max-width:400px){
   .masthead nav{gap:8px;font-size:11px}
