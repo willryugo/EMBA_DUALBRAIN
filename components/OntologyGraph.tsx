@@ -493,7 +493,7 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
   };
 
   return (
-    <div className="bm-fs" onClick={() => setActive(null)}>
+    <div className={"bm-fs" + (active ? " has-active" : "")} onClick={() => setActive(null)}>
       <style>{`
         @keyframes bmTwinkle { 0%,100%{opacity:1} 50%{opacity:.6} }
         @keyframes bmGlowPulse { 0%,100%{opacity:.12; transform:scale(1)} 50%{opacity:.34; transform:scale(1.14)} }
@@ -611,8 +611,8 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
               isActive || hover === n.id || isHub || meetsDensity ||
               (focus && adj[focus]?.has(n.id)) ||
               (colorMode === "industry" && tier === 2 && inView(n));
-            // 라벨은 화면상 크기 일정(축척 보정) — 확대해도 글자가 안 커짐
-            const lblSize = Math.max(11, Math.min(20, n.r * 0.55)) / k;
+            // 라벨이 줌에 따라 같이 커지게(/k 보정 제거) — 확대하면 글자도 커져 읽힌다.
+            const lblSize = Math.max(15, Math.min(30, n.r * 0.62));
             return (
               <g
                 key={n.id}
@@ -691,9 +691,18 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
 
       {/* 선택된 노드 정보 */}
       {active && nodeById[active] && (
-        <div className="bm-info" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="bm-info"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen(active);
+          }}
+        >
           <button
-            onClick={() => setActive(null)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setActive(null);
+            }}
             aria-label="선택 해제"
             style={{
               position: "absolute", top: 10, right: 12, width: 26, height: 26,
@@ -737,7 +746,13 @@ export function OntologyGraph({ cards, onOpen, onClose }: Props) {
               </ul>
             </div>
           )}
-          <button className="bm-info-open" onClick={() => onOpen(active)}>
+          <button
+            className="bm-info-open"
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpen(active);
+            }}
+          >
             카드 열기 →
           </button>
         </div>
