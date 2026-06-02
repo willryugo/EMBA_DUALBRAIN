@@ -361,7 +361,7 @@ img,svg{display:block;max-width:100%}
 @media(max-width:720px){
   /* 메인 로고(타이틀) — 적당한 크기로 */
   .title-block{padding:14px 0 22px;position:relative}
-  .title-block .vol{margin-bottom:10px;font-size:9.5px;letter-spacing:.13em;gap:8px;padding-right:142px}  /* 우상단 접속 버튼 자리 확보 */
+  .title-block .vol{margin-bottom:10px;font-size:9.5px;letter-spacing:.13em;gap:8px}
   .title-block .vol b{font-size:9.5px}
   .title-block .vol > span:last-child{display:none}   /* 'JUN 2, 2026 ISSUE' 삭제 */
   .title-block .vol .dot ~ .dot{display:none}          /* 날짜 앞 두 번째 점도 삭제 */
@@ -371,13 +371,13 @@ img,svg{display:block;max-width:100%}
   .title-bgmark{opacity:.42;left:-8px}
   .title-bgmark .db-mark{transform:scale(.46);transform-origin:left center}
   .byline{display:none}                               /* 'DUAL·BRAIN — VOL.01·52명의 두 번째 뇌' 삭제 */
-  /* '듀얼브레인 접속' 버튼 — 큰 거 대신 우측 상단에 작게 (by 텍스트 숨김) */
-  .title-by-block{position:absolute;top:8px;right:0;width:auto;max-width:54%;margin:0;padding:0;border:none;z-index:6;display:block}
+  /* '듀얼브레인 접속' 버튼 — 로고 아래 우측에 작게 (겹침 방지, by 텍스트 숨김) */
+  .title-by-block{position:static;display:flex;justify-content:flex-end;width:100%;margin-top:12px;padding:0;border:none}
   .title-by-block .tby-info{display:none}
-  .tby-enter{width:auto;padding:7px 12px 7px 13px;border-radius:11px}
-  .tby-enter .tbe-txt{font-size:12.5px;padding-right:20px}
-  .tby-enter .tbe-sub{font-size:8px;margin-top:1px}
-  .tby-enter .tbe-inf{font-size:15px;top:6px;right:10px}
+  .tby-enter{width:auto;padding:9px 14px;border-radius:12px}
+  .tby-enter .tbe-txt{font-size:13px;padding-right:22px}
+  .tby-enter .tbe-sub{font-size:8.5px;margin-top:1px}
+  .tby-enter .tbe-inf{font-size:16px;top:8px;right:11px}
   /* '회의 30분 전, 다시 꺼내 쓴다.'는 byline 자리로 올라옴 — 긴 문장은 컴팩트 */
   .title-block .deck{font-size:14px;line-height:1.45;max-width:100%;margin-top:14px}
   .title-block .deck br{display:none}
