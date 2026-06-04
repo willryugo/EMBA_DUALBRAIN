@@ -574,7 +574,7 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 @keyframes dofade{from{opacity:0}to{opacity:1}}
 .detail-modal{background:var(--paper);border:1.5px solid var(--ink);width:100%;max-width:840px;max-height:calc(100vh - 48px);display:flex;flex-direction:column;position:relative;box-shadow:14px 14px 0 rgba(22,21,15,.18);animation:dopop .26s cubic-bezier(.2,.7,.2,1);overflow:hidden}
 @keyframes dopop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@media(max-width:720px){.detail-overlay{padding:0}.detail-modal{max-width:100vw;max-height:100vh;height:100vh;border:none;box-shadow:none}}
+@media(max-width:720px){.detail-overlay{padding:0}.detail-modal{max-width:100vw;max-height:100vh;height:100vh;max-height:100dvh;height:100dvh;border:none;box-shadow:none}}
 
 .detail-top{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;border-bottom:1px solid var(--line)}
 .dt-meta{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:600;min-width:0;flex:1}
@@ -840,7 +840,7 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
 .dn-dots .dot{width:9px;height:9px;border-radius:50%;background:var(--line-2);transition:.15s;cursor:pointer;padding:0}
 .dn-dots .dot.done{background:var(--ink-faint)}
 .dn-dots .dot.on{background:var(--ink);transform:scale(1.3)}
-@media(max-width:720px){.detail-nav{padding:12px 16px}.dn-btn{font-size:12px;padding:7px 10px}}
+@media(max-width:720px){.detail-nav{padding:12px 16px;padding-bottom:max(12px, env(safe-area-inset-bottom))}.dn-btn{font-size:12px;padding:7px 10px}}
 
 /* ═══════════════════════════════════════════════════════════
    Ontology Graph View
