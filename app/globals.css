@@ -75,7 +75,7 @@ img,svg{display:block;max-width:100%}
 .title-bgmark .db-mark circle{opacity:1 !important}
 .title-bgmark .db-mark g{mix-blend-mode:normal !important}
 @media(max-width:1080px){.title-bgmark{opacity:.26}.title-bgmark .db-mark{transform:scale(.7);transform-origin:left center}}
-@media(max-width:720px){.title-stage{padding:20px 8px 14px 14px;min-height:140px}.title-bgmark{opacity:.22;left:-20px}.title-bgmark .db-mark{transform:scale(.5);transform-origin:left center}}
+@media(max-width:720px){.title-stage{padding:6px 8px 2px 4px;min-height:0}.title-bgmark{opacity:.22;left:-20px}.title-bgmark .db-mark{transform:scale(.5);transform-origin:left center}}
 
 .db-mark{display:block;flex:none}
 .db-mark circle{transition:fill .25s}
@@ -365,11 +365,13 @@ img,svg{display:block;max-width:100%}
   .title-block .vol b{font-size:9.5px}
   .title-block .vol > span:last-child{display:none}   /* 'JUN 2, 2026 ISSUE' 삭제 */
   .title-block .vol .dot ~ .dot{display:none}          /* 날짜 앞 두 번째 점도 삭제 */
-  .title-block h1{font-size:clamp(34px,9.5vw,44px);line-height:.94;letter-spacing:-.028em}
-  .title-block .title-sub{font-size:12.5px;margin-top:6px;display:block}
-  .title-stage{padding:12px 6px 8px 10px;min-height:96px;overflow:visible}
-  .title-bgmark{opacity:.42;left:-8px}
-  .title-bgmark .db-mark{transform:scale(.46);transform-origin:left center}
+  .title-block h1{font-size:clamp(32px,8.5vw,42px);line-height:.96;letter-spacing:-.028em}
+  .title-block .title-sub{font-size:12.5px;margin-top:5px;display:block}
+  /* 제목 영역: 워터마크 자리용 빈 세로공간 제거 — 텍스트 높이에 딱 맞게 */
+  .title-row{gap:0;margin-bottom:0;align-items:flex-start}
+  .title-stage{padding:4px 6px 2px 2px;min-height:0;overflow:visible}
+  .title-bgmark{opacity:.3;left:-6px;top:42%}
+  .title-bgmark .db-mark{transform:scale(.4);transform-origin:left center}
   .byline{display:none}                               /* 'DUAL·BRAIN — VOL.01·52명의 두 번째 뇌' 삭제 */
   /* '듀얼브레인 접속' 버튼 — 로고 아래 우측에 작게 (겹침 방지, by 텍스트 숨김) */
   .title-by-block{position:static;display:flex;justify-content:flex-end;width:100%;margin-top:12px;padding:0;border:none}
