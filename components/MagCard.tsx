@@ -19,9 +19,11 @@ interface Props {
   index: number;
   layout: Layout;
   onClick: (id: string) => void;
+  saved?: boolean;
+  onToggleSave?: (id: string) => void;
 }
 
-export function MagCard({ card, index, layout, onClick }: Props) {
+export function MagCard({ card, index, layout, onClick, saved, onToggleSave }: Props) {
   const color = COURSE_COLOR[card.course] || "#16150F";
   const isFeat = layout === "feat";
   const isStat = layout === "stat";
@@ -40,10 +42,27 @@ export function MagCard({ card, index, layout, onClick }: Props) {
     animationDelay: Math.min(index, 16) * 0.04 + "s",
   } as CSSProperties;
 
+  // 별표(저장) 토글 — 카드 우상단. 카드 클릭(모달 열기)과 분리.
+  const star = onToggleSave ? (
+    <button
+      type="button"
+      className={"card-save" + (saved ? " on" : "")}
+      onClick={(e) => {
+        e.stopPropagation();
+        onToggleSave(card.id);
+      }}
+      aria-pressed={!!saved}
+      title={saved ? "내 솔루션에서 빼기" : "내 솔루션에 저장"}
+    >
+      <span aria-hidden="true">{saved ? "★" : "☆"}</span>
+    </button>
+  ) : null;
+
   if (isStat) {
     const n = String(index + 1).padStart(2, "0");
     return (
       <article className={className} style={style} onClick={() => onClick(card.id)}>
+        {star}
         <DBMark size={22} className="card-mark" />
         <div className="stat-n">{n}</div>
         <div className="stat-rule"></div>
@@ -64,6 +83,7 @@ export function MagCard({ card, index, layout, onClick }: Props) {
   if (isSpread) {
     return (
       <article className={className} style={style} onClick={() => onClick(card.id)}>
+        {star}
         <DBMark size={24} className="card-mark" />
         <div className="spread-marker">EDITORIAL · 펼침</div>
         <div className="spread-cols">
@@ -93,6 +113,7 @@ export function MagCard({ card, index, layout, onClick }: Props) {
   if (isManifesto) {
     return (
       <article className={className} style={style} onClick={() => onClick(card.id)}>
+        {star}
         <DBMark size={22} className="card-mark" />
         <div className="mf-rule"></div>
         <div className="mf-body">
@@ -110,6 +131,7 @@ export function MagCard({ card, index, layout, onClick }: Props) {
 
   return (
     <article className={className} style={style} onClick={() => onClick(card.id)}>
+      {star}
       <DBMark size={26} className="card-mark" />
       {isFeat ? (
         <>

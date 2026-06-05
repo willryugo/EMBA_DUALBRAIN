@@ -9,6 +9,7 @@ import { Masthead } from "./Masthead";
 import { Footer } from "./Footer";
 import { DBMark } from "./DBMark";
 import { DetailModal } from "./DetailModal";
+import { rich } from "./rich";
 
 const CARDS = cardsData as Card[];
 
@@ -30,6 +31,14 @@ export function LibraryView() {
   }, [tick]);
 
   const refresh = useCallback(() => setTick((t) => t + 1), []);
+
+  const unsave = useCallback((id: string) => {
+    setSavedIds((prev) => {
+      const next = prev.filter((x) => x !== id);
+      store.set("emba17_saved", next);
+      return next;
+    });
+  }, []);
 
   const savedCards = useMemo(
     () => CARDS.filter((c) => savedIds.includes(c.id)),
@@ -106,11 +115,19 @@ export function LibraryView() {
                   {items.map((c) => {
                     const col = COURSE_COLOR[c.course] || "#16150F";
                     return (
-                      <button
+                      <div
                         key={c.id + d}
                         className="lib-card"
+                        role="button"
+                        tabIndex={0}
                         style={{ ["--c" as string]: col } as React.CSSProperties}
                         onClick={() => setOpenId(c.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setOpenId(c.id);
+                          }
+                        }}
                       >
                         <div className="lib-card-top">
                           <span className="lib-card-course">
@@ -119,9 +136,20 @@ export function LibraryView() {
                               ? " · WK " + String(c.week).padStart(2, "0")
                               : ""}
                           </span>
-                          <span className="lib-card-star">★</span>
+                          <button
+                            type="button"
+                            className="lib-card-star on"
+                            title="내 솔루션에서 빼기"
+                            aria-label="내 솔루션에서 빼기"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              unsave(c.id);
+                            }}
+                          >
+                            ★
+                          </button>
                         </div>
-                        <h3 className="lib-card-hook">{c.hook}</h3>
+                        <h3 className="lib-card-hook">{rich(c.hook)}</h3>
                         <div className="lib-card-concept">— {c.concept}</div>
                         <div className="lib-card-foot">
                           <span className="lib-card-prof">
@@ -129,7 +157,7 @@ export function LibraryView() {
                           </span>
                           <span className="lib-card-arrow">→</span>
                         </div>
-                      </button>
+                      </div>
                     );
                   })}
                 </div>

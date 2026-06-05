@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import cardsData from "@/data/cards.json";
 import ownerPainsData from "@/data/owner-pains.json";
 import type {
@@ -178,6 +178,17 @@ export function DualBrainApp() {
     store.set("emba17_saved", savedIds);
   }, [savedIds]);
 
+  const toggleSave = useCallback((id: string) => {
+    setSavedIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  }, []);
+
+  // 모달(STEP 4) 안에서 저장이 바뀔 수 있으니, 닫을 때 store에서 다시 읽어 동기화
+  const syncSavedFromStore = useCallback(() => {
+    setSavedIds(store.get<string[]>("emba17_saved") || []);
+  }, []);
+
   const filtered = useMemo(() => {
     return CARDS.filter((c) => {
       if (filter.course.length && !filter.course.includes(c.course)) return false;
@@ -342,6 +353,8 @@ export function DualBrainApp() {
                 index={i}
                 layout={layoutClass(i, filterActive, tweaks.quoteCards)}
                 onClick={setOpenId}
+                saved={savedIds.includes(c.id)}
+                onToggleSave={toggleSave}
               />
             ))
           )}
@@ -368,7 +381,10 @@ export function DualBrainApp() {
         <DetailModal
           cardId={openId}
           cards={CARDS}
-          onClose={() => setOpenId(null)}
+          onClose={() => {
+            setOpenId(null);
+            syncSavedFromStore();
+          }}
           onOpen={setOpenId}
         />
       )}

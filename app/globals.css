@@ -284,6 +284,15 @@ img,svg{display:block;max-width:100%}
 .mag .card{grid-column:span 4;background:var(--paper);border:1px solid var(--line-2);padding:24px 24px 22px;cursor:pointer;display:flex;flex-direction:column;position:relative;transition:.18s;min-height:280px;opacity:0;transform:translateY(10px);animation:rise .55s cubic-bezier(.2,.7,.2,1) forwards;overflow:hidden}
 .mag .card .card-mark{position:absolute;top:13px;right:13px;z-index:1;pointer-events:none}
 .mag .card.qt .card-mark{filter:brightness(1.4) contrast(0.95)}
+/* 카드 저장(별표) 토글 — 우상단. 카드 로고 마크 자리를 대신 차지. */
+.mag .card .card-save{position:absolute;top:8px;right:8px;z-index:6;width:34px;height:34px;display:flex;align-items:center;justify-content:center;padding:0;border:none;background:transparent;color:var(--ink-faint);font-size:20px;line-height:1;cursor:pointer;border-radius:9px;transition:transform .14s,background .14s,color .14s}
+.mag .card .card-save:hover{background:color-mix(in srgb,var(--brain-r) 13%,transparent);color:var(--brain-r);transform:scale(1.14)}
+.mag .card .card-save.on{color:var(--brain-r)}
+.mag .card .card-save.on:hover{color:var(--brain-r)}
+.mag .card:has(.card-save) .card-mark{display:none}   /* 별표가 있으면 장식 로고는 숨김(겹침 방지) */
+.mag .card.manifesto .card-save{color:rgba(255,255,255,.45)}
+.mag .card.manifesto .card-save:hover{background:rgba(255,255,255,.14);color:#fff}
+.mag .card.manifesto .card-save.on{color:var(--brain-l)}
 @keyframes rise{to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.mag .card{animation:none;opacity:1;transform:none}}
 .mag .card:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 14px 30px rgba(22,21,15,.10)}
@@ -525,7 +534,8 @@ img,svg{display:block;max-width:100%}
 .lib-card:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 10px 22px rgba(22,21,15,.08)}
 .lib-card-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .lib-card-course{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--c)}
-.lib-card-star{color:var(--c);font-size:15px;font-weight:700;line-height:1}
+.lib-card-star{color:var(--c);font-size:17px;font-weight:700;line-height:1;border:none;background:transparent;cursor:pointer;padding:4px;margin:-4px -4px -4px 0;border-radius:8px;transition:transform .14s,background .14s,color .14s}
+.lib-card-star:hover{background:color-mix(in srgb,var(--brain-r) 14%,transparent);color:var(--brain-r);transform:scale(1.15)}
 .lib-card-hook{font-family:var(--serif);font-weight:900;font-size:17px;line-height:1.28;letter-spacing:-.012em;color:var(--ink);word-break:keep-all;text-wrap:balance;margin:0}
 .lib-card-concept{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--ink-soft);margin-top:auto}
 .lib-card-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--line);font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);letter-spacing:.05em}
