@@ -4,6 +4,7 @@ import type { Card, Industry, OwnerPainCategory } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
 import { recommendCards, type RecommendResult } from "@/lib/recommend";
 import { logEvent } from "@/lib/events";
+import { rich } from "./rich";
 
 // 접속 시각(일·시간)과 내 산업으로 만드는 결정적 시드 — 매 접속/매 시간 '오늘의 질문'이 달라진다.
 function makeSeed(myIndustries: Industry[]): number {
@@ -281,7 +282,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
                   onClick={() => onOpen(c.id)}
                 >
                   <div className="n">REC · 0{i + 1}</div>
-                  <div className="ah">{c.hook}</div>
+                  <div className="ah">{rich(c.hook)}</div>
                   <div className="ac">
                     {COURSE_SHORT[c.course]} · {c.concept}
                   </div>
@@ -312,7 +313,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
                       title={`${COURSE_SHORT[c.course]} · ${c.concept}`}
                     >
                       <span className="arc-dot" />
-                      <span className="arc-hook">{c.hook}</span>
+                      <span className="arc-hook">{rich(c.hook)}</span>
                       <span className="arc-meta">{COURSE_SHORT[c.course]}</span>
                     </button>
                   );

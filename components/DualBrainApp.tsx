@@ -20,6 +20,7 @@ import { TitleBlock } from "./TitleBlock";
 import { HeroAI } from "./HeroAI";
 import { FilterChips, FilterPanel } from "./Filters";
 import { MagCard, layoutClass } from "./MagCard";
+import { rich } from "./rich";
 import { DetailModal } from "./DetailModal";
 import { OntologyGraph } from "./OntologyGraph";
 import { TweaksPanel } from "./TweaksPanel";
@@ -311,7 +312,7 @@ export function DualBrainApp() {
                 >
                   <span className="tc-badge">{tc.team}</span>
                   <span className="tc-case">{tc.caseTitle}</span>
-                  <span className="tc-hook">{card.hook}</span>
+                  <span className="tc-hook">{rich(card.hook)}</span>
                   <span className="tc-foot">
                     <span>{card.concept}</span>
                     <span className="tc-arrow">카드 열기 →</span>
