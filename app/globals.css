@@ -139,7 +139,8 @@ img,svg{display:block;max-width:100%}
 .biz-seg-btn:hover{color:var(--ink)}
 .biz-seg-btn.on{color:#fff;background:linear-gradient(120deg,var(--brain-l),var(--brain-r))}
 @media(max-width:720px){
-  .ind-pick{margin-top:16px;padding-top:14px}
+  .ind-pick{margin-top:10px;padding-top:10px}
+  .ind-pick-head{margin-bottom:7px}
   .ind-pick-chip{font-size:12px;padding:7px 12px}
   .ind-pick-meta{display:none}
   /* 접힘 기본 — 선택한 칩(+전체)만 보이고, 토글로 펼침 */
@@ -359,35 +360,36 @@ img,svg{display:block;max-width:100%}
 
 @media(max-width:1080px){.mag{grid-template-columns:repeat(6,1fr)}.mag .card,.mag .card.feat,.mag .card.wide,.mag .card.qt,.mag .card.stat,.mag .card.manifesto{grid-column:span 3}.mag .card.feat{grid-column:span 6;grid-row:auto}.mag .card.tall{grid-row:auto}}
 @media(max-width:720px){
-  /* 메인 로고(타이틀) — 적당한 크기로 */
-  .title-block{padding:14px 0 22px;position:relative}
-  .title-block .vol{margin-bottom:10px;font-size:9.5px;letter-spacing:.13em;gap:8px}
+  /* 메인 로고(타이틀) — 적당한 크기로, 위로 바짝 */
+  .title-block{padding:10px 0 12px;position:relative}
+  .title-block .vol{margin-bottom:7px;font-size:9.5px;letter-spacing:.13em;gap:8px}
   .title-block .vol b{font-size:9.5px}
   .title-block .vol > span:last-child{display:none}   /* 'JUN 2, 2026 ISSUE' 삭제 */
   .title-block .vol .dot ~ .dot{display:none}          /* 날짜 앞 두 번째 점도 삭제 */
-  .title-block h1{font-size:clamp(32px,8.5vw,42px);line-height:.96;letter-spacing:-.028em}
+  .title-block h1{font-size:clamp(34px,9.2vw,44px);line-height:.94;letter-spacing:-.03em}
   .title-block .title-sub{font-size:12.5px;margin-top:5px;display:block}
-  /* 제목 영역: 워터마크 자리용 빈 세로공간 제거 — 텍스트 높이에 딱 맞게 */
+  /* 제목 영역: 워터마크 자리용 빈 세로공간 제거 — 텍스트 높이에 딱 맞게.
+     워터마크는 제목 뒤 정중앙에 차분히 앉히고(top:50%) 은은하게. */
   .title-row{gap:0;margin-bottom:0;align-items:flex-start}
-  .title-stage{padding:4px 6px 2px 2px;min-height:0;overflow:visible}
-  .title-bgmark{opacity:.3;left:-6px;top:42%}
-  .title-bgmark .db-mark{transform:scale(.4);transform-origin:left center}
+  .title-stage{padding:2px 6px 0 2px;min-height:0;overflow:visible}
+  .title-bgmark{opacity:.22;left:-4px;top:50%}
+  .title-bgmark .db-mark{transform:scale(.36);transform-origin:left center}
   .byline{display:none}                               /* 'DUAL·BRAIN — VOL.01·52명의 두 번째 뇌' 삭제 */
-  /* '듀얼브레인 접속' 버튼 — 로고 아래 우측에 작게 (겹침 방지, by 텍스트 숨김) */
-  .title-by-block{position:static;display:flex;justify-content:flex-end;width:100%;margin-top:12px;padding:0;border:none}
+  /* '듀얼브레인 접속' 버튼 — 로고 아래 작게 (겹침 방지, by 텍스트 숨김) */
+  .title-by-block{position:static;display:flex;justify-content:flex-start;width:100%;margin-top:8px;padding:0;border:none}
   .title-by-block .tby-info{display:none}
   .tby-enter{width:auto;padding:9px 14px;border-radius:12px}
   .tby-enter .tbe-txt{font-size:13px;padding-right:22px}
   .tby-enter .tbe-sub{font-size:8.5px;margin-top:1px}
   .tby-enter .tbe-inf{font-size:16px;top:8px;right:11px}
   /* '회의 30분 전, 다시 꺼내 쓴다.'는 byline 자리로 올라옴 — 긴 문장은 컴팩트 */
-  .title-block .deck{font-size:14px;line-height:1.45;max-width:100%;margin-top:14px}
+  .title-block .deck{font-size:14px;line-height:1.4;max-width:100%;margin-top:9px}
   .title-block .deck br{display:none}
   .title-block .deck b{display:inline}
   .title-block .deck .deck-em-wrap{display:none}
   .title-block .stats{display:none}
 
-  .aibox{margin-top:10px;padding:14px 16px 14px}
+  .aibox{margin-top:6px;padding:13px 16px 14px}
   .aibox::before{font-size:9px;top:-9px;padding:1px 7px}
   .aibox .l1{display:none}
   .aibox h3{font-size:18px;line-height:1.22;margin-bottom:10px}
