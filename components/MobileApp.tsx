@@ -201,9 +201,23 @@ function AskResult({
     .filter((c): c is Card => Boolean(c));
   return (
     <div className="m-result">
-      <div className="reason">
-        <b>두 번째 뇌</b> — {result.reason}
-      </div>
+      {result.mode === "semantic" && result.diagnosis ? (
+        <div className="ai-diagnosis">
+          <div className="aid-head">
+            🧠 두 번째 뇌의 진단
+            {typeof result.diagnosis.confidence === "number" && (
+              <span className="aid-conf"> · 의미 근접도 {result.diagnosis.confidence}%</span>
+            )}
+          </div>
+          <div className="aid-lens">{result.diagnosis.lens}</div>
+          <div className="aid-body">{result.diagnosis.body}</div>
+          <div className="aid-lead">그래서 — 이 3장을 펼쳤어요 ↓</div>
+        </div>
+      ) : (
+        <div className="reason">
+          <b>두 번째 뇌</b> — {result.reason}
+        </div>
+      )}
       <div className="m-result-cards hscroll">
         {cards.map((c, i) => (
           <button

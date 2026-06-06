@@ -269,9 +269,23 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
         <div className="airesult">
           <div className="airesult-tag">두 번째 뇌의 답 · INSIGHTS</div>
           {activePain && <div className="airesult-q">“{activePain}”</div>}
-          <div className="reason">
-            <b>두 번째 뇌:</b> {result.reason}
-          </div>
+          {result.mode === "semantic" && result.diagnosis ? (
+            <div className="ai-diagnosis">
+              <div className="aid-head">
+                🧠 두 번째 뇌의 진단
+                {typeof result.diagnosis.confidence === "number" && (
+                  <span className="aid-conf"> · 의미 근접도 {result.diagnosis.confidence}%</span>
+                )}
+              </div>
+              <div className="aid-lens">{result.diagnosis.lens}</div>
+              <div className="aid-body">{result.diagnosis.body}</div>
+              <div className="aid-lead">그래서 — 이 3장을 펼쳤습니다 ↓</div>
+            </div>
+          ) : (
+            <div className="reason">
+              <b>두 번째 뇌:</b> {result.reason}
+            </div>
+          )}
 
           {(result.expansions.length > 0 || result.inferredDomain) && (
             <div className="ai-expand">

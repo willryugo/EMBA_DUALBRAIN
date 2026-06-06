@@ -4,7 +4,7 @@
 import type { Card, Industry, Domain } from "./types";
 import { UNIVERSAL } from "./manifest";
 import embJson from "@/data/embeddings.json";
-import { diversifyByCourse, type RecommendResult } from "./recommend";
+import { diversifyByCourse, buildDiagnosis, type RecommendResult } from "./recommend";
 
 interface EmbFile {
   _meta: { model: string; dim: number; count: number; prefix: string };
@@ -108,6 +108,10 @@ export async function semanticRecommend(
       (overlapInd ? " · 내 산업 적합" : "");
   }
 
+  const topCard = top[0] ? byId.get(top[0].id) : undefined;
+  const confidence = top[0] ? Math.round(Math.max(0, Math.min(1, top[0].cos)) * 100) : undefined;
+  const diagnosis = buildDiagnosis(query, inferredDomain, topCard, confidence);
+
   return {
     ids: top.map((x) => x.id),
     reason:
@@ -116,5 +120,7 @@ export async function semanticRecommend(
     relatedIds: related.map((x) => x.id),
     inferredDomain,
     evidence,
+    mode: "semantic",
+    diagnosis,
   };
 }

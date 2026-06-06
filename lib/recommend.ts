@@ -19,6 +19,39 @@ export interface RecommendResult {
   relatedIds: string[];        // 4~8위 — "혹시 이런 카드도?" 칩으로 노출
   inferredDomain?: Domain;     // 쿼리에서 추론한 도메인 (UI 뱃지용)
   evidence?: Record<string, string>; // 카드별 '왜 골랐는지' 한 줄 근거
+  mode?: "keyword" | "semantic"; // 어떤 엔진이 쓰였는지
+  diagnosis?: Diagnosis;       // AI 정밀검색일 때, 카드 위에 펼치는 '두 번째 뇌의 진단'
+}
+
+export interface Diagnosis {
+  lens: string;       // "조직·HR · 동기부여" (도메인 · 핵심개념)
+  body: string;       // 질문을 해석한 한두 문장
+  confidence?: number; // 의미 일치 % (시맨틱일 때)
+}
+
+// 오프라인 합성 진단 — 런타임 LLM 없이, 임베딩/키워드가 고른 1위 카드의
+// 도메인·개념·30초결론을 사용자 질문과 엮어 'AI 큐레이션'처럼 보이게 한다.
+export function buildDiagnosis(
+  query: string,
+  domain: Domain | undefined,
+  topCard: Card | undefined,
+  confidence?: number
+): Diagnosis | undefined {
+  if (!topCard) return undefined;
+  const concept = topCard.concept;
+  const lens = domain ? `${domain} · ${concept}` : concept;
+  const decision = norm0(topCard.decision);
+  const insight = norm0(topCard.insight);
+  const q = query.trim().replace(/\s+/g, " ");
+  const essence = decision || insight;
+  const body =
+    `‘${q}’ — 두 번째 뇌는 이 고민을 「${concept}」 개념과 가장 가깝게 봤어요.` +
+    (essence ? ` 한 줄로 → ${essence}` : "");
+  return { lens, body, confidence };
+}
+
+function norm0(s: string | undefined): string {
+  return String(s || "").replace(/\*/g, "").replace(/\n+/g, " ").replace(/\s+/g, " ").trim();
 }
 
 // 결과 다양성 — 상위 N장이 한 과목에 쏠리지 않게(과목당 최대 cap장) 재배치.
@@ -325,6 +358,7 @@ export function recommendCards(
     relatedIds: related.map((x) => x.id),
     inferredDomain,
     evidence,
+    mode: "keyword",
   };
 }
 

@@ -49,6 +49,20 @@ img,svg{display:block;max-width:100%}
 .ai-smart-toggle.on .ait-knob{transform:translateX(15px)}
 .ai-smart-toggle .ait-note{font-family:var(--sans);font-weight:500;font-size:11.5px;color:var(--ink-faint);letter-spacing:0}
 
+/* 두 번째 뇌의 진단 — AI 정밀검색일 때 카드 위에 펼쳐지는 큐레이션 패널 */
+.ai-diagnosis{position:relative;margin:2px 0 14px;padding:16px 18px;border:1.5px solid transparent;border-radius:14px;background:linear-gradient(var(--paper),var(--paper)) padding-box,linear-gradient(120deg,var(--brain-l),var(--brain-r)) border-box;box-shadow:0 8px 26px color-mix(in srgb,var(--brain-r) 16%,transparent);animation:aidIn .42s cubic-bezier(.2,.7,.2,1);overflow:hidden}
+.ai-diagnosis::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 0% 0%,color-mix(in srgb,var(--brain-l) 12%,transparent),transparent 60%);pointer-events:none}
+@keyframes aidIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+.ai-diagnosis .aid-head{position:relative;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--brain-r)}
+.ai-diagnosis .aid-conf{color:var(--ink-faint);font-weight:600}
+.ai-diagnosis .aid-lens{position:relative;margin-top:9px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.ai-diagnosis .aid-body{position:relative;margin-top:6px;font-family:var(--serif);font-size:15.5px;line-height:1.52;color:var(--ink);font-weight:500;word-break:keep-all}
+.ai-diagnosis .aid-lead{position:relative;margin-top:11px;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--brain-r);font-weight:700}
+@media(max-width:720px){.ai-diagnosis{padding:14px 15px;margin-bottom:12px}.ai-diagnosis .aid-body{font-size:14.5px}}
+@media(prefers-reduced-motion:reduce){.ai-diagnosis{animation:none}}
+
+/* ───── Masthead ───── */
+
 /* ───── Masthead ───── */
 .masthead{padding:18px 0 12px;border-bottom:1px solid var(--line);padding-top:max(18px, env(safe-area-inset-top, 0px))}
 @media(max-width:720px){.masthead{padding-top:max(54px, env(safe-area-inset-top, 0px))}}
