@@ -14,8 +14,8 @@
 /* ── Masthead (sticky slim) ── */
 .m-mast{position:sticky;top:0;z-index:30;background:color-mix(in srgb, var(--bg) 86%, transparent);backdrop-filter:blur(14px) saturate(150%);-webkit-backdrop-filter:blur(14px) saturate(150%);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top,12px) + 14px) 16px 11px;display:flex;align-items:center;justify-content:space-between;gap:12px;transition:padding .22s ease}
 .m-mast.scrolled{padding-top:calc(env(safe-area-inset-top,8px) + 10px);padding-bottom:8px}
-.m-mast-l{display:flex;flex-direction:column;gap:1px;min-width:0}
-.m-ver{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-soft);font-weight:600;white-space:nowrap}
+.m-mast-l{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1 1 auto;margin-right:8px}
+.m-ver{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .m-ver span{color:var(--ink-faint);font-weight:500}
 .m-wordmark{font-family:var(--serif);font-weight:800;font-size:16px;letter-spacing:-.01em;color:var(--ink);line-height:1}
 .m-wordmark span{color:var(--ink-faint);font-weight:400}
@@ -250,4 +250,19 @@
 .m-rel .rc-c{font-family:var(--mono);font-size:9px;color:var(--ink-faint);letter-spacing:.04em}
 
 .db-mark{display:block;flex:none}
+
+/* ── 내 솔루션 시트 (저장 카드 팝업) ── */
+.m-saved-count{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--brain-r);margin-left:6px}
+.m-saved-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:34px 14px 38px;color:var(--ink-soft)}
+.m-saved-empty .se-star{font-size:34px;color:var(--line-3);line-height:1;margin-bottom:4px}
+.m-saved-empty b{font-family:var(--serif);font-weight:800;font-size:16px;color:var(--ink)}
+.m-saved-empty p{font-size:13px;line-height:1.55;max-width:24ch}
+.m-saved-list{display:flex;flex-direction:column;gap:9px}
+.m-saved-row{display:flex;align-items:center;gap:11px;text-align:left;border:1px solid var(--line-2);background:var(--paper);padding:13px 12px;position:relative;border-left:3px solid var(--c);transition:.12s}
+.m-saved-row:active{border-color:var(--ink);border-left-color:var(--c)}
+.m-saved-row .sr-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.m-saved-row .sr-course{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.06em;color:var(--c);text-transform:uppercase}
+.m-saved-row .sr-hook{font-family:var(--serif);font-weight:800;font-size:14.5px;color:var(--ink);line-height:1.32;word-break:keep-all}
+.m-saved-row .sr-star{width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--brain-r);border:1px solid var(--line-2);border-radius:50%}
+.m-saved-row .sr-star:active{background:color-mix(in srgb,var(--brain-r) 12%,transparent)}
 

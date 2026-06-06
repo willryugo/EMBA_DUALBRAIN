@@ -627,6 +627,78 @@ function PainSheet({
   );
 }
 
+function SavedSheet({
+  savedSet,
+  onClose,
+  onOpen,
+  onStar,
+}: {
+  savedSet: Set<string>;
+  onClose: () => void;
+  onOpen: (id: string) => void;
+  onStar: (id: string) => void;
+}) {
+  const cards = CARDS.filter((c) => savedSet.has(c.id));
+  return (
+    <>
+      <div className="m-scrim" onClick={onClose}></div>
+      <div className="m-sheet" role="dialog" aria-label="내 솔루션">
+        <div className="m-sheet-grip"></div>
+        <div className="m-sheet-head">
+          <h3>
+            내 솔루션<span className="m-saved-count">{cards.length}</span>
+          </h3>
+          <button className="x" onClick={onClose} aria-label="닫기">
+            ×
+          </button>
+        </div>
+        <div className="m-sheet-body">
+          {cards.length === 0 ? (
+            <div className="m-saved-empty">
+              <div className="se-star">☆</div>
+              <p>
+                <b>아직 담은 카드가 없어요.</b>
+              </p>
+              <p>카드 우측 상단의 ☆를 누르면 여기에 모입니다.</p>
+            </div>
+          ) : (
+            <div className="m-saved-list">
+              {cards.map((c) => (
+                <div
+                  key={c.id}
+                  className="m-saved-row"
+                  style={css({ "--c": COLOR(c.course) })}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onOpen(c.id)}
+                >
+                  <span className="sr-main">
+                    <span className="sr-course">
+                      {SHORT(c.course)}
+                      {c.week ? " · WK " + String(c.week).padStart(2, "0") : ""}
+                    </span>
+                    <span className="sr-hook">{rich(c.hook)}</span>
+                  </span>
+                  <button
+                    className="sr-star"
+                    aria-label="내 솔루션에서 빼기"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStar(c.id);
+                    }}
+                  >
+                    ★
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
 const STEPS = ["문제 인식", "후킹", "쉬운 이해", "30초 결정", "관계 탐색"];
 function DetailSheet({
   cardId,
@@ -794,6 +866,7 @@ export function MobileApp() {
   const [scrolled, setScrolled] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [painOpen, setPainOpen] = useState(false);
+  const [savedSheetOpen, setSavedSheetOpen] = useState(false);
   const [ontologyOpen, setOntologyOpen] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const [savedOnly, setSavedOnly] = useState(false);
@@ -856,6 +929,7 @@ export function MobileApp() {
   const openDetail = (id: string) => {
     setOpenId(id);
     setPainOpen(false);
+    setSavedSheetOpen(false);
     setOntologyOpen(false);
   };
 
@@ -917,18 +991,16 @@ export function MobileApp() {
 
   const scrollTop = () =>
     scrollRef.current && scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
-  const goSaved = () => {
-    setSavedOnly((o) => !o);
-    setTimeout(() => {
-      const g = scrollRef.current?.querySelector(".m-gridhead") as HTMLElement | null;
-      if (g) scrollRef.current?.scrollTo({ top: g.offsetTop - 60, behavior: "smooth" });
-    }, 60);
-  };
 
   return (
     <div className="m-layer">
       <div className="m-scroll" ref={scrollRef} onScroll={onScroll}>
-        <Masthead scrolled={scrolled} savedCount={saved.size} onLogo={scrollTop} onSaved={goSaved} />
+        <Masthead
+          scrolled={scrolled}
+          savedCount={saved.size}
+          onLogo={scrollTop}
+          onSaved={() => setSavedSheetOpen(true)}
+        />
         <Hero
           myIndustries={myIndustries}
           bizMode={bizMode}
@@ -969,6 +1041,14 @@ export function MobileApp() {
               if (a) a.scrollIntoView({ block: "center", behavior: "smooth" });
             }, 80);
           }}
+        />
+      )}
+      {savedSheetOpen && (
+        <SavedSheet
+          savedSet={saved}
+          onClose={() => setSavedSheetOpen(false)}
+          onOpen={openDetail}
+          onStar={star}
         />
       )}
       {filterOpen && (
