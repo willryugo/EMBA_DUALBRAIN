@@ -24,7 +24,9 @@
      본문(500/400) 대비로 위계를 준다. (관리자 Tweaks에서 명조 등으로 전환은 여전히 가능) */
   --serif:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
   --sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
-  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  /* JetBrains Mono엔 한글 글리프가 없다 → 한글은 Pretendard로 폴백(영문만 mono).
+     이걸 빼면 라벨의 한글이 시스템 명조/고딕으로 떨어져 깨져 보인다. */
+  --mono:"JetBrains Mono",ui-monospace,Menlo,"Pretendard Variable",Pretendard,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);background-image:var(--bg-image,none);background-attachment:fixed;color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
@@ -612,7 +614,7 @@ footer .copy{font-family:var(--mono);font-size:11px;color:var(--ink-faint);lette
    ═══════════════════════════════════════════════════════════ */
 .detail-overlay{position:fixed;inset:0;background:rgba(22,21,15,.55);backdrop-filter:blur(4px);z-index:80;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;animation:dofade .2s}
 @keyframes dofade{from{opacity:0}to{opacity:1}}
-.detail-modal{background:var(--paper);border:1.5px solid var(--ink);width:100%;max-width:840px;max-height:calc(100vh - 48px);display:flex;flex-direction:column;position:relative;box-shadow:14px 14px 0 rgba(22,21,15,.18);animation:dopop .26s cubic-bezier(.2,.7,.2,1);overflow:hidden}
+.detail-modal{background:var(--paper);border:1.5px solid var(--ink);width:100%;max-width:840px;height:min(760px,calc(100vh - 48px));max-height:calc(100vh - 48px);display:flex;flex-direction:column;position:relative;box-shadow:14px 14px 0 rgba(22,21,15,.18);animation:dopop .26s cubic-bezier(.2,.7,.2,1);overflow:hidden}
 @keyframes dopop{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @media(max-width:720px){.detail-overlay{padding:0}.detail-modal{max-width:100vw;max-height:100vh;height:100vh;max-height:100dvh;height:100dvh;border:none;box-shadow:none}}
 
