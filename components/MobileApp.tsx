@@ -21,7 +21,7 @@ import {
   INDUSTRIES,
   UNIVERSAL,
 } from "@/lib/manifest";
-import { recommendCards } from "@/lib/recommend";
+import { useSmartAsk } from "./useSmartAsk";
 import { applyTheme, applyFont } from "@/lib/themes";
 import { store } from "@/lib/storage";
 import { rich } from "./rich";
@@ -87,10 +87,6 @@ function MMark({ size = 24, className = "" }: { size?: number; className?: strin
   );
 }
 
-function recommend(q: string, myInd: Industry[]): { ids: string[]; reason: string } {
-  const r = recommendCards(q, CARDS, myInd);
-  return { ids: r.ids, reason: r.reason };
-}
 
 // ───────────────────────── Masthead ─────────────────────────
 function Masthead({
@@ -236,15 +232,28 @@ const DualAsk = forwardRef<
 >(function DualAsk({ myIndustries, onOpen, onRequestPain }, ref) {
   const [val, setVal] = useState("");
   const [result, setResult] = useState<{ ids: string[]; reason: string } | null>(null);
+  const [loading, setLoading] = useState(false);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
+  const { semantic, toggle, dl, runAsk: smartAsk } = useSmartAsk(CARDS, myIndustries);
 
   const runAsk = (text: string) => {
     const q = (text || "").trim();
     if (!q) return;
     setVal(q);
-    setResult(recommend(q, myIndustries));
+    setLoading(true);
+    setResult(null);
+    smartAsk(q).then((r) => {
+      setResult(r);
+      setLoading(false);
+    });
   };
   useImperativeHandle(ref, () => ({ runAsk }));
+
+  const goLabel = loading
+    ? dl !== null
+      ? `AI 두뇌 내려받는 중 ${dl}%`
+      : "찾는 중…"
+    : "두 번째 뇌에게 묻기";
 
   useEffect(() => {
     if (taRef.current) {
@@ -283,11 +292,29 @@ const DualAsk = forwardRef<
             )}
           </div>
         </div>
-        <button className="m-ask-go" disabled={!val.trim()} onClick={() => runAsk(val)}>
-          두 번째 뇌에게 묻기{" "}
-          <svg viewBox="0 0 24 24">
-            <path d="M5 12h14M13 5l7 7-7 7" />
-          </svg>
+        <button
+          className="m-ask-go"
+          disabled={!val.trim() || loading}
+          onClick={() => runAsk(val)}
+        >
+          {goLabel}{" "}
+          {!loading && (
+            <svg viewBox="0 0 24 24">
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          )}
+        </button>
+        <button
+          type="button"
+          className={"m-ai-toggle" + (semantic ? " on" : "")}
+          onClick={toggle}
+          aria-pressed={semantic}
+        >
+          <span className="ait-sw" aria-hidden="true">
+            <span className="ait-knob" />
+          </span>
+          ✨ AI 정밀검색 {semantic ? "ON" : "OFF"}
+          {semantic && <small> · 최초 1회 다운로드</small>}
         </button>
       </div>
 

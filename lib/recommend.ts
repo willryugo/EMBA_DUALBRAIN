@@ -1,11 +1,16 @@
 import type { Card, Domain, Industry } from "./types";
 import { UNIVERSAL, COURSE_SHORT } from "./manifest";
 import aliasesJson from "@/data/aliases.json";
+import neighborsJson from "@/data/neighbors.json";
 
 // 오프라인 사전 계산된 카드별 검색 별칭.
 // 구조: { "card-id": ["별칭1", "별칭2", ...], "_meta": {...} }
 // _meta 키는 매칭에서 제외.
 const ALIASES = aliasesJson as Record<string, unknown>;
+
+// 오프라인 의미 이웃 그래프 — { "card-id": ["이웃카드id", ...] } (의미 유사 top-N).
+// 키워드가 안 겹쳐도 개념적으로 가까운 카드를 끌어오는 데 사용(시맨틱 리콜).
+const NEIGHBORS = neighborsJson as unknown as Record<string, string[]>;
 
 export interface RecommendResult {
   ids: string[];               // 핵심 추천 3장
@@ -237,10 +242,30 @@ export function recommendCards(
     return { id: c.id, s };
   });
 
-  scored.sort((a, b) => b.s - a.s);
-  const matched = scored.filter((x) => x.s > 0);
-  const top = (matched.length > 0 ? matched : scored).slice(0, 3);
-  const related = (matched.length > 3 ? matched : scored).slice(3, 8);
+  // ── 의미 이웃 재랭킹(그래프 확산) ──
+  // 키워드로 잘 맞은 카드의 '의미 이웃'에 점수를 번지게 한다 → 키워드가 안 겹쳐도
+  // 개념적으로 가까운 카드가 후보에 오른다(오프라인 그래프, 추가 다운로드 0).
+  const base = new Map(scored.map((x) => [x.id, x.s]));
+  const boost = new Map<string, number>();
+  scored.forEach(({ id, s }) => {
+    if (s <= 0) return;
+    const ns = NEIGHBORS[id] || [];
+    ns.slice(0, 6).forEach((nid, idx) => {
+      if (!base.has(nid)) return;
+      const w = s * 0.22 * (1 - idx * 0.12); // 가까운 이웃일수록 강하게, 감쇠
+      boost.set(nid, (boost.get(nid) || 0) + Math.max(0, w));
+    });
+  });
+  const diffused = scored.map((x) => ({
+    id: x.id,
+    s: x.s + (boost.get(x.id) || 0),
+  }));
+
+  diffused.sort((a, b) => b.s - a.s);
+  const scoredFinal = diffused;
+  const matched = scoredFinal.filter((x) => x.s > 0);
+  const top = (matched.length > 0 ? matched : scoredFinal).slice(0, 3);
+  const related = (matched.length > 3 ? matched : scoredFinal).slice(3, 8);
 
   // 이유 작성
   const reason = buildReason({

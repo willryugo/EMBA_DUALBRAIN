@@ -5,6 +5,12 @@ const nextConfig = {
   // 로컬 빌드에서도 모듈 심볼릭링크 추적 불필요.
   webpack: (config) => {
     config.resolve.symlinks = false;
+    // transformers.js(브라우저 임베딩)의 Node 전용 의존성은 클라이언트 번들에서 제외.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      sharp$: false,
+      "onnxruntime-node$": false,
+    };
     return config;
   },
 };

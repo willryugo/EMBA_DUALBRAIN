@@ -40,6 +40,15 @@ img,svg{display:block;max-width:100%}
 .rule{height:2px;background:var(--ink)}
 .rule.thin{height:1px;background:var(--line-2)}
 
+/* ───── AI 정밀검색 토글 (옵트인 시맨틱) ───── */
+.ai-smart-toggle{display:inline-flex;align-items:center;gap:10px;margin-top:14px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--ink-faint);background:transparent;border:none;cursor:pointer;padding:4px 0}
+.ai-smart-toggle .ait-sw{width:34px;height:19px;border-radius:999px;background:var(--line-2);position:relative;transition:.16s;flex:none}
+.ai-smart-toggle .ait-knob{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.28);transition:.16s}
+.ai-smart-toggle.on{color:var(--brain-r)}
+.ai-smart-toggle.on .ait-sw{background:linear-gradient(120deg,var(--brain-l),var(--brain-r))}
+.ai-smart-toggle.on .ait-knob{transform:translateX(15px)}
+.ai-smart-toggle .ait-note{font-family:var(--sans);font-weight:500;font-size:11.5px;color:var(--ink-faint);letter-spacing:0}
+
 /* ───── Masthead ───── */
 .masthead{padding:18px 0 12px;border-bottom:1px solid var(--line);padding-top:max(18px, env(safe-area-inset-top, 0px))}
 @media(max-width:720px){.masthead{padding-top:max(54px, env(safe-area-inset-top, 0px))}}

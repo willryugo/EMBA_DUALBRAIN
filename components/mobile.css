@@ -251,6 +251,15 @@
 
 .db-mark{display:block;flex:none}
 
+/* ── AI 정밀검색 토글 (옵트인 시맨틱) ── */
+.m-ai-toggle{display:inline-flex;align-items:center;gap:8px;margin-top:11px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.02em;color:var(--ink-faint);background:transparent;border:none;padding:4px 2px}
+.m-ai-toggle .ait-sw{width:32px;height:18px;border-radius:999px;background:var(--line-2);position:relative;transition:.16s;flex:none}
+.m-ai-toggle .ait-knob{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--paper);box-shadow:0 1px 2px rgba(0,0,0,.28);transition:.16s}
+.m-ai-toggle.on{color:var(--brain-r)}
+.m-ai-toggle.on .ait-sw{background:linear-gradient(120deg,var(--brain-l),var(--brain-r))}
+.m-ai-toggle.on .ait-knob{transform:translateX(14px)}
+.m-ai-toggle small{font-weight:500;color:var(--ink-faint);letter-spacing:0}
+
 /* ── 디테일 시트: 프로덕션 스텝 콘텐츠를 모바일 시트 안에 그대로 렌더 ── */
 .m-detail-rich .step-content{min-height:0}
 .m-detail-rich .constellation{display:none}  /* 데스크톱용 성좌 SVG는 터치에서 생략 — 아래 관련카드 리스트로 이동 */

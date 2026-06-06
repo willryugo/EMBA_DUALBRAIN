@@ -2,9 +2,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Card, Industry, OwnerPainCategory } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
-import { recommendCards, type RecommendResult } from "@/lib/recommend";
+import { type RecommendResult } from "@/lib/recommend";
 import { logEvent } from "@/lib/events";
 import { rich } from "./rich";
+import { useSmartAsk } from "./useSmartAsk";
 
 // 접속 시각(일·시간)과 내 산업으로 만드는 결정적 시드 — 매 접속/매 시간 '오늘의 질문'이 달라진다.
 function makeSeed(myIndustries: Industry[]): number {
@@ -93,27 +94,28 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
     return () => clearInterval(t);
   }, [val]);
 
+  const { semantic, toggle, dl, runAsk } = useSmartAsk(cards, myIndustries);
+
   const doAsk = (text?: string) => {
     const q = (text ?? val).trim();
     if (!q) return;
     setLoading(true);
     setResult(null);
-    // Phase 1: 동기 fallback (keyword 매칭만). 짧게 지연 줘서 UI 피드백.
-    setTimeout(() => {
-      const r = recommendCards(q, cards, myIndustries);
+    // 기본: 키워드+의미이웃(즉시). 토글 ON: 브라우저 임베딩 시맨틱(최초 1회 다운로드).
+    runAsk(q).then((r) => {
       setResult(r);
       setLoading(false);
       logEvent("question_asked", {
         query_text: q,
         matched_card_ids: r.ids,
-        fallback_used: true,
+        fallback_used: !semantic,
       });
       setTimeout(() => {
         document
           .querySelector(".airesult")
           ?.scrollIntoView({ block: "center", behavior: "smooth" });
       }, 80);
-    }, 160);
+    });
   };
 
   const usePain = (pain: string) => {
@@ -171,7 +173,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
                 <span></span>
                 <span></span>
               </span>{" "}
-              찾는 중
+              {dl !== null ? `AI 두뇌 내려받는 중 ${dl}%` : "찾는 중"}
             </>
           ) : (
             <>
@@ -183,6 +185,22 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
           )}
         </button>
       </div>
+
+      <button
+        type="button"
+        className={"ai-smart-toggle" + (semantic ? " on" : "")}
+        onClick={toggle}
+        aria-pressed={semantic}
+        title="AI 정밀검색 — 의미로 검색. 최초 1회 모델 다운로드(약 118MB) 후 캐시됩니다."
+      >
+        <span className="ait-sw" aria-hidden="true">
+          <span className="ait-knob" />
+        </span>
+        ✨ AI 정밀검색 {semantic ? "ON" : "OFF"}
+        <span className="ait-note">
+          {semantic ? "의미 임베딩으로 검색 · 최초 1회 다운로드" : "표현이 달라도 의미로 찾기 (옵션)"}
+        </span>
+      </button>
 
       <div className="pain-section">
         <div className="pain-head">
