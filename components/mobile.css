@@ -251,6 +251,12 @@
 
 .db-mark{display:block;flex:none}
 
+/* ── 디테일 시트: 프로덕션 스텝 콘텐츠를 모바일 시트 안에 그대로 렌더 ── */
+.m-detail-rich .step-content{min-height:0}
+.m-detail-rich .constellation{display:none}  /* 데스크톱용 성좌 SVG는 터치에서 생략 — 아래 관련카드 리스트로 이동 */
+.m-detail-rich .onto-hint{display:none}        /* '마우스를 올리면' 안내는 터치에서 숨김 */
+.m-detail-rich .finish-row{display:none}       /* 하단 닫기는 시트 푸터가 대신 */
+
 /* ── 내 솔루션 시트 (저장 카드 팝업) ── */
 .m-saved-count{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--brain-r);margin-left:6px}
 .m-saved-empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding:34px 14px 38px;color:var(--ink-soft)}

@@ -9,7 +9,7 @@ import {
   forwardRef,
   useImperativeHandle,
 } from "react";
-import type { CSSProperties, ReactNode } from "react";
+import type { CSSProperties } from "react";
 import cardsData from "@/data/cards.json";
 import ownerPainsData from "@/data/owner-pains.json";
 import type { Card, Industry, OwnerPainCategory } from "@/lib/types";
@@ -26,6 +26,19 @@ import { applyTheme, applyFont } from "@/lib/themes";
 import { store } from "@/lib/storage";
 import { rich } from "./rich";
 import { OntologyGraph } from "./OntologyGraph";
+import { getProbe } from "@/lib/probe";
+import {
+  buildSteps,
+  STEP_LABEL,
+  StepProblem,
+  StepHook,
+  StepConcept,
+  StepApply,
+  StepCase,
+  StepProbe,
+  StepDecision,
+  StepOntology,
+} from "./DetailModal";
 import "./mobile.css";
 
 const CARDS = cardsData as Card[];
@@ -77,25 +90,6 @@ function MMark({ size = 24, className = "" }: { size?: number; className?: strin
 function recommend(q: string, myInd: Industry[]): { ids: string[]; reason: string } {
   const r = recommendCards(q, CARDS, myInd);
   return { ids: r.ids, reason: r.reason };
-}
-
-function relatedCards(card: Card, all: Card[]): Card[] {
-  return all
-    .filter((c) => c.id !== card.id)
-    .map((c) => {
-      let s = 0;
-      if (c.course === card.course) s += 3;
-      s += (c.domain || []).filter((d) => (card.domain || []).includes(d)).length * 2;
-      s +=
-        (c.industry || []).filter(
-          (i) => i !== UNIVERSAL && (card.industry || []).includes(i)
-        ).length * 1.5;
-      return { c, s };
-    })
-    .filter((x) => x.s > 0)
-    .sort((a, b) => b.s - a.s)
-    .slice(0, 4)
-    .map((x) => x.c);
 }
 
 // ───────────────────────── Masthead ─────────────────────────
@@ -699,7 +693,6 @@ function SavedSheet({
   );
 }
 
-const STEPS = ["문제 인식", "후킹", "쉬운 이해", "30초 결정", "관계 탐색"];
 function DetailSheet({
   cardId,
   saved,
@@ -715,99 +708,18 @@ function DetailSheet({
 }) {
   const card = CARDS.find((c) => c.id === cardId);
   const [step, setStep] = useState(0);
-  const rel = useMemo(() => (card ? relatedCards(card, CARDS) : []), [cardId]); // eslint-disable-line react-hooks/exhaustive-deps
+  // 스무고개(probe) 유무에 따라 8/7단계 — 프로덕션 DetailModal과 동일 구조
+  const probeAvail = useMemo(() => (card ? getProbe(card.id) != null : false), [cardId]); // eslint-disable-line react-hooks/exhaustive-deps
+  const steps = useMemo(() => buildSteps(probeAvail), [probeAvail]);
+  useEffect(() => {
+    setStep(0);
+  }, [cardId]);
   if (!card) return null;
   const color = COLOR(card.course);
-
-  let body: ReactNode = null;
-  if (step === 0)
-    body = (
-      <div className="m-dstep" style={{ borderBottom: "none" }}>
-        <div className="de">
-          <span className="num">1</span>SCENE · 문제 인식
-        </div>
-        <p className="scene">“{rich(card.problem_scene || card.insight)}”</p>
-        <p className="body" style={{ marginTop: 14 }}>
-          이 장면, 익숙하죠? — {SHORT(card.course)} 수업의 한 장면입니다.
-        </p>
-      </div>
-    );
-  else if (step === 1)
-    body = (
-      <div className="m-dstep" style={{ borderBottom: "none" }}>
-        <div className="de">
-          <span className="num">2</span>HOOK · 후킹
-        </div>
-        <h2>{rich(card.hook)}</h2>
-        {card.quote && (
-          <div className="m-decision" style={{ marginTop: 18 }}>
-            <div className="dl">QUOTE</div>
-            <div className="dq">“{rich(card.quote)}”</div>
-          </div>
-        )}
-      </div>
-    );
-  else if (step === 2)
-    body = (
-      <div className="m-dstep" style={{ borderBottom: "none" }}>
-        <div className="de">
-          <span className="num">3</span>CONCEPT · 쉬운 이해
-        </div>
-        <div className="concept-k">{card.concept}</div>
-        <p className="body">{rich(card.insight)}</p>
-        {card.application && (
-          <p className="body" style={{ marginTop: 14 }}>
-            <b style={{ color: "var(--ink)" }}>적용 — </b>
-            {rich(card.application)}
-          </p>
-        )}
-      </div>
-    );
-  else if (step === 3)
-    body = (
-      <div className="m-dstep" style={{ borderBottom: "none" }}>
-        <div className="de">
-          <span className="num">4</span>DECISION · 30초 결정
-        </div>
-        <div className="m-decision">
-          <div className="dl">지금 할 한 가지</div>
-          <div className="dq">{rich(card.decision || card.application)}</div>
-        </div>
-        {card.checklist && card.checklist.length > 0 && (
-          <ul className="m-check">
-            {card.checklist.map((it, i) => (
-              <li key={i}>{rich(it)}</li>
-            ))}
-          </ul>
-        )}
-      </div>
-    );
-  else
-    body = (
-      <div className="m-dstep" style={{ borderBottom: "none" }}>
-        <div className="de">
-          <span className="num">5</span>ONTOLOGY · 관계 탐색
-        </div>
-        <p className="body" style={{ marginBottom: 4 }}>
-          이 카드와 이어지는 인사이트들 — 같은 과목·도메인·산업으로 연결됩니다.
-        </p>
-        <div className="m-rel">
-          {rel.map((c) => (
-            <button
-              key={c.id}
-              onClick={() => {
-                setStep(0);
-                onOpen(c.id);
-              }}
-            >
-              <span className="rc-dot" style={{ background: COLOR(c.course) }}></span>
-              <span className="rc-h">{rich(c.hook)}</span>
-              <span className="rc-c">{SHORT(c.course)}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-    );
+  const lastIdx = steps.length - 1;
+  const safeStep = Math.min(step, lastIdx);
+  const key = steps[safeStep];
+  const next = () => setStep((s) => Math.min(lastIdx, s + 1));
 
   return (
     <div className="m-detail" style={css({ "--c": color })}>
@@ -829,25 +741,43 @@ function DetailSheet({
         </div>
       </div>
       <div className="m-detail-steps">
-        {STEPS.map((s, i) => (
-          <div key={i} className={"s" + (i <= step ? " on" : "")}></div>
+        {steps.map((k, i) => (
+          <div key={k} className={"s" + (i <= safeStep ? " on" : "")}></div>
         ))}
       </div>
-      <div className="m-detail-body" key={step}>
-        {body}
+      {/* 콘텐츠는 프로덕션 DetailModal 스텝 컴포넌트를 그대로 렌더 — 최신 배선(RichBlocks·스무고개) 자동 반영 */}
+      <div className="m-detail-body m-detail-rich" key={safeStep}>
+        {key === "problem" && <StepProblem card={card} onNext={next} />}
+        {key === "hook" && <StepHook card={card} color={color} onNext={next} />}
+        {key === "concept" && <StepConcept card={card} color={color} onNext={next} />}
+        {key === "apply" && <StepApply card={card} color={color} />}
+        {key === "case" && <StepCase card={card} color={color} />}
+        {key === "probe" && <StepProbe card={card} color={color} />}
+        {key === "decision" && (
+          <StepDecision
+            card={card}
+            color={color}
+            onSave={() => onStar(card.id)}
+            saved={saved}
+            onNext={next}
+          />
+        )}
+        {key === "connect" && (
+          <StepOntology card={card} cards={CARDS} color={color} onOpen={onOpen} onClose={onClose} />
+        )}
       </div>
       <div className="m-sheet-foot" style={{ borderTop: "1px solid var(--line)" }}>
         <button
           className="reset"
-          disabled={step === 0}
-          style={{ opacity: step === 0 ? 0.4 : 1 }}
+          disabled={safeStep === 0}
+          style={{ opacity: safeStep === 0 ? 0.4 : 1 }}
           onClick={() => setStep((s) => Math.max(0, s - 1))}
         >
           ← 이전
         </button>
-        {step < STEPS.length - 1 ? (
-          <button className="apply" onClick={() => setStep((s) => Math.min(STEPS.length - 1, s + 1))}>
-            다음 — {STEPS[step + 1]} →
+        {safeStep < lastIdx ? (
+          <button className="apply" onClick={next}>
+            다음 — {STEP_LABEL[steps[safeStep + 1]]} →
           </button>
         ) : (
           <button className="apply" onClick={onClose}>

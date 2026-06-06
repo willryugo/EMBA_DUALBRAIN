@@ -15,9 +15,9 @@ import {
 import { DBMark } from "./DBMark";
 import { rich, RichBlocks } from "./rich";
 
-type StepKey =
+export type StepKey =
   | "problem" | "hook" | "concept" | "apply" | "case" | "probe" | "decision" | "connect";
-const STEP_LABEL: Record<StepKey, string> = {
+export const STEP_LABEL: Record<StepKey, string> = {
   problem: "문제 인식",
   hook: "지식 한방",
   concept: "핵심 개념",
@@ -28,7 +28,7 @@ const STEP_LABEL: Record<StepKey, string> = {
   connect: "연결된 듀얼브레인",
 };
 // 스무고개(probe)가 있는 카드만 6번째 단계를 끼워 넣는다(없으면 7단계).
-function buildSteps(hasProbe: boolean): StepKey[] {
+export function buildSteps(hasProbe: boolean): StepKey[] {
   return [
     "problem", "hook", "concept", "apply", "case",
     ...(hasProbe ? (["probe"] as StepKey[]) : []),
@@ -219,7 +219,7 @@ export function DetailModal({ cardId, cards, onClose, onOpen }: Props) {
   );
 }
 
-function StepProblem({ card, onNext }: { card: Card; onNext: () => void }) {
+export function StepProblem({ card, onNext }: { card: Card; onNext: () => void }) {
   return (
     <div className="step-content step-problem">
       <div className="eyebrow eyebrow-step">SCENE · 문제 인식</div>
@@ -235,7 +235,7 @@ function StepProblem({ card, onNext }: { card: Card; onNext: () => void }) {
   );
 }
 
-function StepHook({
+export function StepHook({
   card,
   color,
   onNext,
@@ -286,7 +286,7 @@ const SOURCE_LABEL: Record<string, string> = {
   event: "사례",
 };
 
-function StepConcept({
+export function StepConcept({
   card,
   color,
   onNext,
@@ -307,7 +307,7 @@ function StepConcept({
   );
 }
 
-function StepApply({ card, color }: { card: Card; color: string }) {
+export function StepApply({ card, color }: { card: Card; color: string }) {
   return (
     <div className="step-content step-concept" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">PLAYBOOK · 실전 적용</div>
@@ -317,7 +317,7 @@ function StepApply({ card, color }: { card: Card; color: string }) {
   );
 }
 
-function StepCase({ card, color }: { card: Card; color: string }) {
+export function StepCase({ card, color }: { card: Card; color: string }) {
   return (
     <div className="step-content step-concept" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">CASE · 실제 사례</div>
@@ -344,7 +344,7 @@ function StepCase({ card, color }: { card: Card; color: string }) {
   );
 }
 
-function StepProbe({ card, color }: { card: Card; color: string }) {
+export function StepProbe({ card, color }: { card: Card; color: string }) {
   return (
     <div className="step-content step-decision" style={{ ["--c" as string]: color } as React.CSSProperties}>
       <div className="eyebrow eyebrow-step">DIAGNOSE · 스무고개 진단</div>
@@ -362,7 +362,7 @@ function StepProbe({ card, color }: { card: Card; color: string }) {
   );
 }
 
-function StepDecision({
+export function StepDecision({
   card,
   color,
   onSave,
@@ -439,7 +439,7 @@ function StepDecision({
 // ── 분기 진단(스무고개) ─────────────────────────────
 // 같은 카드로 시작해도, 길목마다의 선택 + 내 산업에 따라 최종 처방이 달라진다.
 // 각 길목엔 이론 렌즈(lens)·교육 한 줄(teach)·선택지 의미(because)를 임베딩.
-function ProbeFlow({ card, color }: { card: Card; color: string }) {
+export function ProbeFlow({ card, color }: { card: Card; color: string }) {
   const probe = useMemo<CardProbe | null>(() => getProbe(card.id), [card.id]);
   const myIndustries = useMemo<Industry[]>(
     () => (store.get<Industry[]>("emba17_my_industries") || []) as Industry[],
@@ -637,7 +637,7 @@ function ProbeFlow({ card, color }: { card: Card; color: string }) {
   );
 }
 
-function StepOntology({
+export function StepOntology({
   card,
   cards,
   color,
