@@ -865,7 +865,8 @@ export function MobileApp() {
   // 부트스트랩 — 테마/폰트/저장/산업 (클라이언트에서만 마운트되므로 안전)
   useEffect(() => {
     applyTheme((store.get<string>("emba17_theme") as never) || ("dawn" as never));
-    applyFont((store.get<string>("emba17_font") as never) || ("allsans" as never));
+    // 모바일 리뉴얼(A형)은 '올 산세리프' 고정 — 데스크톱에 저장된 폰트(명조 등)를 따라가지 않는다.
+    applyFont("allsans" as never);
     setSaved(new Set(store.get<string[]>("emba17_saved") || []));
     setMyIndustries((store.get<Industry[]>("emba17_my_industries") as Industry[]) || []);
     const bm = store.get<string>("emba17_biz_mode");

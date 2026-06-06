@@ -6,7 +6,9 @@
 .hscroll{scrollbar-width:none;-webkit-overflow-scrolling:touch}
 
 /* ════════════ MOBILE APP (phone 내부) ════════════ */
-.m-layer{position:fixed;inset:0;overflow:hidden;background:var(--bg);background-image:var(--bg-image,none);font-family:var(--sans);color:var(--ink);line-height:1.55}
+/* 모바일 리뉴얼(A형) = 올 산세리프 고정. --serif를 산세리프로 스코프 재정의 →
+   .m-* 와 안에서 렌더되는 디테일 스텝(.concept-name 등)의 var(--serif)가 전부 산세리프. */
+.m-layer{position:fixed;inset:0;overflow:hidden;background:var(--bg);background-image:var(--bg-image,none);font-family:var(--sans);--serif:var(--sans);color:var(--ink);line-height:1.55}
 .m-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .m-scroll::-webkit-scrollbar{width:0}
 .m-pad{padding:0 18px}
