@@ -249,6 +249,12 @@ const DualAsk = forwardRef<
     smartAsk(q).then((r) => {
       setResult(r);
       setLoading(false);
+      // 결과가 보이도록 검색창을 마스트헤드 바로 아래로 끌어올린다(결과는 그 밑에 등장).
+      setTimeout(() => {
+        document
+          .querySelector(".m-ask .m-search")
+          ?.scrollIntoView({ block: "start", behavior: "smooth" });
+      }, 60);
     });
   };
   useImperativeHandle(ref, () => ({ runAsk }));
@@ -322,8 +328,11 @@ const DualAsk = forwardRef<
         </button>
       </div>
 
-      <div className="m-or">
-        <span>또는, 임원들이 묻는 질문에서</span>
+      {/* 결과는 검색창 바로 아래 — 검색하면 그 자리에서 바뀐다(고민 버튼에 밀리지 않게) */}
+      <AskResult result={result} onOpen={onOpen} />
+
+      <div className={"m-or" + (result ? " after" : "")}>
+        <span>{result ? "다른 각도로 — 임원들의 질문" : "또는, 임원들이 묻는 질문에서"}</span>
       </div>
       <button className="m-pain-open" onClick={onRequestPain}>
         <span className="l">
@@ -332,8 +341,6 @@ const DualAsk = forwardRef<
         </span>
         <span className="r">→</span>
       </button>
-
-      <AskResult result={result} onOpen={onOpen} />
     </section>
   );
 });
@@ -996,11 +1003,7 @@ export function MobileApp() {
           onClose={() => setPainOpen(false)}
           onPick={(p) => {
             setPainOpen(false);
-            askRef.current?.runAsk(p);
-            setTimeout(() => {
-              const a = scrollRef.current?.querySelector(".m-result") as HTMLElement | null;
-              if (a) a.scrollIntoView({ block: "center", behavior: "smooth" });
-            }, 80);
+            askRef.current?.runAsk(p); // runAsk가 결과로 스크롤까지 처리
           }}
         />
       )}

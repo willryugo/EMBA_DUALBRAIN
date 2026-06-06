@@ -260,6 +260,14 @@
 .m-ai-toggle.on .ait-knob{transform:translateX(14px)}
 .m-ai-toggle small{font-weight:500;color:var(--ink-faint);letter-spacing:0}
 .m-rcard .rc-why{margin-top:7px;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.01em;color:var(--brain-r);white-space:normal;line-height:1.35}
+/* 검색 직후 결과가 보이게 — 검색창을 마스트헤드 아래로 끌어올릴 때의 여백 */
+.m-search{scroll-margin-top:calc(env(safe-area-inset-top,12px) + 64px)}
+/* 결과가 검색창 바로 밑에서 등장 — 바뀐 게 눈에 띄도록 */
+.m-result{animation:mResultIn .34s cubic-bezier(.2,.7,.2,1)}
+@keyframes mResultIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.m-or.after{opacity:.65}
+.m-or.after span{font-size:10.5px}
+@media(prefers-reduced-motion:reduce){.m-result{animation:none}}
 
 /* ── 디테일 시트: 프로덕션 스텝 콘텐츠를 모바일 시트 안에 그대로 렌더 ── */
 .m-detail-rich .step-content{min-height:0}
