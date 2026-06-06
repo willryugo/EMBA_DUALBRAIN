@@ -78,9 +78,7 @@ export function TitleBlock({
         </div>
       </div>
       <div className="byline">
-        <span className="byline-en">DUAL · BRAIN</span>
-        <span className="byline-sep"></span>
-        <span className="byline-by">VOL.01 · 52명의 두 번째 뇌</span>
+        <span className="byline-by">52명의 두 번째 뇌</span>
       </div>
       <div className="title-lower">
       <p className="deck">
