@@ -22,6 +22,7 @@ import {
   UNIVERSAL,
 } from "@/lib/manifest";
 import { useSmartAsk } from "./useSmartAsk";
+import type { RecommendResult } from "@/lib/recommend";
 import { applyTheme, applyFont } from "@/lib/themes";
 import { store } from "@/lib/storage";
 import { rich } from "./rich";
@@ -191,7 +192,7 @@ function AskResult({
   result,
   onOpen,
 }: {
-  result: { ids: string[]; reason: string } | null;
+  result: RecommendResult | null;
   onOpen: (id: string) => void;
 }) {
   if (!result) return null;
@@ -216,6 +217,9 @@ function AskResult({
             <div className="rc">
               {SHORT(c.course)} · {c.concept}
             </div>
+            {result.evidence?.[c.id] && (
+              <div className="rc-why">✓ {result.evidence[c.id]}</div>
+            )}
           </button>
         ))}
       </div>
@@ -231,7 +235,7 @@ const DualAsk = forwardRef<
   { myIndustries: Industry[]; onOpen: (id: string) => void; onRequestPain: () => void }
 >(function DualAsk({ myIndustries, onOpen, onRequestPain }, ref) {
   const [val, setVal] = useState("");
-  const [result, setResult] = useState<{ ids: string[]; reason: string } | null>(null);
+  const [result, setResult] = useState<RecommendResult | null>(null);
   const [loading, setLoading] = useState(false);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
   const { semantic, toggle, dl, runAsk: smartAsk } = useSmartAsk(CARDS, myIndustries);

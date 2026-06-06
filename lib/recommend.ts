@@ -18,6 +18,35 @@ export interface RecommendResult {
   expansions: string[];        // "승진" → 펼쳐진 관련 개념들
   relatedIds: string[];        // 4~8위 — "혹시 이런 카드도?" 칩으로 노출
   inferredDomain?: Domain;     // 쿼리에서 추론한 도메인 (UI 뱃지용)
+  evidence?: Record<string, string>; // 카드별 '왜 골랐는지' 한 줄 근거
+}
+
+// 결과 다양성 — 상위 N장이 한 과목에 쏠리지 않게(과목당 최대 cap장) 재배치.
+// 후보가 모자라면(예: 다 같은 과목) 남은 것으로 채운다.
+export function diversifyByCourse<T extends { id: string }>(
+  items: T[],
+  courseOf: (id: string) => string | undefined,
+  n: number,
+  capPerCourse: number
+): T[] {
+  const out: T[] = [];
+  const count: Record<string, number> = {};
+  const skipped: T[] = [];
+  for (const it of items) {
+    if (out.length >= n) break;
+    const c = courseOf(it.id) || "?";
+    if ((count[c] || 0) < capPerCourse) {
+      out.push(it);
+      count[c] = (count[c] || 0) + 1;
+    } else {
+      skipped.push(it);
+    }
+  }
+  for (const it of skipped) {
+    if (out.length >= n) break;
+    out.push(it);
+  }
+  return out;
 }
 
 // ────────────────────────────────────────────────────────────────────
@@ -264,8 +293,21 @@ export function recommendCards(
   diffused.sort((a, b) => b.s - a.s);
   const scoredFinal = diffused;
   const matched = scoredFinal.filter((x) => x.s > 0);
-  const top = (matched.length > 0 ? matched : scoredFinal).slice(0, 3);
-  const related = (matched.length > 3 ? matched : scoredFinal).slice(3, 8);
+  const pool = matched.length > 0 ? matched : scoredFinal;
+
+  // 결과 다양성 — 상위 3장이 한 과목에 쏠리지 않게(과목당 최대 2).
+  const cardById = new Map(cards.map((c) => [c.id, c]));
+  const courseOf = (id: string) => cardById.get(id)?.course as string | undefined;
+  const top = diversifyByCourse(pool, courseOf, 3, 2);
+  const usedTop = new Set(top.map((x) => x.id));
+  const related = pool.filter((x) => !usedTop.has(x.id)).slice(0, 5);
+
+  // 카드별 근거 — '왜 이 카드?' 한 줄.
+  const evidence: Record<string, string> = {};
+  for (const t of top) {
+    const c = cardById.get(t.id);
+    if (c) evidence[t.id] = keywordEvidence(c, tokens, inferredDomain, myIndustries);
+  }
 
   // 이유 작성
   const reason = buildReason({
@@ -282,7 +324,36 @@ export function recommendCards(
     expansions: expansions.slice(0, 6),
     relatedIds: related.map((x) => x.id),
     inferredDomain,
+    evidence,
   };
+}
+
+// 키워드 경로 근거 — 어떤 말이 어디서 걸렸는지 한 줄.
+function keywordEvidence(
+  card: Card,
+  tokens: string[],
+  inferredDomain: Domain | undefined,
+  myIndustries: Industry[]
+): string {
+  const aliasRaw = ALIASES[card.id];
+  const aliasText = Array.isArray(aliasRaw) ? (aliasRaw as string[]).join(" ") : "";
+  const hay = norm([card.hook, card.concept, aliasText].join(" "));
+  const hits: string[] = [];
+  for (const tok of tokens) {
+    if (tok.length >= 2 && hay.includes(tok) && !hits.includes(tok)) hits.push(tok);
+    if (hits.length >= 2) break;
+  }
+  const parts: string[] = [];
+  if (hits.length) parts.push(`'${hits.join("·")}' 매칭`);
+  if (inferredDomain && (card.domain || []).includes(inferredDomain))
+    parts.push(`${inferredDomain} 영역`);
+  if (
+    myIndustries.length &&
+    (card.industry || []).some((i) => i !== UNIVERSAL && myIndustries.includes(i))
+  )
+    parts.push("내 산업 적합");
+  if (!parts.length) parts.push("의미 이웃·관련도 상위");
+  return parts.join(" · ");
 }
 
 function buildReason(args: {

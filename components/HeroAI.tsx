@@ -304,6 +304,9 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
                   <div className="ac">
                     {COURSE_SHORT[c.course]} · {c.concept}
                   </div>
+                  {result.evidence?.[c.id] && (
+                    <div className="ai-why">✓ {result.evidence[c.id]}</div>
+                  )}
                 </button>
               );
             })}

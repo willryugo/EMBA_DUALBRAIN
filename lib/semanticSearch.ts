@@ -4,7 +4,7 @@
 import type { Card, Industry, Domain } from "./types";
 import { UNIVERSAL } from "./manifest";
 import embJson from "@/data/embeddings.json";
-import type { RecommendResult } from "./recommend";
+import { diversifyByCourse, type RecommendResult } from "./recommend";
 
 interface EmbFile {
   _meta: { model: string; dim: number; count: number; prefix: string };
@@ -74,7 +74,8 @@ export async function semanticRecommend(
     .filter((r) => byId.has(r.id))
     .map((r) => {
       const c = byId.get(r.id)!;
-      let s = r.s; // 0..1 코사인
+      const cos = r.s; // 0..1 코사인(근거 표시용 원점수)
+      let s = cos;
       // 내 산업 가중(시맨틱 점수 스케일에 맞춰 소폭).
       if (myIndustries.length > 0) {
         const overlap = (c.industry || []).filter(
@@ -83,13 +84,29 @@ export async function semanticRecommend(
         s += overlap * 0.05;
         if ((c.industry || []).includes(UNIVERSAL)) s += 0.012;
       }
-      return { id: r.id, s, domain: c.domain };
+      return { id: r.id, s, cos, domain: c.domain };
     })
     .sort((a, b) => b.s - a.s);
 
-  const top = ranked.slice(0, 3);
-  const related = ranked.slice(3, 8);
+  // 결과 다양성 — 상위 3장 과목 쏠림 방지(과목당 최대 2).
+  const courseOf = (id: string) => byId.get(id)?.course as string | undefined;
+  const top = diversifyByCourse(ranked, courseOf, 3, 2);
+  const usedTop = new Set(top.map((x) => x.id));
+  const related = ranked.filter((x) => !usedTop.has(x.id)).slice(0, 5);
   const inferredDomain: Domain | undefined = top[0]?.domain?.[0];
+
+  // 카드별 근거 — 의미 유사도 %.
+  const evidence: Record<string, string> = {};
+  for (const t of top) {
+    const overlapInd =
+      myIndustries.length > 0 &&
+      (byId.get(t.id)?.industry || []).some(
+        (i) => i !== UNIVERSAL && myIndustries.includes(i)
+      );
+    evidence[t.id] =
+      `의미 유사도 ${Math.round(Math.max(0, Math.min(1, t.cos)) * 100)}%` +
+      (overlapInd ? " · 내 산업 적합" : "");
+  }
 
   return {
     ids: top.map((x) => x.id),
@@ -98,5 +115,6 @@ export async function semanticRecommend(
     expansions: [],
     relatedIds: related.map((x) => x.id),
     inferredDomain,
+    evidence,
   };
 }

@@ -259,6 +259,7 @@
 .m-ai-toggle.on .ait-sw{background:linear-gradient(120deg,var(--brain-l),var(--brain-r))}
 .m-ai-toggle.on .ait-knob{transform:translateX(14px)}
 .m-ai-toggle small{font-weight:500;color:var(--ink-faint);letter-spacing:0}
+.m-rcard .rc-why{margin-top:7px;font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.01em;color:var(--brain-r);white-space:normal;line-height:1.35}
 
 /* ── 디테일 시트: 프로덕션 스텝 콘텐츠를 모바일 시트 안에 그대로 렌더 ── */
 .m-detail-rich .step-content{min-height:0}
