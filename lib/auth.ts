@@ -1,28 +1,16 @@
-// 2단계 비밀번호 + httpOnly 쿠키 인증 — Edge Runtime 호환 (Web Crypto API 사용)
-// 관리자(국장·부국장)와 일반 원우를 별도 비밀번호로 구분. 둘 다 입장 가능,
-// 관리자만 Tweaks(테마 변경)가 보인다. 개인 식별 X — 외부 노출 차단 + 역할 분리.
-
+// 단일 비밀번호 + httpOnly 쿠키 입장 게이트 — Edge Runtime 호환(Web Crypto).
+// 17기 내부 공유 전용. (관리자/원우 2단계 폐지 → 전원 동일 UI)
 export const COOKIE_NAME = "db_auth";
 export const COOKIE_MAX_AGE = 60 * 60 * 24 * 90; // 90일
 
-export type Role = "admin" | "member";
-
-// 비밀번호 — 17기 학술국이 공유. 환경변수로 덮어쓸 수 있음(Vercel: DB_ADMIN_PASSWORD / DB_MEMBER_PASSWORD).
-// 내부 공유용 캐주얼 게이트라 코드 기본값을 둔다(민감자료 아님). 운영에서 바꾸려면 env만 설정.
-function adminPassword(): string {
-  return process.env.DB_ADMIN_PASSWORD || "0604";
-}
-function memberPassword(): string {
-  return process.env.DB_MEMBER_PASSWORD || "2580";
+// 공유 비밀번호. 운영에서 바꾸려면 env(DB_PASSWORD) 설정. (내부 캐주얼 게이트)
+function gatePassword(): string {
+  return process.env.DB_PASSWORD || process.env.DB_MEMBER_PASSWORD || "2580";
 }
 
-// 입력 비밀번호 → 역할. 매칭 없으면 null.
-export function roleForPassword(input: string): Role | null {
+export function isPassword(input: string): boolean {
   const p = input.trim();
-  if (!p) return null;
-  if (p === adminPassword()) return "admin";
-  if (p === memberPassword()) return "member";
-  return null;
+  return p.length > 0 && p === gatePassword();
 }
 
 async function sha256Hex(input: string): Promise<string> {
@@ -33,25 +21,13 @@ async function sha256Hex(input: string): Promise<string> {
     .join("");
 }
 
-// 역할별 토큰 — httpOnly 쿠키 값. 해당 역할의 비밀번호를 모르면 위조 불가.
-export async function makeAuthToken(role: Role): Promise<string> {
-  const secret = role === "admin" ? adminPassword() : memberPassword();
-  return sha256Hex("dualbrain:v2:" + role + ":" + secret);
+// 쿠키 토큰. 기존 원우(member) 쿠키와 호환되도록 동일 스킴 유지 →
+// 이미 2580으로 입장한 사람은 재로그인 불필요. (관리자 0604 쿠키만 무효)
+export async function makeAuthToken(): Promise<string> {
+  return sha256Hex("dualbrain:v2:member:" + gatePassword());
 }
 
-// 쿠키 토큰 → 역할. 유효하지 않으면 null. (middleware·서버에서 입장/역할 판정)
-export async function roleForToken(
-  token: string | undefined
-): Promise<Role | null> {
-  if (!token) return null;
-  if (token === (await makeAuthToken("admin"))) return "admin";
-  if (token === (await makeAuthToken("member"))) return "member";
-  return null;
-}
-
-// 입장 가능 여부(역할 무관).
-export async function isValidToken(
-  token: string | undefined
-): Promise<boolean> {
-  return (await roleForToken(token)) !== null;
+export async function isValidToken(token: string | undefined): Promise<boolean> {
+  if (!token) return false;
+  return token === (await makeAuthToken());
 }

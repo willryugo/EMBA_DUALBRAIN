@@ -23,7 +23,6 @@ import { MagCard, layoutClass } from "./MagCard";
 import { rich } from "./rich";
 import { DetailModal } from "./DetailModal";
 import { OntologyGraph } from "./OntologyGraph";
-import { TweaksPanel } from "./TweaksPanel";
 import { Footer } from "./Footer";
 
 const CARDS = cardsData as Card[];
@@ -63,25 +62,12 @@ export function DualBrainApp() {
   // Hydration-안전: 모든 클라이언트 상태는 서버 기본값으로 초기화, 마운트 후 localStorage에서 복원.
   const [view, setView] = useState<"home" | "graph">("home");
   const [openId, setOpenId] = useState<string | null>(null);
-  const [tweaks, setTweaks] = useState<TweakState>(TWEAK_DEFAULTS);
+  // Tweaks 제거 — 전원 동일 UI(여명 테마 · Pretendard · regular). 고정값.
+  const tweaks: TweakState = TWEAK_DEFAULTS;
   const [filter, setFilter] = useState<FilterState>(FILTER_DEFAULTS);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [myIndustries, setMyIndustries] = useState<Industry[]>(MY_INDUSTRIES_DEFAULT);
   const [bizMode, setBizMode] = useState<"all" | "b2b" | "b2c">("all");
-  const [tweaksOpen, setTweaksOpen] = useState(false);
-  // 관리자 전용 노출(Tweaks). 1순위: 로그인 시 저장된 역할(emba17_role==="admin", 관리자 비번 0604).
-  // 보조: ?admin=1/0 수동 override(개발·데모용). 역할은 민감정보 아님 — 입장 차단은 서버 쿠키가 담당.
-  const [adminMode, setAdminMode] = useState(false);
-  useEffect(() => {
-    try {
-      const sp = new URLSearchParams(window.location.search);
-      if (sp.get("admin") === "1") localStorage.setItem("emba17_admin", "1");
-      if (sp.get("admin") === "0") localStorage.removeItem("emba17_admin");
-      const byRole = localStorage.getItem("emba17_role") === "admin";
-      const byOverride = localStorage.getItem("emba17_admin") === "1";
-      setAdminMode(byRole || byOverride);
-    } catch {}
-  }, []);
   const [today, setToday] = useState("");
   // 방문(새로고침)마다 바뀌는 시드 — 상단 대표 카드를 과목별로 순환시킨다. 0=첫 페인트(하이드레이션 안전).
   const [visitNonce, setVisitNonce] = useState(0);
@@ -90,23 +76,16 @@ export function DualBrainApp() {
     setVisitNonce((Math.floor(n * 1000) % 100000) + 1);
   }, []);
 
-  // 마운트 후 1회: localStorage 복원
+  // 마운트 후 1회: 고정 UI 적용 + localStorage 복원(필터·저장·산업만)
   useEffect(() => {
     setToday(todayStr());
-    // 1회 이전: 과거 자동 저장된 기본 명조(classic)를 Pretendard 통일로 전환.
-    // (이후 관리자가 Tweaks에서 다른 폰트를 고르면 그 선택은 존중)
-    if (!store.get("emba17_font_unified")) {
-      const f = store.get<string>("emba17_font");
-      if (f == null || f === "classic") store.set("emba17_font", "allsans");
-      store.set("emba17_font_unified", true);
+    // 전원 동일 — 여명 테마 · Pretendard · regular 밀도 고정(테마/폰트 저장값 무시).
+    applyTheme("dawn");
+    applyFont("allsans");
+    if (typeof document !== "undefined") {
+      document.body.classList.remove("density-compact", "density-airy");
+      document.body.classList.add("density-regular");
     }
-    const storedTweaks: Partial<TweakState> = {
-      theme: store.get("emba17_theme") || undefined,
-      font: store.get("emba17_font") || undefined,
-      quoteCards: store.get("emba17_quoteCards") ?? undefined,
-      density: store.get("emba17_density") || undefined,
-    };
-    setTweaks((t) => ({ ...t, ...(storedTweaks as TweakState) }));
 
     setFilter({
       course: (store.get<Course[]>("emba17_filter_course")) || [],
@@ -135,33 +114,6 @@ export function DualBrainApp() {
     window.addEventListener("emba17:industries-changed", onInd);
     return () => window.removeEventListener("emba17:industries-changed", onInd);
   }, []);
-
-  // 테마·폰트 라이브 반영
-  useEffect(() => {
-    applyTheme(tweaks.theme);
-    store.set("emba17_theme", tweaks.theme);
-  }, [tweaks.theme]);
-  useEffect(() => {
-    applyFont(tweaks.font);
-    store.set("emba17_font", tweaks.font);
-  }, [tweaks.font]);
-  useEffect(() => {
-    store.set("emba17_quoteCards", tweaks.quoteCards);
-  }, [tweaks.quoteCards]);
-  useEffect(() => {
-    store.set("emba17_density", tweaks.density);
-    if (typeof document === "undefined") return;
-    document.body.classList.remove(
-      "density-compact",
-      "density-regular",
-      "density-airy"
-    );
-    document.body.classList.add("density-" + tweaks.density);
-  }, [tweaks.density]);
-
-  const setTweak = <K extends keyof TweakState>(k: K, v: TweakState[K]) => {
-    setTweaks((s) => ({ ...s, [k]: v }));
-  };
 
   const setF = <K extends keyof FilterState>(k: K, v: FilterState[K]) => {
     setFilter((s) => {
@@ -371,20 +323,6 @@ export function DualBrainApp() {
 
       <Footer todayLabel={today} />
 
-      {adminMode && (
-      <button
-        className="tweaks-toggle"
-        onClick={() => setTweaksOpen((o) => !o)}
-        title="테마·폰트·팔레트 트윅 (관리자 전용)"
-      >
-        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2">
-          <circle cx="12" cy="12" r="3" />
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-        </svg>
-        <span>Tweaks · 테마 변경</span>
-      </button>
-      )}
-
       {openId && (
         <DetailModal
           cardId={openId}
@@ -408,17 +346,6 @@ export function DualBrainApp() {
           onClose={() => setView("home")}
         />
       )}
-
-      <TweaksPanel
-        open={tweaksOpen}
-        onClose={() => setTweaksOpen(false)}
-        state={tweaks}
-        setState={setTweak}
-        onResetFilters={resetFilters}
-        onClearSaved={() => {
-          setSavedIds([]);
-        }}
-      />
     </>
   );
 }

@@ -24,12 +24,10 @@ function WelcomeForm() {
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
-        const data = await res.json().catch(() => ({}));
-        // 역할 저장 — Tweaks(테마 변경) 노출 판단용. 쿠키는 httpOnly라 JS가 못 읽음.
+        // 과거 역할 기반 분기 잔재 제거(전원 동일 UI).
         try {
-          if (data?.role === "admin" || data?.role === "member") {
-            localStorage.setItem("emba17_role", data.role);
-          }
+          localStorage.removeItem("emba17_role");
+          localStorage.removeItem("emba17_admin");
         } catch {
           /* localStorage 차단 환경 무시 */
         }
