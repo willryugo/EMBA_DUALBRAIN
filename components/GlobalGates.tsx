@@ -16,6 +16,10 @@ export function GlobalGates() {
     // null = 한 번도 응답한 적 없음. [] = 명시적으로 건너뛴 상태도 응답으로 침.
     const existing = store.get("emba17_my_industries");
     if (existing === null) setShowIndustry(true);
+    // 모바일 Hero의 '내 산업' 칩 등에서 산업 모달을 다시 열 수 있게.
+    const onOpen = () => setShowIndustry(true);
+    window.addEventListener("emba17:open-industry", onOpen);
+    return () => window.removeEventListener("emba17:open-industry", onOpen);
   }, [pathname]);
 
   if (pathname === "/welcome") return null;
