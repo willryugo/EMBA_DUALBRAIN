@@ -6,6 +6,7 @@ import { type RecommendResult } from "@/lib/recommend";
 import { logEvent } from "@/lib/events";
 import { rich } from "./rich";
 import { useSmartAsk } from "./useSmartAsk";
+import { useRotatingExample } from "./useRotatingExample";
 
 // 접속 시각(일·시간)과 내 산업으로 만드는 결정적 시드 — 매 접속/매 시간 '오늘의 질문'이 달라진다.
 function makeSeed(myIndustries: Industry[]): number {
@@ -22,16 +23,6 @@ function rotate<T>(arr: T[], by: number): T[] {
   return arr.slice(k).concat(arr.slice(0, k));
 }
 
-// 검색창 placeholder 예시 — 네이티브 placeholder라 입력 시작하면 자동으로 사라진다.
-const PLACE_EXAMPLES = [
-  "예) 성수기인데 매장 대기가 30분, 손님이 그냥 나가요",
-  "예) 핵심 인재가 경쟁사로 간다는데 연봉을 올려야 할까요",
-  "예) 신제품 가격, 얼마로 잡아야 할지 회의가 안 끝나요",
-  "예) 외부 스타를 영입할까, 내부를 키울까",
-  "예) 장부는 흑자인데 통장이 비어요 — 현금이 어디 묶였죠",
-  "예) 부서끼리 책임을 미루다 결정이 계속 미뤄져요",
-];
-
 interface Props {
   cards: Card[];
   ownerPains: OwnerPainCategory[];
@@ -45,7 +36,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RecommendResult | null>(null);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
-  const [phIdx, setPhIdx] = useState(0);
+  const placeholder = useRotatingExample(!!val.trim());
   const [refreshNonce, setRefreshNonce] = useState(0);
   const [activePain, setActivePain] = useState<string | null>(null);
   // 방문할 때마다 질문이 새로 섞이게 — 마운트 후 client에서만(하이드레이션 안전).
@@ -82,16 +73,6 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
       taRef.current.style.height = "auto";
       taRef.current.style.height = Math.min(taRef.current.scrollHeight, 200) + "px";
     }
-  }, [val]);
-
-  // placeholder 예시 회전 — 입력 중(val 존재)엔 멈춘다. 입력 시작하면 native placeholder가 자동으로 사라짐.
-  useEffect(() => {
-    if (val) return;
-    const t = setInterval(
-      () => setPhIdx((i) => (i + 1) % PLACE_EXAMPLES.length),
-      3800
-    );
-    return () => clearInterval(t);
   }, [val]);
 
   const { semantic, toggle, dl, runAsk } = useSmartAsk(cards, myIndustries);
@@ -151,7 +132,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
           ref={taRef}
           value={val}
           onChange={(e) => setVal(e.target.value)}
-          placeholder={val ? "" : PLACE_EXAMPLES[phIdx]}
+          placeholder={val ? "" : "예) " + placeholder}
           rows={1}
           onKeyDown={(e) => {
             // Enter = 즉시 검색, Shift+Enter = 줄바꿈

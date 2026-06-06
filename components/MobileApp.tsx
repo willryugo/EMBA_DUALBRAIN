@@ -22,6 +22,7 @@ import {
   UNIVERSAL,
 } from "@/lib/manifest";
 import { useSmartAsk } from "./useSmartAsk";
+import { useRotatingExample } from "./useRotatingExample";
 import type { RecommendResult } from "@/lib/recommend";
 import { applyTheme, applyFont } from "@/lib/themes";
 import { store } from "@/lib/storage";
@@ -252,6 +253,7 @@ const DualAsk = forwardRef<
   const [result, setResult] = useState<RecommendResult | null>(null);
   const [loading, setLoading] = useState(false);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
+  const placeholder = useRotatingExample(!!val.trim());
   const { semantic, toggle, dl, runAsk: smartAsk } = useSmartAsk(CARDS, myIndustries);
 
   const runAsk = (text: string) => {
@@ -311,9 +313,7 @@ const DualAsk = forwardRef<
                 }
               }}
             />
-            {!val && (
-              <span className="m-search-ghost">여기에 한 줄 — 예: HR · 전략 · 손익</span>
-            )}
+            {!val && <span className="m-search-ghost">예) {placeholder}</span>}
           </div>
         </div>
         <button
