@@ -25,9 +25,7 @@ export function Masthead({
       <div className="wrap masthead-inner">
         <div className="brand">
           <DBMark size={36} className="masthead-mark" />
-          <div className="name">
-            DualBrain <span>· 듀얼브레인</span>
-          </div>
+          <div className="name">DualBrain</div>
         </div>
         <nav>
           <Link href="/" className={isHome && !graphOpen ? "on" : ""}>

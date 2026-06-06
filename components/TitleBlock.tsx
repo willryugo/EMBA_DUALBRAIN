@@ -47,8 +47,6 @@ export function TitleBlock({
     <section className="title-block wrap">
       <div className="vol">
         <b>VOLUME 01</b>
-        <span className="dot"></span>
-        <span>YONSEI EMBA 17기 학술국</span>
       </div>
       <div className="title-row">
         <div className="title-stage">
@@ -61,7 +59,6 @@ export function TitleBlock({
               듀얼브레인<span className="period">.</span>
             </span>
           </h1>
-          <div className="title-sub">EMBA 17기의 두 번째 뇌</div>
         </div>
         <div className="title-by-block">
           <div className="tby-info">
