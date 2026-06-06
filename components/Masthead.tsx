@@ -33,15 +33,6 @@ export function Masthead({
           <Link href="/" className={isHome && !graphOpen ? "on" : ""}>
             매거진
           </Link>
-          {isHome && onGraphToggle && (
-            <button
-              className={graphOpen ? "on" : ""}
-              onClick={onGraphToggle}
-              title="온톨로지 브레인맵 — 두 번째 뇌에 접속"
-            >
-              🧠 브레인접속
-            </button>
-          )}
           <Link href="/library" className={isLibrary ? "on" : ""}>
             내 솔루션 ({savedCount})
           </Link>
@@ -49,11 +40,6 @@ export function Masthead({
             모바일 ↗
           </a>
         </nav>
-        <div className="mast-meta">
-          <span>YONSEI EMBA 17</span>
-          <span>{todayLabel}</span>
-          <span>VOL.01</span>
-        </div>
       </div>
     </header>
   );

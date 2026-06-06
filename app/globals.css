@@ -60,7 +60,7 @@ img,svg{display:block;max-width:100%}
 .ai-diagnosis .aid-head{position:relative;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--brain-r)}
 .ai-diagnosis .aid-conf{color:var(--ink-faint);font-weight:600}
 .ai-diagnosis .aid-lens{position:relative;margin-top:9px;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
-.ai-diagnosis .aid-body{position:relative;margin-top:6px;font-family:var(--serif);font-size:15.5px;line-height:1.52;color:var(--ink);font-weight:500;word-break:keep-all}
+.ai-diagnosis .aid-body{position:relative;margin-top:6px;font-family:var(--serif);font-size:15.5px;line-height:1.6;color:var(--ink);font-weight:500;word-break:keep-all;white-space:pre-line}
 .ai-diagnosis .aid-lead{position:relative;margin-top:11px;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--brain-r);font-weight:700}
 @media(max-width:720px){.ai-diagnosis{padding:14px 15px;margin-bottom:12px}.ai-diagnosis .aid-body{font-size:14.5px}}
 @media(prefers-reduced-motion:reduce){.ai-diagnosis{animation:none}}

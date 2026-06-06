@@ -49,8 +49,6 @@ export function TitleBlock({
         <b>VOLUME 01</b>
         <span className="dot"></span>
         <span>YONSEI EMBA 17기 학술국</span>
-        <span className="dot"></span>
-        <span>{todayLabel} ISSUE</span>
       </div>
       <div className="title-row">
         <div className="title-stage">

@@ -44,9 +44,11 @@ export function buildDiagnosis(
   const insight = norm0(topCard.insight);
   const q = query.trim().replace(/\s+/g, " ");
   const essence = decision || insight;
+  // 진단 문장과 처방(한 줄로 →)을 줄바꿈으로 분리 → 한 줄로 길게 늘어지지 않고 가독성↑.
+  // (.aid-body에 white-space:pre-line 적용되어 \n이 실제 줄바꿈으로 렌더됨)
   const body =
     `‘${q}’ — 두 번째 뇌는 이 고민을 「${concept}」 개념과 가장 가깝게 봤어요.` +
-    (essence ? ` 한 줄로 → ${essence}` : "");
+    (essence ? `\n\n한 줄로 →\n${essence}` : "");
   return { lens, body, confidence };
 }
 
