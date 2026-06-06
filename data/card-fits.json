@@ -1,7 +1,7 @@
 {
  "_meta": {
   "purpose": "카드 그리드 '이럴 때' 후킹 부제(상황). 4-agent 크래프트.",
-  "count": 87
+  "count": 125
  },
  "fits": {
   "ethics-groupthink": "30분 만에 박수로 끝난 회의가 찜찜할 때",
@@ -90,6 +90,44 @@
   "ba-ai-agent": "반복 업무를 AI에게 통째로 맡기고 의사결정만 남기고 싶을 때",
   "ba-prompt-engineering": "같은 AI인데 남보다 못한 답이 나올 때",
   "ba-genai-adoption-chasm": "AI 시범사업은 성공했는데 정작 현장엔 안 퍼질 때",
-  "ba-llm-onprem-security": "사내 기밀을 외부 AI에 넣어도 되나 걱정될 때"
+  "ba-llm-onprem-security": "사내 기밀을 외부 AI에 넣어도 되나 걱정될 때",
+  "acc-inventory-costing": "재고 이익이 늘었는데 그게 진짜 마진인지 원가흐름 가정 때문인지 가려야 할 때.",
+  "acc-receivables-allowance": "외상매출이 늘었는데 그 채권을 다 받을 수 있을지, 충당금이 충분한지 가려야 할 때.",
+  "acc-adjusting-entries": "결산 앞두고 현금 시점과 손익 귀속 시점이 어긋난 항목을 기간에 맞게 끊어야 할 때.",
+  "acc-equity-statement": "자본총계가 늘었는데 그게 번 돈인지 받은 돈인지 헷갈릴 때.",
+  "acc-bonds-effective-interest": "회사채 조달비용이 표면금리만큼 싼지 따져야 할 때.",
+  "acc-consolidation-equity-method": "남의 회사 지분을 가졌는데 그걸 연결할지 지분법으로 잡을지 헷갈릴 때.",
+  "ba-random-forest-ensemble": "단일 모델 하나의 예측이 못 미더워, 여러 모델을 모아 편향을 누르고 정확도를 올리고 싶을 때.",
+  "ba-time-series-forecasting": "추세와 계절성이 섞인 과거 수치로 미래를 예측하고, 여러 예측 모델 중 best를 골라야 할 때.",
+  "ba-confusion-matrix": "예측 모델이 정확도는 높은데 정작 중요한 케이스를 놓치는 게 두려울 때.",
+  "eco-consumer-producer-surplus": "거래·협상에서 가격을 어디에 둘지, 시장 개입이 득인지 실인지 판단할 때.",
+  "eco-monopoly": "대체재 없는 제품의 가격·생산량을 잡거나, 우리 시장지배력의 출처를 점검할 때.",
+  "eco-oligopoly-cartel": "경쟁사가 소수인 시장에서 증산·가격 결정의 파급, 담합의 지속 가능성을 따질 때.",
+  "eco-price-discrimination": "고객별 지불용의가 갈리는데 단일가를 쓰고 있어 이윤을 흘리고 있을 때.",
+  "eco-price-controls": "정부·본사가 가격을 인위적으로 누르거나 올릴 때, 부족·잉여·암시장이 어디서 터질지 먼저 보고 싶을 때.",
+  "eco-economic-vs-accounting-profit": "사업·투자가 '이익 났다'는데 정말 남는 장사인지, 묶인 자본·내 시간까지 따져 보고 싶을 때.",
+  "eco-sunk-cost-shutdown": "이미 투자한 돈이 아까워 못 접을 때, 단기에 계속 돌릴지·장기에 빠질지를 냉정히 가르고 싶을 때.",
+  "eth-normative-frameworks": "같은 결정인데 사람마다 옳다·그르다 갈릴 때",
+  "eth-ford-pinto-cba": "안전 개선비와 배상비를 저울에 올리고 싶어질 때",
+  "eth-friedman-vs-csr": "CSR 예산을 '착해서' 말고 논리로 변호해야 할 때",
+  "eth-incentive-misconduct": "보상·할당량 KPI를 새로 걸려는데 그게 직원을 비윤리로 떠밀지 걱정될 때.",
+  "eth-relativism-imperialism": "해외 시장에서 \"여긴 원래 이렇게 한다\"는 관행에 따를지 본사 기준을 강요할지 갈릴 때.",
+  "eth-ethical-org-systems": "윤리강령은 멀쩡한데 현장 행동이 따로 놀아 '왜 문화가 안 바뀌나' 답답할 때.",
+  "mkt-perceptual-map": "경쟁사가 시장 어디에 깔려 있고 우리가 어디로 차별화할지 한 장으로 정해야 할 때.",
+  "mkt-segment-attractiveness": "세그먼트가 여럿인데 자원은 한정돼 어디부터 공략할지 우선순위를 정해야 할 때.",
+  "mpo-psychological-safety": "팀이 입을 닫고 사고가 사후에야 보고될 때.",
+  "mpo-social-capital": "스펙은 좋은데 조직에 안 녹는 사람을 평가·배치할 때.",
+  "mpo-structural-holes": "단절된 두 집단 사이에 다리를 놓을지 판단할 때.",
+  "mpo-transformational-leadership": "보상으로 굴러가던 팀에 큰 변화를 끌어내야 할 때.",
+  "mpo-ocb": "평가표엔 없는데 누군가 떠받치고 있는 '보이지 않는 일'을 다룰 때.",
+  "mpo-org-structures": "조직을 어떤 모양으로 짤지, 효율과 유연성 사이에서 결정할 때.",
+  "mpo-voice-silence": "다들 조용한데 그 침묵이 동의인지 체념인지 가려야 할 때.",
+  "mpo-ambidexterity": "잘되는 사업 때문에 다음 먹거리 탐험이 자꾸 밀려 죽을 때.",
+  "ms-transportation": "여러 출발지에서 여러 도착지로 물량을 나눠 보낼 때, 총 운송비를 최소로 짜야 할 때.",
+  "ms-assignment": "사람·기계·팀을 일에 1:1로 붙여 전체 비용이나 시간을 최소화해야 할 때.",
+  "ms-integer-programming": "결정이 '몇 대·몇 명·할까 말까'처럼 정수나 예/아니오로만 의미 있을 때.",
+  "ms-binary-capital-budgeting": "예산은 한정됐고 여러 통짜 투자안 중 '할지 말지'를 골라야 할 때.",
+  "ms-shift-scheduling": "시간대별 수요는 들쭉날쭉한데 인력은 정해진 교대조로만 뽑아야 할 때.",
+  "ms-diet-blending": "영양·성분 규격은 다 맞추되 원가를 가장 싸게 배합·구성하고 싶을 때."
  }
 }
