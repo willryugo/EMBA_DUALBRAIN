@@ -74,7 +74,9 @@ export function TitleBlock({
           {onEnter && (
             <button className="tby-enter" onClick={onEnter} type="button">
               <span className="tbe-inf" aria-hidden="true">∞</span>
-              <span className="tbe-txt">듀얼브레인 접속</span>
+              <span className="tbe-txt">
+                <span className="tbe-emoji" aria-hidden="true">🧠</span> 브레인접속
+              </span>
               <span className="tbe-sub">81장 인사이트 브레인맵 →</span>
             </button>
           )}

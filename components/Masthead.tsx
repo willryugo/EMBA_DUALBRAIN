@@ -39,7 +39,7 @@ export function Masthead({
               onClick={onGraphToggle}
               title="온톨로지 브레인맵 — 두 번째 뇌에 접속"
             >
-              ∞ 온톨로지
+              🧠 브레인접속
             </button>
           )}
           <Link href="/library" className={isLibrary ? "on" : ""}>
