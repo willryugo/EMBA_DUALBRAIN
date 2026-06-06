@@ -39,7 +39,7 @@ const TEAM_CASES: { id: string; team: string; caseTitle: string }[] = [
 
 const TWEAK_DEFAULTS: TweakState = {
   theme: "dawn",
-  font: "classic",
+  font: "allsans", // 웹·모바일 Pretendard 통일 (굵기 대비로 위계)
   quoteCards: true,
   density: "regular",
 };
@@ -93,6 +93,13 @@ export function DualBrainApp() {
   // 마운트 후 1회: localStorage 복원
   useEffect(() => {
     setToday(todayStr());
+    // 1회 이전: 과거 자동 저장된 기본 명조(classic)를 Pretendard 통일로 전환.
+    // (이후 관리자가 Tweaks에서 다른 폰트를 고르면 그 선택은 존중)
+    if (!store.get("emba17_font_unified")) {
+      const f = store.get<string>("emba17_font");
+      if (f == null || f === "classic") store.set("emba17_font", "allsans");
+      store.set("emba17_font_unified", true);
+    }
     const storedTweaks: Partial<TweakState> = {
       theme: store.get("emba17_theme") || undefined,
       font: store.get("emba17_font") || undefined,

@@ -20,7 +20,9 @@
   --mark-l:#4E5DB6;
   --mark-r:#D55E92;
   --bg-image:radial-gradient(80% 60% at 100% 0%, rgba(209,128,158,.18) 0%, transparent 55%), radial-gradient(60% 60% at 0% 100%, rgba(140,150,191,.16) 0%, transparent 55%);
-  --serif:"Nanum Myeongjo",ui-serif,serif;
+  /* 웹·모바일 Pretendard 통일 — 헤드라인도 Pretendard. 굵기(900/800/700)와
+     본문(500/400) 대비로 위계를 준다. (관리자 Tweaks에서 명조 등으로 전환은 여전히 가능) */
+  --serif:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
   --sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
 }
