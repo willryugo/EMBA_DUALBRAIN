@@ -12,6 +12,7 @@ import {
 import type { CSSProperties } from "react";
 import cardsData from "@/data/cards.json";
 import ownerPainsData from "@/data/owner-pains.json";
+import cardFitsData from "@/data/card-fits.json";
 import type { Card, Industry, OwnerPainCategory } from "@/lib/types";
 import {
   COURSE_COLOR,
@@ -44,6 +45,9 @@ import {
 import "./mobile.css";
 
 const CARDS = cardsData as Card[];
+// 카드별 '이럴 때' 후킹 부제 (상황) — 그리드 카드 제목 아래 빈칸을 채운다.
+const FITS = (cardFitsData as { fits: Record<string, string> }).fits || {};
+const fitOf = (id: string): string => FITS[id] || "";
 const COLOR = (course: string): string =>
   (COURSE_COLOR as Record<string, string>)[course] || "var(--ink)";
 const SHORT = (course: string): string =>
@@ -437,6 +441,12 @@ function MagCard({
         {wk}
       </div>
       <h3>{rich(card.hook)}</h3>
+      {fitOf(card.id) && (
+        <div className="mc-fit">
+          <span className="t">이럴 때</span>
+          {fitOf(card.id)}
+        </div>
+      )}
       <div className="mc-meta">{card.concept}</div>
     </article>
   );

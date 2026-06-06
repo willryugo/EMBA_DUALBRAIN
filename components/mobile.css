@@ -178,8 +178,11 @@
 .m-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--c)}
 .m-card:active{border-color:var(--ink);transform:translateY(-2px)}
 .m-card .mc-course{font-family:var(--mono);font-size:9.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:6px;margin-bottom:9px;padding-right:32px}
-.m-card h3{font-family:var(--serif);font-weight:800;font-size:16px;line-height:1.3;letter-spacing:-.01em;color:var(--ink);word-break:keep-all;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;flex:1}
-.m-card .mc-meta{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--ink-faint);margin-top:10px;padding-top:9px;border-top:1px solid var(--line);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+.m-card h3{font-family:var(--serif);font-weight:800;font-size:16px;line-height:1.3;letter-spacing:-.01em;color:var(--ink);word-break:keep-all;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+/* '이럴 때' 후킹 부제 — 제목 아래 빈칸을 채움. 굵은 제목과 대비되게 가는 글씨+포인트 칩 */
+.m-card .mc-fit{margin-top:8px;font-size:11.5px;font-weight:500;line-height:1.4;color:var(--ink-soft);word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.m-card .mc-fit .t{font-family:var(--mono);font-size:8.5px;font-weight:700;letter-spacing:.04em;color:var(--brain-r);background:color-mix(in srgb,var(--brain-r) 11%,transparent);padding:1.5px 5px;border-radius:5px;margin-right:6px;white-space:nowrap;vertical-align:1.5px}
+.m-card .mc-meta{font-family:var(--mono);font-size:9.5px;letter-spacing:.04em;color:var(--ink-faint);margin-top:auto;padding-top:9px;border-top:1px solid var(--line);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
 .m-star{position:absolute;top:8px;right:6px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ink-faint);z-index:2;transition:.13s}
 .m-star.on{color:var(--brain-r)}
 .m-star:active{transform:scale(1.2)}
