@@ -308,7 +308,23 @@
           { "label": "A+E", "ev": 545, "cost": 600 },
           { "label": "C+D+E", "ev": 400, "cost": 1000 }
         ]
-      }
+      },
+      "visuals": [
+        {
+          "kind": "constraint-check",
+          "step": "take",
+          "headline": "왜 A+D+E가 최적해인가 — 7개 제약을 모두 통과한 조합 중 기대이익 최대",
+          "constraints": [
+            { "label": "예산 한도", "check": "900 ≤ 1,000", "ok": true },
+            { "label": "최소 2개 선택", "check": "3개 ≥ 2", "ok": true },
+            { "label": "최대 3개 동시", "check": "3개 ≤ 3", "ok": true },
+            { "label": "CNS 집중 방지", "check": "치매+파킨슨 1 ≤ 1", "ok": true },
+            { "label": "전략영역 의무", "check": "A(비만/당뇨) 포함", "ok": true },
+            { "label": "최소 기대이익", "check": "695 ≥ 400", "ok": true }
+          ],
+          "verdict": "7개 제약을 전부 통과하면서, 실현 가능한 조합 중 기대이익이 가장 큰(695억) 답 — 그래서 최적해다. A+C(655)·A+D(625)도 유효하지만 이익이 더 작다."
+        }
+      ]
     }
   ]
 }

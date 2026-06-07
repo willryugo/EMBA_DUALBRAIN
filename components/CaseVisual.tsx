@@ -91,5 +91,26 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
     );
   }
 
+  // ── 제약조건 통과 + 최적성 (왜 이 결정이 최적인가) ──
+  if (visual.kind === "constraint-check" && visual.constraints) {
+    return (
+      <div className="cv" style={styleC}>
+        {visual.headline && <div className="cv-headline">{visual.headline}</div>}
+        <div className="cv-block">
+          <div className="cv-checks">
+            {visual.constraints.map((c, i) => (
+              <div key={i} className={"cv-check" + (c.ok ? " ok" : " no")}>
+                <span className="cv-ck-mark">{c.ok ? "✓" : "✕"}</span>
+                <span className="cv-ck-label">{c.label}</span>
+                <span className="cv-ck-expr">{c.check}</span>
+              </div>
+            ))}
+          </div>
+          {visual.verdict && <div className="cv-verdict">{visual.verdict}</div>}
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }

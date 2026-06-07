@@ -1433,3 +1433,11 @@ mark.hl {
 .cv-sval{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink);flex:none}
 .cv-fill.good{background:#3c8c6e}
 .cv-fill.bad{background:#c0506e}
+.cv-checks{display:flex;flex-direction:column;gap:6px}
+.cv-check{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:9px;padding:7px 11px;border-radius:3px;background:rgba(60,140,110,.09)}
+.cv-check.no{background:rgba(192,80,110,.09)}
+.cv-ck-mark{font-weight:800;color:#3c8c6e;text-align:center}
+.cv-check.no .cv-ck-mark{color:#c0506e}
+.cv-ck-label{font-size:12.5px;font-weight:600}
+.cv-ck-expr{font-family:var(--mono);font-size:11px;font-weight:700;color:rgba(22,21,15,.55)}
+.cv-verdict{margin-top:11px;padding:11px 13px;background:var(--c);color:var(--paper);font-size:13px;font-weight:700;line-height:1.55;border-radius:3px}

@@ -106,12 +106,17 @@ export interface CaseVisualProject {
 }
 export interface CaseVisualCombo { label: string; ev: number; cost: number; optimal?: boolean; }
 export interface CaseVisualBar { label: string; value: number; max?: number; tone?: "good" | "bad" | "neutral"; note?: string; }
+export interface CaseConstraint { label: string; check: string; ok: boolean; } // 제약조건 통과 여부
+export type CaseStepKey = "surface" | "roots" | "paradigm" | "take" | "connect";
 export interface CaseVisual {
-  kind: "rnd-portfolio" | "score-bars" | "compare-bars";
+  kind: "rnd-portfolio" | "score-bars" | "compare-bars" | "constraint-check";
+  step?: CaseStepKey;      // 어느 단계에 그릴지 (없으면 surface)
   headline?: string;       // 비주얼이 말하는 한 줄
   projects?: CaseVisualProject[];   // rnd-portfolio
   combos?: CaseVisualCombo[];       // rnd-portfolio
   bars?: CaseVisualBar[];           // score-bars / compare-bars
+  constraints?: CaseConstraint[];   // constraint-check
+  verdict?: string;                 // constraint-check 결론 한 줄
 }
 
 export interface TeamCase {
@@ -147,6 +152,7 @@ export interface TeamCase {
   ourTakeDetail?: string[];               // 최종 결론 상세 (단계/근거)
   quotes?: CaseQuote[];                   // 원문 인용
   visual?: CaseVisual;                    // '한눈에' 비주얼 (surface 최상단)
+  visuals?: CaseVisual[];                 // 단계별 비주얼 (step 지정)
 }
 
 export interface CasesFile {

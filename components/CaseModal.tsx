@@ -61,6 +61,8 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
   const stepKey = CASE_STEPS[safeStep];
 
   const lectureById = (id: string) => lectures.find((l) => l.id === id);
+  const visualsFor = (step: string) =>
+    (kase.visuals || []).filter((v) => (v.step || "surface") === step);
   const rootLectures = kase.roots.lectures
     .map(lectureById)
     .filter(Boolean) as Lecture[];
@@ -300,6 +302,10 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
                   ))}
                 </div>
               )}
+
+              {visualsFor("take").map((v, i) => (
+                <CaseVisualView key={i} visual={v} color={color} />
+              ))}
 
               {!kase.debate && kase.discussion && kase.discussion.length > 0 && (
                 <div className="ct-discussion">
