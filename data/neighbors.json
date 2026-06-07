@@ -1531,5 +1531,17 @@
   "ms-sensitivity-analysis",
   "ms-analytics-intuition",
   "ms-network-shortest-path"
+ ],
+ "mpo-paradigm-shift": [
+  "mpo-kotter-eight-steps",
+  "mpo-intrinsic-motivation",
+  "mpo-leadership-influence",
+  "mpo-org-design",
+  "mpo-two-factor-herzberg",
+  "mpo-terracog",
+  "mpo-recruitment-vs-promote",
+  "ethics-groupthink",
+  "mpo-radical-candor",
+  "mpo-pay-secrecy"
  ]
 }

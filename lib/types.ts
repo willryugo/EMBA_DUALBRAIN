@@ -76,6 +76,92 @@ export interface OwnerPainCategory {
   items: string[];
 }
 
+// ── 레벨2: 실증 케이스 레이어 (cases.json) ─────────────────
+// 과제(표면) → 강의 뿌리(roots) → 패러다임 렌즈(paradigm) → 17기 해석(ourTake)
+export interface CaseParadigm {
+  old: string;        // 옛 패러다임(잭웰치式) 해석
+  new: string;        // 새 패러다임 해석
+  question: string;   // 핵심 질문
+  reading: string;    // "누가 맞냐가 아니라 지금 세상에 맞는 해석이냐"
+}
+
+export interface CaseRoots {
+  lectures: string[]; // lectures.json id — 이 케이스를 고민하게 된 강의
+  sources: string[];  // cases.json _meta.sourceFiles 키 — 원문 근거
+}
+
+// ── deep 케이스 심화 필드 (원문·PPT·강의 풀활용) ──────────
+export interface CaseCharacter { name: string; role: string; note: string; }
+export interface CaseFact { label: string; value: string; }      // 핵심 숫자/사실
+export interface CaseTheoryApp { lectureId: string; concept: string; how: string; } // 강의 이론별 적용
+export interface CaseParadigmAxis { label: string; old: string; new: string; }      // 다축 패러다임
+export interface CaseDebateSide { stance: string; points: string[]; }               // 찬반 한쪽
+export interface CaseQuote { text: string; by: string; }                            // 원문 인용
+
+export interface TeamCase {
+  id: string;
+  depth: "deep" | "pin";
+  title: string;
+  subtitle: string;             // 후킹 부제
+  course: Course;
+  professor?: string;
+  sourceGroup: string;          // 발표 출처 (예: "NEW 2조") — subject와 별개 축
+  term: string;
+  subjectType: "hbs" | "public" | "member"; // member는 산업만·이름 익명
+  subject: string;              // 사례 주인공 (기업/페르소나)
+  subjectIndustry: string;
+  roots: CaseRoots;             // 강의 뿌리 + 원문 근거
+  surface: string;              // 과제 개요
+  paradigm: CaseParadigm;
+  ourTake: string;              // PPT 발표 결론에서 추출
+  ourTakeExtra?: string;        // 수달님 그날 토론 논점 보강 슬롯
+  discussion?: string[];
+  cardLinks: string[];          // 연결 이론 카드 (cards.json id)
+  tags?: string[];
+
+  // ── deep 케이스 심화(선택) — 있으면 모달이 풍부하게 렌더 ──
+  background?: string;                    // 회사·맥락 (긴 배경)
+  characters?: CaseCharacter[];           // 핵심 인물
+  keyFacts?: CaseFact[];                  // 핵심 숫자/사실
+  theoryApplications?: CaseTheoryApp[];   // 강의 이론별 적용 (roots 심화)
+  paradigmAxes?: CaseParadigmAxis[];      // 다축 패러다임 (paradigm 심화)
+  debatePrompt?: string;                  // 찬반 토론 질문
+  debate?: CaseDebateSide[];              // 찬반 양측 논점
+  qna?: string[];                         // Q&A 쟁점
+  ourTakeDetail?: string[];               // 최종 결론 상세 (단계/근거)
+  quotes?: CaseQuote[];                   // 원문 인용
+}
+
+export interface CasesFile {
+  _meta: Record<string, unknown> & { sourceFiles?: Record<string, string> };
+  cases: TeamCase[];
+}
+
+// ── 레벨0: 강의 뿌리 (lectures.json) ─────────────────────
+export interface LectureParadigm {
+  from: string;       // 옛 패러다임 축
+  to: string;         // 새 패러다임 축
+  evidence: string;   // 근거(사례·인용)
+}
+
+export interface Lecture {
+  id: string;
+  n: number;
+  title: string;
+  pages?: number;
+  bigIdea: string;
+  concepts: string[];
+  paradigm: LectureParadigm | null;
+  anchors: string[];
+  linkedCards: string[];
+  source?: string;
+}
+
+export interface LecturesFile {
+  _meta: Record<string, unknown>;
+  lectures: Lecture[];
+}
+
 export type ThemeKey =
   | "duotone"
   | "white"

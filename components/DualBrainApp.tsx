@@ -2,6 +2,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import cardsData from "@/data/cards.json";
 import ownerPainsData from "@/data/owner-pains.json";
+import casesData from "@/data/cases.json";
+import lecturesData from "@/data/lectures.json";
 import type {
   Card,
   Course,
@@ -10,6 +12,8 @@ import type {
   Industry,
   OwnerPainCategory,
   TweakState,
+  CasesFile,
+  LecturesFile,
 } from "@/lib/types";
 import { MY_INDUSTRIES_DEFAULT, UNIVERSAL, COURSE_COLOR } from "@/lib/manifest";
 import { applyFont, applyTheme } from "@/lib/themes";
@@ -20,21 +24,15 @@ import { TitleBlock } from "./TitleBlock";
 import { HeroAI } from "./HeroAI";
 import { FilterChips, FilterPanel } from "./Filters";
 import { MagCard, layoutClass } from "./MagCard";
-import { rich } from "./rich";
 import { DetailModal } from "./DetailModal";
+import { CaseModal } from "./CaseModal";
 import { OntologyGraph } from "./OntologyGraph";
 import { Footer } from "./Footer";
 
 const CARDS = cardsData as Card[];
 const OWNER_PAINS = ownerPainsData as OwnerPainCategory[];
-
-// 과제로 보는 카드뉴스 — 17기 조별발표 케이스 ↔ 카드 매핑 (추출 보강은 후속)
-const TEAM_CASES: { id: string; team: string; caseTitle: string }[] = [
-  { id: "mpo-rob-parson", team: "1조", caseTitle: "Morgan Stanley · Rob Parson" },
-  { id: "mpo-terracog", team: "2조", caseTitle: "TerraCog GPS" },
-  { id: "mpo-martha-rinaldi", team: "3조", caseTitle: "Martha Rinaldi" },
-  { id: "mpo-recruitment-vs-promote", team: "4조", caseTitle: "Recruitment of a Star" },
-];
+const DEEP_CASES = (casesData as CasesFile).cases.filter((c) => c.depth === "deep");
+const LECTURES = (lecturesData as LecturesFile).lectures;
 
 const TWEAK_DEFAULTS: TweakState = {
   theme: "dawn",
@@ -62,6 +60,7 @@ export function DualBrainApp() {
   // Hydration-안전: 모든 클라이언트 상태는 서버 기본값으로 초기화, 마운트 후 localStorage에서 복원.
   const [view, setView] = useState<"home" | "graph">("home");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [openCaseId, setOpenCaseId] = useState<string | null>(null);
   // Tweaks 제거 — 전원 동일 UI(여명 테마 · Pretendard · regular). 고정값.
   const tweaks: TweakState = TWEAK_DEFAULTS;
   const [filter, setFilter] = useState<FilterState>(FILTER_DEFAULTS);
@@ -255,30 +254,27 @@ export function DualBrainApp() {
             <div className="tc-eyebrow">과제로 보는 카드뉴스 · TEAM CASE STUDY</div>
             <h2 className="tc-title">우리가 직접 발표한 그 사례 — 카드로 다시 본다</h2>
             <p className="tc-lead">
-              17기가 조별로 분석·발표한 하버드 케이스. 그날의 고민이 한 장의 카드가 됐다.
+              17기가 조별로 분석·발표한 실제 케이스. 그날의 고민을 강의 뿌리와
+              패러다임 렌즈로 다시 본다.
             </p>
           </div>
           <div className="teamcase-grid">
-            {TEAM_CASES.map((tc) => {
-              const card = CARDS.find((c) => c.id === tc.id);
-              if (!card) return null;
-              return (
-                <button
-                  key={tc.id}
-                  className="tc-card"
-                  style={{ ["--c" as string]: COURSE_COLOR[card.course] } as React.CSSProperties}
-                  onClick={() => setOpenId(tc.id)}
-                >
-                  <span className="tc-badge">{tc.team}</span>
-                  <span className="tc-case">{tc.caseTitle}</span>
-                  <span className="tc-hook">{rich(card.hook)}</span>
-                  <span className="tc-foot">
-                    <span>{card.concept}</span>
-                    <span className="tc-arrow">카드 열기 →</span>
-                  </span>
-                </button>
-              );
-            })}
+            {DEEP_CASES.map((tc) => (
+              <button
+                key={tc.id}
+                className="tc-card"
+                style={{ ["--c" as string]: COURSE_COLOR[tc.course] } as React.CSSProperties}
+                onClick={() => setOpenCaseId(tc.id)}
+              >
+                <span className="tc-badge">{tc.sourceGroup}</span>
+                <span className="tc-case">{tc.title}</span>
+                <span className="tc-hook">{tc.subtitle}</span>
+                <span className="tc-foot">
+                  <span>{tc.subjectIndustry}</span>
+                  <span className="tc-arrow">케이스 열기 →</span>
+                </span>
+              </button>
+            ))}
           </div>
         </section>
 
@@ -332,6 +328,20 @@ export function DualBrainApp() {
             syncSavedFromStore();
           }}
           onOpen={setOpenId}
+        />
+      )}
+
+      {openCaseId && (
+        <CaseModal
+          caseId={openCaseId}
+          cases={DEEP_CASES}
+          lectures={LECTURES}
+          cards={CARDS}
+          onClose={() => setOpenCaseId(null)}
+          onOpen={(id) => {
+            setOpenCaseId(null);
+            setOpenId(id);
+          }}
         />
       )}
 

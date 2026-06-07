@@ -1283,3 +1283,115 @@ mark.hl {
 .bm-basis-dot{width:7px;height:7px;border-radius:50%;flex:none}
 .bm-basis-concept{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bm-basis-why{font-size:10px;color:rgba(255,255,255,.5);flex:none}
+
+/* ── 레벨2 케이스 모달 (deep case) ───────────────────────── */
+.case-surface .cs-head{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.cs-type{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;background:var(--ink);color:var(--paper);padding:3px 8px}
+.cs-industry{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--c);border:1.5px solid var(--c);padding:2px 8px}
+.cs-title{font-size:26px;font-weight:800;line-height:1.18;margin:0 0 6px}
+.cs-subtitle{font-size:16px;font-weight:600;color:var(--c);margin-bottom:16px}
+.cs-surface{font-size:15px;line-height:1.78;color:var(--ink)}
+
+.cr-lead{font-size:14px;font-weight:600;color:rgba(22,21,15,.62);margin-bottom:16px}
+.cr-lectures{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.cr-lecture{display:flex;gap:14px;border:1.5px solid rgba(22,21,15,.16);border-left:4px solid var(--c);padding:12px 14px;background:color-mix(in srgb,var(--c) 4%,var(--paper))}
+.crl-n{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--c);flex:none;padding-top:1px}
+.crl-title{font-size:15px;font-weight:800;margin-bottom:3px}
+.crl-idea{font-size:13px;line-height:1.6;color:rgba(22,21,15,.7)}
+
+.pl-question{font-size:19px;font-weight:800;line-height:1.42;margin-bottom:16px;padding-left:14px;border-left:4px solid var(--c)}
+.pl-toggle{display:flex;border:2px solid var(--ink);width:fit-content}
+.plt-btn{font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.05em;padding:8px 18px;background:var(--paper);color:var(--ink);border:none;cursor:pointer;transition:.15s}
+.plt-btn+.plt-btn{border-left:2px solid var(--ink)}
+.plt-btn.on{background:var(--ink);color:var(--paper)}
+.pl-panel{border:2px solid var(--ink);border-top:none;padding:18px;margin-bottom:16px}
+.pl-panel.old{background:repeating-linear-gradient(45deg,rgba(22,21,15,.045),rgba(22,21,15,.045) 8px,transparent 8px,transparent 16px)}
+.pl-panel.new{background:color-mix(in srgb,var(--c) 8%,var(--paper))}
+.plp-tag{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;margin-bottom:8px;color:rgba(22,21,15,.55)}
+.pl-panel.new .plp-tag{color:var(--c)}
+.plp-text{font-size:15.5px;line-height:1.72;font-weight:500}
+.pl-reading{display:flex;gap:12px;align-items:flex-start;background:var(--ink);color:var(--paper);padding:16px 18px}
+.plr-lab{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;background:var(--paper);color:var(--ink);padding:3px 8px;flex:none;margin-top:2px}
+.pl-reading p{font-size:14.5px;line-height:1.72;margin:0}
+
+.ct-group{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--c);margin-bottom:12px}
+.ct-ppt{font-size:15px;line-height:1.8;margin-bottom:18px}
+.ct-discussion{border:1.5px solid rgba(22,21,15,.16);padding:14px 16px;margin-bottom:14px}
+.ctd-lab{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(22,21,15,.55);margin-bottom:8px}
+.ct-discussion ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px}
+.ct-discussion li{font-size:13.5px;line-height:1.6;color:rgba(22,21,15,.82)}
+.ct-extra{border-left:4px solid var(--c);background:color-mix(in srgb,var(--c) 6%,var(--paper));padding:12px 16px}
+.ct-extra span{display:block;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;color:var(--c);margin-bottom:6px}
+.ct-extra p{font-size:14.5px;line-height:1.7;margin:0}
+
+.cc-lead{font-size:14px;font-weight:600;color:rgba(22,21,15,.62);margin-bottom:14px}
+.cc-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.cc-card{display:flex;flex-direction:column;gap:5px;text-align:left;border:1.5px solid rgba(22,21,15,.18);border-left:4px solid var(--c);background:var(--paper);padding:13px 16px;cursor:pointer;transition:.15s}
+.cc-card:hover{background:color-mix(in srgb,var(--c) 6%,var(--paper));transform:translateX(3px)}
+.ccc-concept{font-size:14px;font-weight:800}
+.ccc-hook{font-size:13px;line-height:1.5;color:rgba(22,21,15,.7)}
+.ccc-arrow{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--c);margin-top:2px}
+
+/* ── deep 케이스 심화 요소 ───────────────────────── */
+/* 핵심 숫자 */
+.cs-facts{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:16px 0}
+.csf{display:flex;flex-direction:column;gap:2px;border:1.5px solid rgba(22,21,15,.14);border-left:3px solid var(--c);padding:8px 11px;background:color-mix(in srgb,var(--c) 3%,var(--paper))}
+.csf-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;color:rgba(22,21,15,.55)}
+.csf-value{font-size:15px;font-weight:800;color:var(--ink)}
+/* 배경 */
+.cs-background{margin:16px 0;padding:14px 16px;background:rgba(22,21,15,.035);border-radius:2px}
+.csb-lab{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(22,21,15,.5);margin-bottom:8px}
+.cs-background p{font-size:13.5px;line-height:1.72;color:rgba(22,21,15,.85);margin:0}
+/* 인물 */
+.cs-cast{margin-top:16px}
+.csc-lab{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(22,21,15,.5);margin-bottom:10px}
+.csc-person{border-left:3px solid var(--c);padding:8px 0 8px 13px;margin-bottom:12px}
+.cscp-head{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;margin-bottom:4px}
+.cscp-name{font-size:15px;font-weight:800}
+.cscp-role{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--c)}
+.cscp-note{font-size:13px;line-height:1.6;color:rgba(22,21,15,.78)}
+/* 강의 이론별 적용 */
+.cr-theories{display:flex;flex-direction:column;gap:12px;margin-bottom:8px}
+.cr-theory{border:1.5px solid rgba(22,21,15,.16);border-left:4px solid var(--c);padding:13px 15px;background:color-mix(in srgb,var(--c) 4%,var(--paper))}
+.crt-head{display:flex;align-items:baseline;gap:9px;margin-bottom:3px}
+.crt-n{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--c);flex:none}
+.crt-concept{font-size:15px;font-weight:800}
+.crt-lecture{font-size:11.5px;color:rgba(22,21,15,.5);margin-bottom:7px}
+.crt-how{font-size:13.5px;line-height:1.66;color:rgba(22,21,15,.85)}
+/* 다축 패러다임 */
+.pl-axes{border:2px solid var(--ink);margin-bottom:16px}
+.pla-head{display:grid;grid-template-columns:1fr 1fr;background:var(--ink)}
+.pla-col{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.06em;padding:7px 12px;color:var(--paper)}
+.pla-col.new{color:color-mix(in srgb,var(--c) 70%,#fff);border-left:1px solid rgba(255,255,255,.25)}
+.pla-row{border-top:1.5px solid rgba(22,21,15,.14)}
+.pla-row:first-of-type{border-top:none}
+.pla-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;color:rgba(22,21,15,.5);padding:7px 12px 2px;text-transform:uppercase}
+.pla-cells{display:grid;grid-template-columns:1fr 1fr}
+.pla-cell{font-size:13px;line-height:1.55;padding:6px 12px 12px}
+.pla-cell.old{color:rgba(22,21,15,.62)}
+.pla-cell.new{font-weight:600;color:var(--ink);background:color-mix(in srgb,var(--c) 7%,var(--paper));border-left:1px solid rgba(22,21,15,.1)}
+/* 찬반 토론 */
+.ct-debate-q{font-size:16px;font-weight:800;line-height:1.4;padding-left:13px;border-left:4px solid var(--c);margin-bottom:14px}
+.ct-debate{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ctd-side{border:1.5px solid rgba(22,21,15,.18);padding:12px 13px}
+.ctd-side.a{border-top:3px solid var(--ink)}
+.ctd-side.b{border-top:3px solid var(--c)}
+.ctds-stance{font-size:14px;font-weight:800;margin-bottom:8px}
+.ctd-side ul{margin:0;padding-left:16px;display:flex;flex-direction:column;gap:6px}
+.ctd-side li{font-size:12.5px;line-height:1.5;color:rgba(22,21,15,.82)}
+/* 최종 결론 상세 */
+.ct-detail{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+.ctdt{font-size:13.5px;line-height:1.6;padding:10px 13px;background:color-mix(in srgb,var(--c) 6%,var(--paper));border-left:3px solid var(--c)}
+/* Q&A */
+.ct-qna{border:1.5px dashed rgba(22,21,15,.28);padding:13px 15px;margin-bottom:14px}
+.ctq-lab{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(22,21,15,.55);margin-bottom:8px}
+.ct-qna ul{margin:0;padding-left:17px;display:flex;flex-direction:column;gap:8px}
+.ct-qna li{font-size:12.5px;line-height:1.55;color:rgba(22,21,15,.8)}
+/* 원문 인용 */
+.cc-quotes{margin-bottom:18px}
+.ccq-lab{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;color:rgba(22,21,15,.5);margin-bottom:10px}
+.ccq{margin:0 0 12px;padding:10px 0 10px 15px;border-left:4px solid var(--c)}
+.ccq p{font-size:14.5px;line-height:1.6;font-style:italic;margin:0 0 5px}
+.ccq cite{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--c);font-style:normal}
+/* 모바일 폭에서 2칼럼 → 1칼럼 */
+@media(max-width:640px){.cs-facts,.ct-debate,.pla-head,.pla-cells{grid-template-columns:1fr}.pla-cell.new{border-left:none;border-top:1px solid rgba(22,21,15,.1)}}

@@ -128,6 +128,7 @@
   "ms-integer-programming": "결정이 '몇 대·몇 명·할까 말까'처럼 정수나 예/아니오로만 의미 있을 때.",
   "ms-binary-capital-budgeting": "예산은 한정됐고 여러 통짜 투자안 중 '할지 말지'를 골라야 할 때.",
   "ms-shift-scheduling": "시간대별 수요는 들쭉날쭉한데 인력은 정해진 교대조로만 뽑아야 할 때.",
-  "ms-diet-blending": "영양·성분 규격은 다 맞추되 원가를 가장 싸게 배합·구성하고 싶을 때."
+  "ms-diet-blending": "영양·성분 규격은 다 맞추되 원가를 가장 싸게 배합·구성하고 싶을 때.",
+  "mpo-paradigm-shift": "과거 성공 방식을 미는데 예전 같은 결과가 안 나올 때."
  }
 }
