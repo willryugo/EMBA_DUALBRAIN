@@ -98,6 +98,22 @@ export interface CaseParadigmAxis { label: string; old: string; new: string; }  
 export interface CaseDebateSide { stance: string; points: string[]; }               // 찬반 한쪽
 export interface CaseQuote { text: string; by: string; }                            // 원문 인용
 
+// ── 케이스 비주얼 (한눈에 — 텍스트보다 그림 먼저) ──────────
+export interface CaseVisualProject {
+  id: string; name: string;
+  cost: number; prob: number; revenue: number; ev: number;  // 억원·%
+  pick: boolean;                                            // 최적해 선택 여부
+}
+export interface CaseVisualCombo { label: string; ev: number; cost: number; optimal?: boolean; }
+export interface CaseVisualBar { label: string; value: number; max?: number; tone?: "good" | "bad" | "neutral"; note?: string; }
+export interface CaseVisual {
+  kind: "rnd-portfolio" | "score-bars" | "compare-bars";
+  headline?: string;       // 비주얼이 말하는 한 줄
+  projects?: CaseVisualProject[];   // rnd-portfolio
+  combos?: CaseVisualCombo[];       // rnd-portfolio
+  bars?: CaseVisualBar[];           // score-bars / compare-bars
+}
+
 export interface TeamCase {
   id: string;
   depth: "deep" | "pin";
@@ -130,6 +146,7 @@ export interface TeamCase {
   qna?: string[];                         // Q&A 쟁점
   ourTakeDetail?: string[];               // 최종 결론 상세 (단계/근거)
   quotes?: CaseQuote[];                   // 원문 인용
+  visual?: CaseVisual;                    // '한눈에' 비주얼 (surface 최상단)
 }
 
 export interface CasesFile {

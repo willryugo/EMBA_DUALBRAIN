@@ -1395,3 +1395,41 @@ mark.hl {
 .ccq cite{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--c);font-style:normal}
 /* 모바일 폭에서 2칼럼 → 1칼럼 */
 @media(max-width:640px){.cs-facts,.ct-debate,.pla-head,.pla-cells{grid-template-columns:1fr}.pla-cell.new{border-left:none;border-top:1px solid rgba(22,21,15,.1)}}
+
+/* ── 케이스 '한눈에' 비주얼 ───────────────────────── */
+.cv{margin:14px 0 6px;border:2px solid var(--ink);background:var(--paper)}
+.cv-headline{font-size:14px;font-weight:800;line-height:1.45;padding:11px 14px;background:var(--ink);color:var(--paper)}
+.cv-block{padding:13px 14px;border-top:1.5px solid rgba(22,21,15,.12)}
+.cv-block-lab{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.03em;color:rgba(22,21,15,.6);margin-bottom:9px}
+.cv-legend{display:flex;gap:14px;margin-bottom:11px;flex-wrap:wrap}
+.cv-legend .lg{font-size:10.5px;font-weight:700}
+.cv-legend .rev{color:rgba(22,21,15,.45)}
+.cv-legend .ev{color:var(--c)}
+.cv-prow{padding:7px 0;border-top:1px dashed rgba(22,21,15,.1)}
+.cv-prow:first-of-type{border-top:none}
+.cv-prow.pick{background:color-mix(in srgb,var(--c) 7%,transparent);margin:0 -8px;padding:7px 8px;border-radius:3px}
+.cv-pname{font-size:12.5px;font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.cv-pname b{font-family:var(--mono);color:var(--c)}
+.cv-prob{font-family:var(--mono);font-size:10px;font-weight:700;color:rgba(22,21,15,.5);background:rgba(22,21,15,.06);padding:1px 6px;border-radius:8px}
+.cv-pickflag{font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--paper);background:var(--c);padding:1px 7px;border-radius:8px}
+.cv-twobar{display:flex;flex-direction:column;gap:3px}
+.cv-bar{position:relative;height:18px;background:rgba(22,21,15,.05);border-radius:2px;overflow:hidden;display:flex;align-items:center}
+.cv-fill{height:100%;border-radius:2px}
+.cv-fill.rev{background:rgba(22,21,15,.26)}
+.cv-fill.ev{background:var(--c)}
+.cv-fill.combo{background:var(--c);opacity:.45}
+.cv-fill.scored{background:var(--c)}
+.cv-val{position:absolute;right:7px;font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink)}
+.cv-crow{display:grid;grid-template-columns:70px 1fr 46px;align-items:center;gap:8px;padding:4px 0}
+.cv-clabel{font-family:var(--mono);font-size:11px;font-weight:700}
+.cv-crow.opt .cv-clabel{color:var(--c)}
+.cv-crow.opt .cv-fill.combo{opacity:1}
+.cv-ccost{font-family:var(--mono);font-size:10px;color:rgba(22,21,15,.5);text-align:right}
+.cv-crow.tone-bad .cv-fill.scored{background:#c0506e}
+.cv-crow.tone-good .cv-fill.scored{background:#3c8c6e}
+.cv-srow{padding:6px 0;border-top:1px dashed rgba(22,21,15,.1)}
+.cv-srow:first-of-type{border-top:none}
+.cv-slabel{font-size:12px;font-weight:600;margin-bottom:4px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.cv-sval{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink);flex:none}
+.cv-fill.good{background:#3c8c6e}
+.cv-fill.bad{background:#c0506e}

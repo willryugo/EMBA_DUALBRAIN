@@ -145,7 +145,20 @@
         { "text": "거래 한 건 더 성사시키겠다고 회사의 문화를 손상시키는 건 안 될 일이죠.", "by": "폴 나스르" },
         { "text": "그는 다른 식으로는 성사되지 않았을 일들을 실현시킨다.", "by": "동료 평가 (Person E)" },
         { "text": "아침에 눈을 뜰 때마다 세상을 활활 불태우고 싶어 하는 사람 — 롭이 딱 그랬습니다.", "by": "폴 나스르" }
-      ]
+      ],
+      "visual": {
+        "kind": "score-bars",
+        "headline": "성과는 최고, 협업·문화는 바닥 — 같은 사람의 두 얼굴 (360도 평가 · 5점 만점)",
+        "bars": [
+          { "label": "시장·상품 지식", "value": 4.5, "max": 5, "tone": "good" },
+          { "label": "고객 관계 관리", "value": 4.3, "max": 5, "tone": "good" },
+          { "label": "진취성·헌신", "value": 4.3, "max": 5, "tone": "good" },
+          { "label": "팀플레이어 (상사 평가)", "value": 2.5, "max": 5, "tone": "bad" },
+          { "label": "리더십·인력 관리", "value": 2.5, "max": 5, "tone": "bad" },
+          { "label": "회사방침 준수 (상사 평가)", "value": 2.0, "max": 5, "tone": "bad" },
+          { "label": "평가·코칭·다양성 관리", "value": 2.0, "max": 5, "tone": "bad" }
+        ]
+      }
     },
     {
       "id": "case-ob-martha-rinaldi",
@@ -275,7 +288,27 @@
         { "text": "경영과학이 답한다 — 유한양행의 최적 R&D 포트폴리오.", "by": "5조 발표 (Management Science)" }
       ],
       "cardLinks": ["ms-binary-capital-budgeting", "ms-integer-programming", "ms-portfolio-diversification", "ms-sensitivity-analysis"],
-      "tags": ["선형계획법", "Solver", "기대이익", "포트폴리오최적화", "신약개발"]
+      "tags": ["선형계획법", "Solver", "기대이익", "포트폴리오최적화", "신약개발"],
+      "visual": {
+        "kind": "rnd-portfolio",
+        "headline": "치매는 매출 1위인데 왜 탈락했나 — 성공확률을 넣으면 순위가 뒤집힌다",
+        "projects": [
+          { "id": "A", "name": "비만/당뇨", "cost": 400, "prob": 35, "revenue": 2500, "ev": 475, "pick": true },
+          { "id": "B", "name": "치매", "cost": 400, "prob": 10, "revenue": 5000, "ev": 100, "pick": false },
+          { "id": "C", "name": "항암", "cost": 500, "prob": 17, "revenue": 4000, "ev": 180, "pick": false },
+          { "id": "D", "name": "파킨슨", "cost": 300, "prob": 15, "revenue": 3000, "ev": 150, "pick": true },
+          { "id": "E", "name": "유전자치료", "cost": 200, "prob": 27, "revenue": 1000, "ev": 70, "pick": true }
+        ],
+        "combos": [
+          { "label": "A+D+E", "ev": 695, "cost": 900, "optimal": true },
+          { "label": "A+C", "ev": 655, "cost": 900 },
+          { "label": "A+B+E", "ev": 645, "cost": 1000 },
+          { "label": "A+D", "ev": 625, "cost": 700 },
+          { "label": "A+B", "ev": 575, "cost": 800 },
+          { "label": "A+E", "ev": 545, "cost": 600 },
+          { "label": "C+D+E", "ev": 400, "cost": 1000 }
+        ]
+      }
     }
   ]
 }

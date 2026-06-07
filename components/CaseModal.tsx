@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Card, TeamCase, Lecture } from "@/lib/types";
 import { COURSE_COLOR } from "@/lib/manifest";
 import { rich } from "./rich";
+import { CaseVisualView } from "./CaseVisual";
 
 const CASE_STEPS = ["surface", "roots", "paradigm", "take", "connect"] as const;
 type CaseStepKey = (typeof CASE_STEPS)[number];
@@ -120,6 +121,7 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
               </div>
               <h2 className="cs-title">{kase.title}</h2>
               <div className="cs-subtitle">{kase.subtitle}</div>
+              {kase.visual && <CaseVisualView visual={kase.visual} color={color} />}
               <p className="cs-surface">{rich(kase.surface)}</p>
 
               {kase.keyFacts && kase.keyFacts.length > 0 && (
