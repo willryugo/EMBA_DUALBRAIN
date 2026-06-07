@@ -107,6 +107,15 @@ export interface CaseVisualProject {
 export interface CaseVisualCombo { label: string; ev: number; cost: number; optimal?: boolean; }
 export interface CaseVisualBar { label: string; value: number; max?: number; tone?: "good" | "bad" | "neutral"; note?: string; }
 export interface CaseConstraint { label: string; check: string; ok: boolean; } // 제약조건 통과 여부
+
+// ── 5why 사다리 (T타임즈式 — 쉽게 보는 메인 뷰) ──────────
+export interface CaseJourneyStep { n: number; why: string; because: string; keyword: string; }
+export interface CaseJourney {
+  symptom: string;       // 증상 한 줄 (호기심 유발)
+  symptomSub?: string;
+  steps: CaseJourneyStep[];   // 왜? → because (보통 5단계)
+  result: string;        // 근본 통찰 한 줄
+}
 export type CaseStepKey = "surface" | "roots" | "paradigm" | "take" | "connect";
 export interface CaseVisual {
   kind: "rnd-portfolio" | "score-bars" | "compare-bars" | "constraint-check";
@@ -153,6 +162,7 @@ export interface TeamCase {
   quotes?: CaseQuote[];                   // 원문 인용
   visual?: CaseVisual;                    // '한눈에' 비주얼 (surface 최상단)
   visuals?: CaseVisual[];                 // 단계별 비주얼 (step 지정)
+  journey?: CaseJourney;                  // 5why 사다리 (있으면 모달 첫 화면)
 }
 
 export interface CasesFile {

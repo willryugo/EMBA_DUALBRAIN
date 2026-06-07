@@ -5,10 +5,8 @@ import { COURSE_COLOR } from "@/lib/manifest";
 import { rich } from "./rich";
 import { CaseVisualView } from "./CaseVisual";
 
-const CASE_STEPS = ["surface", "roots", "paradigm", "take", "connect"] as const;
-type CaseStepKey = (typeof CASE_STEPS)[number];
-
-const CASE_STEP_LABEL: Record<CaseStepKey, string> = {
+const CASE_STEP_LABEL: Record<string, string> = {
+  why: "왜? · 5why",
   surface: "과제 개요",
   roots: "강의 뿌리",
   paradigm: "패러다임 렌즈",
@@ -36,8 +34,16 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
   const [step, setStep] = useState(0);
   const [lens, setLens] = useState<"old" | "new">("new");
   const color = kase ? COURSE_COLOR[kase.course] || "#16150F" : "#16150F";
-  const lastIdx = CASE_STEPS.length - 1;
+  const STEPS = useMemo(
+    () =>
+      kase?.journey
+        ? (["why", "surface", "roots", "paradigm", "take", "connect"] as string[])
+        : (["surface", "roots", "paradigm", "take", "connect"] as string[]),
+    [kase]
+  );
+  const lastIdx = STEPS.length - 1;
   const lastIdxRef = useRef(lastIdx);
+  lastIdxRef.current = lastIdx;
 
   useEffect(() => {
     setStep(0);
@@ -58,7 +64,7 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
   const next = () => setStep((s) => Math.min(lastIdx, s + 1));
   const back = () => setStep((s) => Math.max(0, s - 1));
   const safeStep = Math.min(step, lastIdx);
-  const stepKey = CASE_STEPS[safeStep];
+  const stepKey = STEPS[safeStep];
 
   const lectureById = (id: string) => lectures.find((l) => l.id === id);
   const visualsFor = (step: string) =>
@@ -97,7 +103,7 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
         </div>
 
         <div className="stepbar">
-          {CASE_STEPS.map((key, i) => (
+          {STEPS.map((key, i) => (
             <button
               key={key}
               className={"step " + (i === safeStep ? "on" : "") + (i < safeStep ? " done" : "")}
@@ -111,6 +117,31 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
         </div>
 
         <div className="step-stage">
+          {/* ── 0. 왜? (5why 사다리) ── */}
+          {stepKey === "why" && kase.journey && (
+            <div className="step-content case-why">
+              <div className="eyebrow eyebrow-step">5 WHY · 왜?를 따라가 보기</div>
+              <div className="jy-symptom">{kase.journey.symptom}</div>
+              {kase.journey.symptomSub && (
+                <div className="jy-sub">{kase.journey.symptomSub}</div>
+              )}
+              <div className="jy-ladder">
+                {kase.journey.steps.map((s) => (
+                  <div key={s.n} className="jy-step">
+                    <div className="jy-n">왜 {s.n}</div>
+                    <div className="jy-why">{s.why}</div>
+                    <div className="jy-because">{rich(s.because)}</div>
+                    <span className="jy-keyword">{s.keyword}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="jy-result">{rich(kase.journey.result)}</div>
+              <button className="nextcue" onClick={next}>
+                숫자로 한눈에 보기 <span>→</span>
+              </button>
+            </div>
+          )}
+
           {/* ── 1. 과제 개요 ── */}
           {stepKey === "surface" && (
             <div className="step-content case-surface">
@@ -390,7 +421,7 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
             ← 이전
           </button>
           <div className="dn-dots">
-            {CASE_STEPS.map((key, i) => (
+            {STEPS.map((key, i) => (
               <button
                 key={key}
                 className={"dot " + (i === safeStep ? "on" : "") + (i < safeStep ? " done" : "")}
