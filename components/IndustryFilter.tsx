@@ -24,6 +24,7 @@ interface Props {
   onToggleIndustry: (ind: Industry) => void;
   bizMode: "all" | "b2b" | "b2c";
   onBizMode: (m: "all" | "b2b" | "b2c") => void;
+  className?: string;
 }
 
 export function IndustryFilter({
@@ -32,10 +33,12 @@ export function IndustryFilter({
   onToggleIndustry,
   bizMode,
   onBizMode,
+  className,
 }: Props) {
   const [indOpen, setIndOpen] = useState(false);
+  const cls = ["ind-pick", "ind-pick-bar", className].filter(Boolean).join(" ");
   return (
-    <div className="ind-pick ind-pick-bar">
+    <div className={cls}>
       <div className="ind-pick-head">
         <span className="ind-pick-lab">내 산업군으로 보기</span>
         <div className="biz-seg" role="group" aria-label="비즈니스 형태">

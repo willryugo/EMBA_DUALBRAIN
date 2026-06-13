@@ -186,6 +186,10 @@ img,svg{display:block;max-width:100%}
 /* ───── Hero AI block ───── */
 .aibox{background:var(--paper);border:1.5px solid var(--ink);padding:24px 32px 22px;margin-top:22px;position:relative;box-shadow:8px 8px 0 var(--ink)}
 .aibox::before{content:"DUAL ASK";position:absolute;top:-11px;left:24px;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.22em;background:var(--bg);padding:2px 9px;color:var(--ink-soft)}
+/* aibox 안에 통합된 산업군 필터 — 상단 구분선으로 박스 안에 자연스럽게 */
+.aibox .aibox-ind{border-left:none;padding-left:0;border-bottom:1px solid var(--line-2);padding-bottom:16px;margin-bottom:18px;border-top:none}
+.aibox .aibox-ind .ind-pick-lab{font-size:13px}
+@media(max-width:720px){.aibox .aibox-ind{padding-bottom:12px;margin-bottom:14px}}
 .aibox .l1{font-family:var(--serif);font-style:italic;font-weight:700;font-size:clamp(16px,1.8vw,20px);color:var(--ink-soft);margin-bottom:6px}
 .aibox h3{font-family:var(--serif);font-weight:900;font-size:clamp(22px,2.6vw,30px);line-height:1.18;letter-spacing:-.014em;margin-bottom:14px;word-break:keep-all;text-wrap:balance}
 .aibox h3 mark{background:linear-gradient(transparent 56%, var(--accent-soft) 56%);padding:0 .12em;color:var(--ink)}

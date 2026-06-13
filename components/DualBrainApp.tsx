@@ -21,7 +21,6 @@ import { store } from "@/lib/storage";
 
 import { Masthead } from "./Masthead";
 import { TitleBlock } from "./TitleBlock";
-import { IndustryFilter } from "./IndustryFilter";
 import { HeroAI } from "./HeroAI";
 import { FilterChips, FilterPanel } from "./Filters";
 import { MagCard, layoutClass } from "./MagCard";
@@ -225,9 +224,13 @@ export function DualBrainApp() {
       />
 
       <main className="wrap">
-        <IndustryFilter
-          totalCards={CARDS.length}
+        <HeroAI
+          cards={CARDS}
+          ownerPains={OWNER_PAINS}
           myIndustries={myIndustries}
+          bizMode={bizMode}
+          onOpen={setOpenId}
+          totalCards={CARDS.length}
           onToggleIndustry={(ind) => {
             const next =
               (ind as string) === "__ALL__"
@@ -238,19 +241,10 @@ export function DualBrainApp() {
             setMyIndustries(next);
             store.set("emba17_my_industries", next);
           }}
-          bizMode={bizMode}
           onBizMode={(m) => {
             setBizMode(m);
             store.set("emba17_biz_mode", m);
           }}
-        />
-
-        <HeroAI
-          cards={CARDS}
-          ownerPains={OWNER_PAINS}
-          myIndustries={myIndustries}
-          bizMode={bizMode}
-          onOpen={setOpenId}
         />
 
         <section className="teamcase">

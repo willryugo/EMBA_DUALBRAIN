@@ -7,6 +7,7 @@ import { logEvent } from "@/lib/events";
 import { rich } from "./rich";
 import { useSmartAsk } from "./useSmartAsk";
 import { useRotatingExample } from "./useRotatingExample";
+import { IndustryFilter } from "./IndustryFilter";
 
 // 접속 시각(일·시간)과 내 산업으로 만드는 결정적 시드 — 매 접속/매 시간 '오늘의 질문'이 달라진다.
 function makeSeed(myIndustries: Industry[]): number {
@@ -29,9 +30,12 @@ interface Props {
   myIndustries: Industry[];
   bizMode?: "all" | "b2b" | "b2c";
   onOpen: (id: string) => void;
+  onToggleIndustry?: (ind: Industry) => void;
+  onBizMode?: (m: "all" | "b2b" | "b2c") => void;
+  totalCards?: number;
 }
 
-export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpen }: Props) {
+export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpen, onToggleIndustry, onBizMode, totalCards }: Props) {
   const [val, setVal] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RecommendResult | null>(null);
@@ -119,6 +123,16 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
 
   return (
     <div className="aibox">
+      {onToggleIndustry && onBizMode && (
+        <IndustryFilter
+          totalCards={totalCards ?? cards.length}
+          myIndustries={myIndustries}
+          onToggleIndustry={onToggleIndustry}
+          bizMode={bizMode}
+          onBizMode={onBizMode}
+          className="aibox-ind"
+        />
+      )}
       <div className="l1">회의 30분 전. 손이 떨릴 때.</div>
       <h3>
         지금 이 고민, <mark>수업에서 본 적이 있다.</mark>
