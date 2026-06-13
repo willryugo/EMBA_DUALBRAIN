@@ -159,10 +159,14 @@ export function MagCard({ card, index, layout, onClick, saved, onToggleSave }: P
       ) : (
         <>
           <div className="crow">
-            <div className="ccourse">
-              {COURSE_SHORT[card.course]}
-              {card.week ? " · WK " + String(card.week).padStart(2, "0") : ""}
-            </div>
+            {card._badge ? (
+              <div className="ccourse case-badge">{card._badge}</div>
+            ) : (
+              <div className="ccourse">
+                {COURSE_SHORT[card.course]}
+                {card.week ? " · WK " + String(card.week).padStart(2, "0") : ""}
+              </div>
+            )}
             <div className="cnum">N°{String(index + 1).padStart(2, "0")}</div>
           </div>
           <h3>{rich(card.hook)}</h3>
@@ -170,7 +174,7 @@ export function MagCard({ card, index, layout, onClick, saved, onToggleSave }: P
           <p className="ins">{card.insight}</p>
           <div className="foot">
             <div className="inds">{indStr || "범용"}</div>
-            <div className="arrow">→</div>
+            <div className="arrow">{card._badge ? "케이스 →" : "→"}</div>
           </div>
         </>
       )}

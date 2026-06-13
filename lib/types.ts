@@ -48,6 +48,7 @@ export interface SourceRef {
 export interface Card {
   id: string;
   course: Course;
+  _badge?: string;  // 케이스 카드: "NEW 2조 · 조직행동론" 형태 뱃지
   professor?: string;
   term: string;
   week: number | null;

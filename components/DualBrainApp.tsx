@@ -11,6 +11,7 @@ import type {
   FilterState,
   Industry,
   OwnerPainCategory,
+  TeamCase,
   TweakState,
   CasesFile,
   LecturesFile,
@@ -29,10 +30,58 @@ import { CaseModal } from "./CaseModal";
 import { OntologyGraph } from "./OntologyGraph";
 import { Footer } from "./Footer";
 
-const CARDS = cardsData as Card[];
 const OWNER_PAINS = ownerPainsData as OwnerPainCategory[];
 const DEEP_CASES = (casesData as CasesFile).cases.filter((c) => c.depth === "deep");
 const LECTURES = (lecturesData as LecturesFile).lectures;
+
+// TeamCase → Card 런타임 변환 (TEAM CASE 섹션 없이 카드 그리드에 통합)
+function caseToCard(tc: TeamCase): Card {
+  const NORM: Record<string, Course> = { "Managing People & Organizations": "Managing People & Org" };
+  const courseNorm: Course = NORM[tc.course as string] ?? (tc.course as Course);
+  const si = tc.subjectIndustry ?? "";
+  let industry: Industry[] = [];
+  if (si.includes("금융") || si.includes("투자")) industry = ["금융·핀테크"];
+  else if (si.includes("소비재") || si.includes("음료") || si.includes("식품")) industry = ["소비재·식품·F&B·유통"];
+  else if (si.includes("제약") || si.includes("바이오") || si.includes("헬스")) industry = ["제약·바이오·헬스케어"];
+  else if (si.includes("하이테크") || si.includes("GPS") || si.includes("전자") || si.includes("반도체")) industry = ["전자·반도체·하드웨어"];
+  else if (si.includes("제조") || si.includes("산업재")) industry = ["제조·산업재·소재"];
+  else if (si.includes("IT") || si.includes("소프트웨어")) industry = ["IT·소프트웨어·플랫폼"];
+  const COURSE_DOMAIN_MAP: Partial<Record<Course, Domain>> = {
+    "Managing People & Org": "조직·HR",
+    "Management Science": "운영·SCM",
+    "Business Ethics": "윤리·거버넌스",
+    "Marketing Management": "마케팅",
+    "Business Analytics": "데이터·AI",
+    "Business Economics": "전략",
+    "Financial Accounting": "재무·회계",
+  };
+  const domain: Domain[] = COURSE_DOMAIN_MAP[courseNorm] ? [COURSE_DOMAIN_MAP[courseNorm]!] : [];
+  return {
+    id: `case-card-${tc.id}`,
+    course: courseNorm,
+    professor: tc.professor,
+    term: tc.term,
+    week: null,
+    hook: tc.subtitle,
+    concept: tc.title,
+    insight: tc.surface.slice(0, 120) + (tc.surface.length > 120 ? "…" : ""),
+    application: tc.paradigm.new,
+    problem_scene: tc.surface,
+    decision: tc.paradigm.reading,
+    quote: tc.paradigm.question,
+    checklist: [],
+    case_title: tc.subject,
+    case_body: tc.ourTake,
+    domain,
+    industry,
+    author: tc.sourceGroup,
+    created_at: tc.term,
+    _badge: `${tc.sourceGroup} · ${tc.professor ?? ""}`.replace(/ · $/, ""),
+  };
+}
+
+const CASE_CARDS: Card[] = DEEP_CASES.map(caseToCard);
+const CARDS: Card[] = [...(cardsData as Card[]), ...CASE_CARDS];
 
 const TWEAK_DEFAULTS: TweakState = {
   theme: "dawn",
@@ -112,6 +161,15 @@ export function DualBrainApp() {
     };
     window.addEventListener("emba17:industries-changed", onInd);
     return () => window.removeEventListener("emba17:industries-changed", onInd);
+  }, []);
+
+  // 케이스 카드(id=case-card-*)는 CaseModal, 일반 카드는 DetailModal
+  const handleCardClick = useCallback((id: string) => {
+    if (id.startsWith("case-card-")) {
+      setOpenCaseId(id.replace("case-card-", ""));
+    } else {
+      setOpenId(id);
+    }
   }, []);
 
   const setF = <K extends keyof FilterState>(k: K, v: FilterState[K]) => {
@@ -229,7 +287,7 @@ export function DualBrainApp() {
           ownerPains={OWNER_PAINS}
           myIndustries={myIndustries}
           bizMode={bizMode}
-          onOpen={setOpenId}
+          onOpen={handleCardClick}
           totalCards={CARDS.length}
           onToggleIndustry={(ind) => {
             const next =
@@ -246,35 +304,6 @@ export function DualBrainApp() {
             store.set("emba17_biz_mode", m);
           }}
         />
-
-        <section className="teamcase">
-          <div className="teamcase-head">
-            <div className="tc-eyebrow">과제로 보는 카드뉴스 · TEAM CASE STUDY</div>
-            <h2 className="tc-title">우리가 직접 발표한 그 사례 — 카드로 다시 본다</h2>
-            <p className="tc-lead">
-              17기가 조별로 분석·발표한 실제 케이스. 그날의 고민을 강의 뿌리와
-              패러다임 렌즈로 다시 본다.
-            </p>
-          </div>
-          <div className="teamcase-grid">
-            {DEEP_CASES.map((tc) => (
-              <button
-                key={tc.id}
-                className="tc-card"
-                style={{ ["--c" as string]: COURSE_COLOR[tc.course] } as React.CSSProperties}
-                onClick={() => setOpenCaseId(tc.id)}
-              >
-                <span className="tc-badge">{tc.sourceGroup}</span>
-                <span className="tc-case">{tc.title}</span>
-                <span className="tc-hook">{tc.subtitle}</span>
-                <span className="tc-foot">
-                  <span>{tc.subjectIndustry}</span>
-                  <span className="tc-arrow">케이스 열기 →</span>
-                </span>
-              </button>
-            ))}
-          </div>
-        </section>
 
         <div className="section-head" style={{ marginTop: 54 }}>
           <h2>회의 직전, 키워드로 꺼내기</h2>
@@ -306,7 +335,7 @@ export function DualBrainApp() {
                 card={c}
                 index={i}
                 layout={layoutClass(i, filterActive, tweaks.quoteCards)}
-                onClick={setOpenId}
+                onClick={handleCardClick}
                 saved={savedIds.includes(c.id)}
                 onToggleSave={toggleSave}
               />
