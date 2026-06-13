@@ -1,17 +1,36 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { GlobalGates } from "@/components/GlobalGates";
+import { RegisterSW } from "@/components/RegisterSW";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 export const metadata: Metadata = {
+  applicationName: "듀얼브레인",
   title: "듀얼브레인 — EMBA 17기의 두 번째 뇌",
   description:
-    "회의 30분 전, 다시 꺼내 쓰는 학습 자산 매거진. 분석과 직관, 두 개의 뇌가 만나는 곳.",
+    "회의 30분 전, 다시 꺼내 쓰는 의사결정 코파일럿. 분석과 직관, 두 개의 뇌가 만나는 곳.",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "듀얼브레인",
+  },
+  icons: {
+    icon: [
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180" }],
+    shortcut: ["/favicon-32.png"],
+  },
+  formatDetection: { telephone: false },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#EDF0F8",
 };
 
 export default function RootLayout({
@@ -40,6 +59,8 @@ export default function RootLayout({
       <body>
         <div id="app">{children}</div>
         <GlobalGates />
+        <RegisterSW />
+        <InstallPrompt />
       </body>
     </html>
   );
