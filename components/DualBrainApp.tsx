@@ -21,6 +21,7 @@ import { store } from "@/lib/storage";
 
 import { Masthead } from "./Masthead";
 import { TitleBlock } from "./TitleBlock";
+import { IndustryFilter } from "./IndustryFilter";
 import { HeroAI } from "./HeroAI";
 import { FilterChips, FilterPanel } from "./Filters";
 import { MagCard, layoutClass } from "./MagCard";
@@ -221,26 +222,29 @@ export function DualBrainApp() {
         todayLabel={today}
         totalCards={CARDS.length}
         onEnter={() => setView("graph")}
-        myIndustries={myIndustries}
-        onToggleIndustry={(ind) => {
-          // "전체"(__ALL__) = 산업 선택 해제(모두 보기)
-          const next =
-            (ind as string) === "__ALL__"
-              ? []
-              : myIndustries.includes(ind)
-                ? myIndustries.filter((x) => x !== ind)
-                : [...myIndustries, ind];
-          setMyIndustries(next);
-          store.set("emba17_my_industries", next);
-        }}
-        bizMode={bizMode}
-        onBizMode={(m) => {
-          setBizMode(m);
-          store.set("emba17_biz_mode", m);
-        }}
       />
 
       <main className="wrap">
+        <IndustryFilter
+          totalCards={CARDS.length}
+          myIndustries={myIndustries}
+          onToggleIndustry={(ind) => {
+            const next =
+              (ind as string) === "__ALL__"
+                ? []
+                : myIndustries.includes(ind)
+                  ? myIndustries.filter((x) => x !== ind)
+                  : [...myIndustries, ind];
+            setMyIndustries(next);
+            store.set("emba17_my_industries", next);
+          }}
+          bizMode={bizMode}
+          onBizMode={(m) => {
+            setBizMode(m);
+            store.set("emba17_biz_mode", m);
+          }}
+        />
+
         <HeroAI
           cards={CARDS}
           ownerPains={OWNER_PAINS}
