@@ -292,7 +292,7 @@ export function DualBrainApp() {
             {filtered.length}편의 인사이트
             {filterActive ? " · 필터 적용됨" : ""}
           </b>
-          <span>EDITORIAL · 카드 한 장 = 5-step 솔루션</span>
+          <span>카드 한 장에 5단계 솔루션</span>
         </div>
         <div className="mag">
           {filtered.length === 0 ? (

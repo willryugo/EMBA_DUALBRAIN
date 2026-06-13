@@ -70,9 +70,9 @@ export function TitleBlock({
             <button className="tby-enter" onClick={onEnter} type="button">
               <span className="tbe-inf" aria-hidden="true">∞</span>
               <span className="tbe-txt">
-                <span className="tbe-emoji" aria-hidden="true">🧠</span> 브레인접속
+                <span className="tbe-emoji" aria-hidden="true">🧠</span> 생각 지도
               </span>
-              <span className="tbe-sub">81장 인사이트 브레인맵 →</span>
+              <span className="tbe-sub">126장이 연결된 지도 →</span>
             </button>
           )}
         </div>

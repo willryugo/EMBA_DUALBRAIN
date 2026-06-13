@@ -85,7 +85,7 @@ export function MagCard({ card, index, layout, onClick, saved, onToggleSave }: P
       <article className={className} style={style} onClick={() => onClick(card.id)}>
         {star}
         <DBMark size={24} className="card-mark" />
-        <div className="spread-marker">EDITORIAL · 펼침</div>
+        <div className="spread-marker">펼쳐 보기</div>
         <div className="spread-cols">
           <div className="spread-col l">
             <div className="sc-eyebrow">CONCEPT</div>

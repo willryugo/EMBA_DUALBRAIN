@@ -976,9 +976,9 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 /* ═══════════════════════════════════════════════════════════
    Welcome page (/welcome) · 단일 비밀번호 진입
    ═══════════════════════════════════════════════════════════ */
-.welcome-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 20px;background:var(--bg);background-image:var(--bg-image,none);background-attachment:fixed}
-.welcome-card{width:100%;max-width:460px;background:var(--paper);border:1.5px solid var(--ink);padding:44px 38px 34px;box-shadow:14px 14px 0 rgba(22,21,15,.12);position:relative}
-@media(max-width:480px){.welcome-card{padding:32px 24px 26px;box-shadow:8px 8px 0 rgba(22,21,15,.12)}}
+.welcome-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 20px;overflow-x:hidden;background:var(--bg);background-image:var(--bg-image,none);background-attachment:fixed}
+.welcome-card{width:100%;max-width:460px;min-width:0;box-sizing:border-box;background:var(--paper);border:1.5px solid var(--ink);padding:44px 38px 34px;box-shadow:14px 14px 0 rgba(22,21,15,.12);position:relative}
+@media(max-width:480px){.welcome-shell{padding:24px 14px}.welcome-card{max-width:100%;padding:30px 22px 24px;box-shadow:6px 6px 0 rgba(22,21,15,.12)}.welcome-title{font-size:clamp(24px,6.6vw,34px)}}
 .welcome-mark{display:flex;justify-content:center;margin-bottom:14px;opacity:.9}
 .welcome-vol{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
 .welcome-vol b{font-family:var(--mono);font-weight:600;color:var(--ink)}

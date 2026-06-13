@@ -671,7 +671,7 @@ export function StepOntology({
   };
   return (
     <div className="step-content step-onto" style={{ ["--c" as string]: color } as React.CSSProperties}>
-      <div className="eyebrow eyebrow-step">ONTOLOGY · 05 연결된 듀얼브레인</div>
+      <div className="eyebrow eyebrow-step">연결 · 05 이어지는 카드</div>
       <div className="onto-headline-row">
         <DBMark size={44} className="onto-headline-mark" />
         <div className="onto-headline">

@@ -166,8 +166,8 @@ function Hero({
         <button className="m-onto-btn" onClick={onOntology} aria-label="브레인 접속">
           <span className="ob-glow"></span>
           <span className="ob-emoji">🧠</span>
-          <span className="ob-label">브레인접속</span>
-          <span className="ob-hint">온톨로지 ∞</span>
+          <span className="ob-label">생각 지도</span>
+          <span className="ob-hint">전체 연결 ∞</span>
         </button>
       </div>
       <p className="deck">
