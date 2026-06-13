@@ -133,10 +133,6 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
           className="aibox-ind"
         />
       )}
-      <div className="l1">회의 30분 전. 손이 떨릴 때.</div>
-      <h3>
-        지금 이 고민, <mark>수업에서 본 적이 있다.</mark>
-      </h3>
       <div className={"aibox-search" + (val.trim() ? " filled" : "")}>
         <svg className="aibox-search-ico" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="11" cy="11" r="7" />
@@ -149,7 +145,6 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
           placeholder={val ? "" : "예) " + placeholder}
           rows={1}
           onKeyDown={(e) => {
-            // Enter = 즉시 검색, Shift+Enter = 줄바꿈
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
               doAsk();
@@ -168,7 +163,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
                 <span></span>
                 <span></span>
               </span>{" "}
-              {dl !== null ? `AI 두뇌 내려받는 중 ${dl}%` : "찾는 중"}
+              {dl !== null ? `${dl}%` : "찾는 중"}
             </>
           ) : (
             <>
@@ -181,66 +176,27 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
         </button>
       </div>
 
-      <button
-        type="button"
-        className={"ai-smart-toggle" + (semantic ? " on" : "")}
-        onClick={toggle}
-        aria-pressed={semantic}
-        title="AI 정밀검색 — 의미로 검색. 최초 1회 모델 다운로드(약 118MB) 후 캐시됩니다."
-      >
-        <span className="ait-sw" aria-hidden="true">
-          <span className="ait-knob" />
-        </span>
-        ✨ AI 정밀검색 {semantic ? "ON" : "OFF"}
-        <span className="ait-note">
-          {semantic ? "의미 임베딩으로 검색 · 최초 1회 다운로드" : "표현이 달라도 의미로 찾기 (옵션)"}
-        </span>
-      </button>
-
       <div className="pain-section">
-        <div className="pain-head">
-          <div className="ph-eyebrow">
-            C레벨의 고민들 · C-SUITE DESK
-            <span className="ph-rotate">
-              {bizMode !== "all" ? `· ${bizMode.toUpperCase()}` : ""}
-              {myIndustries.length > 0
-                ? ` · ${myIndustries[0]} 맞춤`
-                : bizMode === "all"
-                  ? "· 접속할 때마다 새로고침"
-                  : " 관점"}
-            </span>
+        <div className="pain-bar">
+          <div className="pain-tabs">
+            {rotatedPains.map((c, i) => (
+              <button
+                key={c.cat}
+                className={"pain-tab" + (activeCat === i ? " on" : "")}
+                onClick={() => setActiveCat(i)}
+                style={{ ["--pc" as string]: c.color } as React.CSSProperties}
+              >
+                {c.cat}
+              </button>
+            ))}
           </div>
-          <div className="ph-lead">
-            오늘 누군가의 임원회의에 올라온 진짜 질문 —{" "}
-            <b>① 분야를 고르고 → ② 질문을 누르면</b> 아래에 관련 인사이트 3장이 뜬다.
-          </div>
-        </div>
-        <div className="pain-howto">
-          <span className="ph-step">STEP 1 · 분야 고르기</span>
           <button
             type="button"
             className="pain-refresh"
             onClick={() => setRefreshNonce((n) => n + 1)}
           >
-            ↻ 다른 질문 보기
+            ↻
           </button>
-        </div>
-        <div className="pain-tabs">
-          {rotatedPains.map((c, i) => (
-            <button
-              key={c.cat}
-              className={"pain-tab " + (activeCat === i ? "on" : "")}
-              onClick={() => setActiveCat(i)}
-              style={{ ["--pc" as string]: c.color } as React.CSSProperties}
-            >
-              <span className="pt-n">{String(i + 1).padStart(2, "0")}</span>
-              <span className="pt-k">{c.cat}</span>
-              <span className="pt-e">{c.catE}</span>
-            </button>
-          ))}
-        </div>
-        <div className="pain-step2">
-          STEP 2 · 질문 누르기 <span className="ps-arr">↓</span> 아래에 인사이트 3장
         </div>
         <div className="pain-items">
           {(rotatedPains[activeCat]?.items ?? []).map((p, i) => (
