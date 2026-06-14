@@ -64,8 +64,29 @@ function caseToCard(tc: TeamCase): Card {
     "Financial Accounting": "재무·회계",
   };
   const domain: Domain[] = COURSE_DOMAIN_MAP[courseNorm] ? [COURSE_DOMAIN_MAP[courseNorm]!] : [];
+
+  // ── 홈 카드 미니 프리뷰 — 케이스의 가장 극적인 수치 + 스파크라인 ──
+  const allVis = [tc.visual, ...(tc.visuals || [])].filter(Boolean) as NonNullable<TeamCase["visual"]>[];
+  const deltaVis = allVis.find((v) => v.deltas && v.deltas.length > 0);
+  let _metric: Card["_metric"];
+  if (deltaVis?.deltas?.[0]) {
+    const d = deltaVis.deltas[0];
+    _metric = { label: d.label, from: d.from, to: d.to, tone: d.tone };
+  } else if (tc.keyFacts?.[0]) {
+    _metric = { label: tc.keyFacts[0].label, to: tc.keyFacts[0].value };
+  }
+  const barVis = allVis.find((v) => v.bars && v.bars.length > 0);
+  const portVis = allVis.find((v) => v.kind === "rnd-portfolio" && v.projects?.length);
+  const _spark = barVis?.bars
+    ? barVis.bars.map((b) => b.value)
+    : portVis?.projects
+    ? portVis.projects.map((p) => p.ev)
+    : undefined;
+
   return {
     id: `case-card-${tc.id}`,
+    _metric,
+    _spark,
     course: courseNorm,
     professor: tc.professor,
     term: tc.term,

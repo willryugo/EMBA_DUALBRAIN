@@ -49,6 +49,8 @@ export interface Card {
   id: string;
   course: Course;
   _badge?: string;  // 케이스 카드: "NEW 2조 · 조직행동론" 형태 뱃지
+  _metric?: { label: string; from?: string; to: string; tone?: "good" | "bad" | "neutral" }; // 케이스 카드 홈 프리뷰 핵심 수치
+  _spark?: number[]; // 케이스 카드 미니 스파크라인 (막대 비주얼에서)
   professor?: string;
   term: string;
   week: number | null;
