@@ -31,7 +31,8 @@ import { OntologyGraph } from "./OntologyGraph";
 import { Footer } from "./Footer";
 
 const OWNER_PAINS = ownerPainsData as OwnerPainCategory[];
-const DEEP_CASES = (casesData as CasesFile).cases.filter((c) => c.depth === "deep");
+const ALL_CASES = (casesData as CasesFile).cases;
+const DEEP_CASES = ALL_CASES.filter((c) => c.depth === "deep");
 const LECTURES = (lecturesData as LecturesFile).lectures;
 
 // TeamCase → Card 런타임 변환 (TEAM CASE 섹션 없이 카드 그리드에 통합)
@@ -40,12 +41,19 @@ function caseToCard(tc: TeamCase): Card {
   const courseNorm: Course = NORM[tc.course as string] ?? (tc.course as Course);
   const si = tc.subjectIndustry ?? "";
   let industry: Industry[] = [];
-  if (si.includes("금융") || si.includes("투자")) industry = ["금융·핀테크"];
-  else if (si.includes("소비재") || si.includes("음료") || si.includes("식품")) industry = ["소비재·식품·F&B·유통"];
-  else if (si.includes("제약") || si.includes("바이오") || si.includes("헬스")) industry = ["제약·바이오·헬스케어"];
-  else if (si.includes("하이테크") || si.includes("GPS") || si.includes("전자") || si.includes("반도체")) industry = ["전자·반도체·하드웨어"];
-  else if (si.includes("제조") || si.includes("산업재")) industry = ["제조·산업재·소재"];
-  else if (si.includes("IT") || si.includes("소프트웨어")) industry = ["IT·소프트웨어·플랫폼"];
+  const has = (...ks: string[]) => ks.some((k) => si.includes(k));
+  if (has("금융", "투자", "은행", "핀테크", "회계감사", "정책금융")) industry = ["금융·핀테크"];
+  else if (has("반도체", "하이테크", "GPS", "전자", "가전", "하드웨어", "메모리", "HBM")) industry = ["전자·반도체·하드웨어"];
+  else if (has("제약", "바이오", "헬스", "의료기기", "분유", "영유아", "임플란트")) industry = ["제약·바이오·헬스케어"];
+  else if (has("물류", "3PL", "운송", "SCM", "택배")) industry = ["물류·운송·SCM"];
+  else if (has("게임")) industry = ["미디어·콘텐츠·게임·광고"];
+  else if (has("광고", "미디어", "콘텐츠", "엔터")) industry = ["미디어·콘텐츠·게임·광고"];
+  else if (has("럭셔리", "패션", "뷰티", "의류", "라이프스타일")) industry = ["패션·뷰티·라이프스타일"];
+  else if (has("여행", "관광", "OTA", "레저", "호텔")) industry = ["여행·관광·레저·문화"];
+  else if (has("건설", "부동산", "재개발", "철거", "인테리어")) industry = ["건설·부동산"];
+  else if (has("자동차", "제조", "산업재", "소재")) industry = ["제조·산업재·소재"];
+  else if (has("이커머스", "유통", "외식", "식음료", "음료", "식품", "소비재", "F&B", "FMCG", "커피", "유가공")) industry = ["소비재·식품·F&B·유통"];
+  else if (has("IT", "소프트웨어", "SaaS", "플랫폼", "SI", "메시징")) industry = ["IT·소프트웨어·플랫폼"];
   const COURSE_DOMAIN_MAP: Partial<Record<Course, Domain>> = {
     "Managing People & Org": "조직·HR",
     "Management Science": "운영·SCM",
@@ -80,7 +88,8 @@ function caseToCard(tc: TeamCase): Card {
   };
 }
 
-const CASE_CARDS: Card[] = DEEP_CASES.map(caseToCard);
+// deep + pin 모든 케이스를 검색 카드로 (pin도 카드 그리드·검색·모달에 노출)
+const CASE_CARDS: Card[] = ALL_CASES.map(caseToCard);
 const CARDS: Card[] = [...(cardsData as Card[]), ...CASE_CARDS];
 
 const TWEAK_DEFAULTS: TweakState = {
@@ -361,7 +370,7 @@ export function DualBrainApp() {
       {openCaseId && (
         <CaseModal
           caseId={openCaseId}
-          cases={DEEP_CASES}
+          cases={ALL_CASES}
           lectures={LECTURES}
           cards={CARDS}
           onClose={() => setOpenCaseId(null)}
