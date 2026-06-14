@@ -209,8 +209,9 @@ function AskResult({
   onOpen: (id: string) => void;
 }) {
   if (!result) return null;
+  // 결과 id를 ALL_CARDS(케이스 포함)에서 해석 — 케이스가 검색 결과로 렌더되도록.
   const cards = result.ids
-    .map((id) => CARDS.find((c) => c.id === id))
+    .map((id) => ALL_CARDS.find((c) => c.id === id))
     .filter((c): c is Card => Boolean(c));
   return (
     <div className="m-result">
@@ -266,7 +267,8 @@ const DualAsk = forwardRef<
   const [loading, setLoading] = useState(false);
   const taRef = useRef<HTMLTextAreaElement | null>(null);
   const placeholder = useRotatingExample(!!val.trim());
-  const { semantic, toggle, dl, runAsk: smartAsk } = useSmartAsk(CARDS, myIndustries);
+  // 검색 풀에 케이스 카드 포함(ALL_CARDS) — "terracog"·"2조"·"선형계획" 등이 케이스를 찾도록.
+  const { semantic, toggle, dl, runAsk: smartAsk } = useSmartAsk(ALL_CARDS, myIndustries);
 
   const runAsk = (text: string) => {
     const q = (text || "").trim();
