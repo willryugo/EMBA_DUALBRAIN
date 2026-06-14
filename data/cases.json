@@ -84,18 +84,42 @@
         "result": "이건 가격 문제가 아니었다. 사일로 구조가 12회의 회의를 허비하게 만들었다 — 결정 구조를 설계하지 않은 조직의 비용이다."
       },
       "visual": {
-        "kind": "compare-bars",
-        "headline": "같은 회의실, 7명의 다른 숫자 — 이해관계자 가격 포지션 ($, 최대 500 기준)",
-        "bars": [
-          { "label": "시장 현실 · 경쟁사 BirdsI", "value": 400, "max": 500, "tone": "bad", "note": "시장 기준점" },
-          { "label": "앤디 워커 (영업 부이사장)", "value": 425, "max": 500, "tone": "bad", "note": "이탈 위협" },
-          { "label": "2조 권고 (진입형)", "value": 445, "max": 500, "tone": "neutral", "note": "$440~450" },
-          { "label": "엠마 리처드슨 (결정자)", "value": 460, "max": 500, "tone": "neutral", "note": "판단 보류" },
-          { "label": "에릭 미셸 (영업 부사장)", "value": 475, "max": 500, "tone": "good", "note": "마진 사수" },
-          { "label": "버키 타운젠드 (CFO)", "value": 475, "max": 500, "tone": "good", "note": "$475 최소선" },
-          { "label": "톰 오브라이언 (제조)", "value": 475, "max": 500, "tone": "good", "note": "품질 최소선" }
+        "kind": "timeline",
+        "headline": "30년 '추종자 전략'이 1년의 오판으로 무너지기까지",
+        "events": [
+          { "date": "2006", "title": "경쟁사 BirdsI 등장", "desc": "$400 위성사진 GPS 출시. TerraCog은 '장난감'이라 폄하하며 위협을 과소평가한다.", "tone": "bad" },
+          { "date": "2006–07", "title": "경영진의 오판 · 1년 허비", "desc": "낡은 플랫폼 재사용으로 처리속도·원가 모두 악화. 대응이 1년 늦어진다.", "tone": "bad" },
+          { "date": "2007", "title": "핵심 거래처 2곳 상실", "desc": "시장은 이미 BirdsI로 이동. 추종자 전략의 한계가 드러난다.", "tone": "bad" },
+          { "date": "2008.03", "title": "Project Aerial 가격회의 · 딜레마", "desc": "원가 $475 vs 시장 $400, 간극 $75. 12회 회의에도 만장일치가 오지 않는다.", "tone": "neutral" }
         ]
       },
+      "visuals": [
+        {
+          "kind": "compare-bars",
+          "step": "surface",
+          "headline": "같은 회의실, 7명의 다른 숫자 — 이해관계자 가격 포지션 ($, 최대 500 기준)",
+          "bars": [
+            { "label": "시장 현실 · 경쟁사 BirdsI", "value": 400, "max": 500, "tone": "bad", "note": "시장 기준점" },
+            { "label": "앤디 워커 (영업 부이사장)", "value": 425, "max": 500, "tone": "bad", "note": "이탈 위협" },
+            { "label": "2조 권고 (진입형)", "value": 445, "max": 500, "tone": "neutral", "note": "$440~450" },
+            { "label": "엠마 리처드슨 (결정자)", "value": 460, "max": 500, "tone": "neutral", "note": "판단 보류" },
+            { "label": "에릭 미셸 (영업 부사장)", "value": 475, "max": 500, "tone": "good", "note": "마진 사수" },
+            { "label": "버키 타운젠드 (CFO)", "value": 475, "max": 500, "tone": "good", "note": "$475 최소선" },
+            { "label": "톰 오브라이언 (제조)", "value": 475, "max": 500, "tone": "good", "note": "품질 최소선" }
+          ]
+        },
+        {
+          "kind": "persona-grid",
+          "step": "paradigm",
+          "headline": "RAPID로 본 의사결정 붕괴 — 누가 결정자(D)인지 아무도 모른다",
+          "personas": [
+            { "name": "D · 결정", "tag": "Decider", "strength": "이상 — 총괄부사장 엠마가 통합해 최종 결정", "risk": "실제 — 영업 이사가 결정자처럼 군림" },
+            { "name": "A · 승인", "tag": "Approver", "strength": "이상 — CFO 버키가 마진을 승인", "risk": "실제 — 이사가 승인자 역할까지 침범" },
+            { "name": "I · 자문", "tag": "Input", "strength": "이상 — 영업·개발·생산이 의견을 제공", "risk": "실제 — 자문자가 결정자 행세를 한다" },
+            { "name": "P · 실행", "tag": "Perform", "strength": "이상 — 전 부서가 합의안을 실행", "risk": "실제 — 책임 소재가 끝내 불명확" }
+          ]
+        }
+      ],
       "paradigmAxes": [
         { "label": "문제 정의", "old": "가격을 빨리 정해야 한다 — 합의하면 된다", "new": "결정 구조 자체가 망가졌다 — 사일로를 가로지를 RAPID 설계가 없다" },
         { "label": "리더십 스타일", "old": "강한 리더가 top-down으로 가격을 밀어붙인다", "new": "엠마는 D(결정자)로 앉아 통합하되, 이해관계자 입력을 구조화한다" },
@@ -217,18 +241,31 @@
         { "text": "아침에 눈을 뜰 때마다 세상을 활활 불태우고 싶어 하는 사람 — 롭이 딱 그랬습니다.", "by": "폴 나스르" }
       ],
       "visual": {
-        "kind": "score-bars",
-        "headline": "성과는 최고, 협업·문화는 바닥 — 같은 사람의 두 얼굴 (360도 평가 · 5점 만점)",
-        "bars": [
-          { "label": "시장·상품 지식", "value": 4.5, "max": 5, "tone": "good" },
-          { "label": "고객 관계 관리", "value": 4.3, "max": 5, "tone": "good" },
-          { "label": "진취성·헌신", "value": 4.3, "max": 5, "tone": "good" },
-          { "label": "팀플레이어 (상사 평가)", "value": 2.5, "max": 5, "tone": "bad" },
-          { "label": "리더십·인력 관리", "value": 2.5, "max": 5, "tone": "bad" },
-          { "label": "회사방침 준수 (상사 평가)", "value": 2.0, "max": 5, "tone": "bad" },
-          { "label": "평가·코칭·다양성 관리", "value": 2.0, "max": 5, "tone": "bad" }
+        "kind": "stat-delta",
+        "headline": "한 사람이 만든 두 개의 숫자 — 성과는 폭발, 문화는 추락",
+        "deltas": [
+          { "label": "CMS 시장점유율", "from": "2%", "to": "12.2%", "tone": "good" },
+          { "label": "업계 순위", "from": "10위", "to": "3위", "tone": "good" },
+          { "label": "신규 대형고객", "from": "0곳", "to": "10곳+", "tone": "good" },
+          { "label": "회사방침 준수 (상사 평가)", "from": "기대 3.5", "to": "실제 2.0", "tone": "bad" }
         ]
       },
+      "visuals": [
+        {
+          "kind": "score-bars",
+          "step": "surface",
+          "headline": "성과는 최고, 협업·문화는 바닥 — 같은 사람의 두 얼굴 (360도 평가 · 5점 만점)",
+          "bars": [
+            { "label": "시장·상품 지식", "value": 4.5, "max": 5, "tone": "good" },
+            { "label": "고객 관계 관리", "value": 4.3, "max": 5, "tone": "good" },
+            { "label": "진취성·헌신", "value": 4.3, "max": 5, "tone": "good" },
+            { "label": "팀플레이어 (상사 평가)", "value": 2.5, "max": 5, "tone": "bad" },
+            { "label": "리더십·인력 관리", "value": 2.5, "max": 5, "tone": "bad" },
+            { "label": "회사방침 준수 (상사 평가)", "value": 2.0, "max": 5, "tone": "bad" },
+            { "label": "평가·코칭·다양성 관리", "value": 2.0, "max": 5, "tone": "bad" }
+          ]
+        }
+      ],
       "journey": {
         "symptom": "6배 성장 안겨준 에이스를, 왜 승진 못 시킬까?",
         "symptomSub": "5번 '왜?'를 파고들면 성과와 문화의 충돌이 보입니다.",
@@ -280,6 +317,28 @@
         { "name": "폴렛 지오르다노", "role": "마사의 매니저", "note": "반일 재택으로 지원 부재. 마사의 온보딩을 설계하지 않은 구조적 공백. '시스템보다 자신에게 의존하는' 패턴." },
         { "name": "본 카르터", "role": "동료 PM", "note": "마사에게 적대적, 정보 차단. 개인 문제인가, 잘못 설계된 팀 구조의 결과인가." },
         { "name": "소냐 (딥 다이브 CEO)", "role": "이전 인턴십 회사 대표", "note": "마사를 아는 조직. 이직 제안 유효. 심리적 안전과 성장 가능성이 포토맥보다 높을 수 있다." }
+      ],
+      "visual": {
+        "kind": "fork",
+        "headline": "입사 1년도 안 돼 강요받는 선택",
+        "forkQuestion": "남는가, 떠나는가?",
+        "options": [
+          { "label": "포토맥에 남는다", "sub": "꿈의 회사·브랜드라는 커리어 자산. 그러나 멘토 부재·적대적 동료·정체된 시스템은 그대로다.", "chosen": false },
+          { "label": "딥 다이브로 떠난다", "sub": "이미 나를 아는 조직·심리적 안전·성장 가능성. '버티지 못했다'는 꼬리표는 감수한다.", "chosen": true }
+        ]
+      },
+      "visuals": [
+        {
+          "kind": "persona-grid",
+          "step": "paradigm",
+          "headline": "NEW 3조의 4개 렌즈로 해부한 마사의 1년",
+          "personas": [
+            { "name": "HR 렌즈", "tag": "Job-Fit", "strength": "채용 적합성은 확실했다", "risk": "입사 후 역할·기대치 설정이 없었다" },
+            { "name": "구조 렌즈", "tag": "조직설계", "strength": "문제는 마사 개인이 아니다", "risk": "온보딩 부재 + 리더십 공백 + 역할권한 부조리" },
+            { "name": "시대 렌즈", "tag": "2009→2026", "strength": "이직 충동은 정상 신호다", "risk": "세대가 변한 게 아니라 조직이 정체됐다" },
+            { "name": "심리 렌즈", "tag": "주변의 목소리", "strength": "두려움이 아닌 방향을 택한다", "risk": "엄마(간판)·아빠(원하는 것)·친구(안 바뀐다)의 충돌" }
+          ]
+        }
       ],
       "paradigmAxes": [
         { "label": "문제 원인", "old": "마사가 적응을 못 한다 — 신입은 원래 2년은 참아야", "new": "포토맥이 마사가 남을 이유를 설계하지 못했다 — 조직설계 실패" },
@@ -371,16 +430,14 @@
         "result": "'누구를 뽑을까'는 두 번째 질문. 첫 번째 질문은 '왜 스타들이 여기서 떠나는가'다."
       },
       "visual": {
-        "kind": "score-bars",
-        "headline": "5명 후보 비교 — 즉각 성과 기대 vs RSH 문화 적합도 (5점 만점, 4조 추정)",
-        "bars": [
-          { "label": "제럴드 바움 · 즉각 성과", "value": 5.0, "max": 5, "tone": "good" },
-          { "label": "제럴드 바움 · 문화 적합", "value": 1.5, "max": 5, "tone": "bad" },
-          { "label": "데이비드 휴즈 · 신뢰·멘토링", "value": 4.5, "max": 5, "tone": "good" },
-          { "label": "데이비드 휴즈 · 즉각 성과", "value": 2.5, "max": 5, "tone": "bad" },
-          { "label": "소냐 미사 · 균형 (성과+문화)", "value": 4.0, "max": 5, "tone": "good" },
-          { "label": "리나 시어 · 문화+업무연속성", "value": 4.5, "max": 5, "tone": "good" },
-          { "label": "리나 시어 · 시장 인지도", "value": 2.0, "max": 5, "tone": "bad" }
+        "kind": "persona-grid",
+        "headline": "별 4명을 사올까, 우리 사람을 키울까 — 5인 후보 비교",
+        "personas": [
+          { "name": "제럴드 바움", "tag": "외부 · 18개월 II 11위", "strength": "최고 스톡피킹 · 즉각 성과", "risk": "프리마돈나 · 문화 충돌 최대" },
+          { "name": "데이비드 휴즈", "tag": "외부 · 15년 베테랑", "strength": "신뢰 · 멘토링 열정", "risk": "에너지 저하 · 고비용 · ROI 의문" },
+          { "name": "소냐 미사", "tag": "외부 · 균형형 (차선책)", "strength": "성과·문화·성장의 균형", "risk": "대형 플랫폼 적응 미지수" },
+          { "name": "세스 호컴", "tag": "외부 · 파워칩 네트워크", "strength": "파워칩 경영진 연줄", "risk": "장기 헌신도 의문" },
+          { "name": "리나 시어", "tag": "내부 · RSH", "strength": "문화 적합 · 업무 연속성 · 비용 절감", "risk": "시장 인지도 낮음", "pick": true }
         ]
       },
       "paradigmAxes": [

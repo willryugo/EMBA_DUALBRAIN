@@ -157,6 +157,10 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
               {kase.visual && <CaseVisualView visual={kase.visual} color={color} />}
               <p className="cs-surface">{rich(kase.surface)}</p>
 
+              {visualsFor("surface").map((v, i) => (
+                <CaseVisualView key={i} visual={v} color={color} />
+              ))}
+
               {kase.keyFacts && kase.keyFacts.length > 0 && (
                 <div className="cs-facts">
                   {kase.keyFacts.map((f, i) => (
@@ -234,6 +238,10 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
                 </div>
               )}
 
+              {visualsFor("roots").map((v, i) => (
+                <CaseVisualView key={i} visual={v} color={color} />
+              ))}
+
               <button className="nextcue" onClick={next}>
                 그래서 — 옛 눈과 새 눈으로 본다 <span>→</span>
               </button>
@@ -293,6 +301,11 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
                 <span className="plr-lab">읽기</span>
                 <p>{rich(kase.paradigm.reading)}</p>
               </div>
+
+              {visualsFor("paradigm").map((v, i) => (
+                <CaseVisualView key={i} visual={v} color={color} />
+              ))}
+
               <button className="nextcue" onClick={next}>
                 17기는 이렇게 봤다 <span>→</span>
               </button>

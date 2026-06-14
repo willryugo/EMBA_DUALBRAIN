@@ -91,6 +91,107 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
     );
   }
 
+  // ── 타임라인 (사건 전개 — 케이스의 첫 장면) ──
+  if (visual.kind === "timeline" && visual.events) {
+    return (
+      <div className="cv" style={styleC}>
+        {visual.headline && <div className="cv-headline">{visual.headline}</div>}
+        <div className="cv-block">
+          <div className="cv-tl">
+            {visual.events.map((e, i) => (
+              <div key={i} className={"cv-tlrow tone-" + (e.tone || "neutral")}>
+                <div className="cv-tldate">{e.date}</div>
+                <div className="cv-tldot" />
+                <div className="cv-tlbody">
+                  <div className="cv-tltitle">{e.title}</div>
+                  {e.desc && <div className="cv-tldesc">{e.desc}</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── 스탯 변화 (극적 수치 from→to) ──
+  if (visual.kind === "stat-delta" && visual.deltas) {
+    return (
+      <div className="cv" style={styleC}>
+        {visual.headline && <div className="cv-headline">{visual.headline}</div>}
+        <div className="cv-block">
+          <div className="cv-deltas">
+            {visual.deltas.map((d, i) => (
+              <div key={i} className={"cv-delta tone-" + (d.tone || "neutral")}>
+                <div className="cv-dlabel">{d.label}</div>
+                <div className="cv-drow">
+                  <span className="cv-dfrom">{d.from}</span>
+                  <span className="cv-darrow">→</span>
+                  <span className="cv-dto">{d.to}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── 인물·후보·렌즈 비교 카드 ──
+  if (visual.kind === "persona-grid" && visual.personas) {
+    return (
+      <div className="cv" style={styleC}>
+        {visual.headline && <div className="cv-headline">{visual.headline}</div>}
+        <div className="cv-block">
+          <div className="cv-personas">
+            {visual.personas.map((p, i) => (
+              <div key={i} className={"cv-persona" + (p.pick ? " pick" : "")}>
+                <div className="cv-pphead">
+                  <span className="cv-ppname">{p.name}</span>
+                  {p.pick && <span className="cv-pppick">선택 ✓</span>}
+                </div>
+                {p.tag && <div className="cv-pptag">{p.tag}</div>}
+                {p.strength && (
+                  <div className="cv-ppline good">
+                    <span className="cv-ppmk">＋</span>
+                    {p.strength}
+                  </div>
+                )}
+                {p.risk && (
+                  <div className="cv-ppline bad">
+                    <span className="cv-ppmk">－</span>
+                    {p.risk}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── 갈림길 (양자택일) ──
+  if (visual.kind === "fork" && visual.options) {
+    return (
+      <div className="cv" style={styleC}>
+        {visual.headline && <div className="cv-headline">{visual.headline}</div>}
+        <div className="cv-block">
+          {visual.forkQuestion && <div className="cv-forkq">{visual.forkQuestion}</div>}
+          <div className="cv-fork">
+            {visual.options.map((o, i) => (
+              <div key={i} className={"cv-forkopt" + (o.chosen ? " chosen" : "")}>
+                {o.chosen && <div className="cv-forkflag">17기의 선택</div>}
+                <div className="cv-forklabel">{o.label}</div>
+                {o.sub && <div className="cv-forksub">{o.sub}</div>}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ── 제약조건 통과 + 최적성 (왜 이 결정이 최적인가) ──
   if (visual.kind === "constraint-check" && visual.constraints) {
     return (

@@ -1443,6 +1443,58 @@ mark.hl {
 .cv-ck-expr{font-family:var(--mono);font-size:11px;font-weight:700;color:rgba(22,21,15,.55)}
 .cv-verdict{margin-top:11px;padding:11px 13px;background:var(--c);color:var(--paper);font-size:13px;font-weight:700;line-height:1.55;border-radius:3px}
 
+/* ── 히어로 장면 비주얼 (timeline / stat-delta / persona-grid / fork) ── */
+/* 타임라인 — 사건 전개 */
+.cv-tl{border-left:2px solid rgba(22,21,15,.15);margin-left:7px;padding-left:19px;display:flex;flex-direction:column;gap:15px}
+.cv-tlrow{position:relative}
+.cv-tlrow::before{content:"";position:absolute;left:-27px;top:1px;width:12px;height:12px;border-radius:50%;background:var(--paper);border:3px solid var(--c)}
+.cv-tlrow.tone-bad::before{border-color:#c0506e}
+.cv-tlrow.tone-good::before{border-color:#3c8c6e}
+.cv-tldate{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.05em;color:var(--c);margin-bottom:2px}
+.cv-tlrow.tone-bad .cv-tldate{color:#c0506e}
+.cv-tltitle{font-size:13.5px;font-weight:800;line-height:1.38;margin-bottom:3px}
+.cv-tldesc{font-size:12px;line-height:1.58;color:rgba(22,21,15,.72)}
+.cv-tldot{display:none}
+
+/* 스탯 변화 — 극적 수치 from→to */
+.cv-deltas{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cv-delta{padding:11px 13px;border:1.5px solid rgba(22,21,15,.13);border-radius:4px;background:rgba(22,21,15,.015)}
+.cv-dlabel{font-size:11px;font-weight:700;color:rgba(22,21,15,.6);margin-bottom:6px}
+.cv-drow{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.cv-dfrom{font-family:var(--mono);font-size:14px;font-weight:700;color:rgba(22,21,15,.4)}
+.cv-darrow{font-size:13px;color:rgba(22,21,15,.35)}
+.cv-dto{font-family:var(--mono);font-size:21px;font-weight:800;color:var(--c);line-height:1}
+.cv-delta.tone-good .cv-dto{color:#3c8c6e}
+.cv-delta.tone-bad .cv-dto{color:#c0506e}
+
+/* 인물·후보·렌즈 비교 카드 */
+.cv-personas{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.cv-persona{padding:11px 12px;border:1.5px solid rgba(22,21,15,.13);border-radius:4px;background:var(--paper)}
+.cv-persona.pick{border-color:var(--c);border-width:2px;background:color-mix(in srgb,var(--c) 6%,transparent)}
+.cv-persona:last-child:nth-child(odd){grid-column:1/-1}
+.cv-pphead{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:3px}
+.cv-ppname{font-size:13px;font-weight:800}
+.cv-pppick{font-family:var(--mono);font-size:9px;font-weight:700;color:var(--paper);background:var(--c);padding:1px 7px;border-radius:8px;white-space:nowrap}
+.cv-pptag{font-family:var(--mono);font-size:10px;font-weight:700;color:rgba(22,21,15,.5);margin-bottom:7px}
+.cv-ppline{display:flex;gap:6px;font-size:11.5px;line-height:1.5;margin-top:4px;color:rgba(22,21,15,.82)}
+.cv-ppmk{flex:none;font-weight:800;width:13px;text-align:center}
+.cv-ppline.good .cv-ppmk{color:#3c8c6e}
+.cv-ppline.bad .cv-ppmk{color:#c0506e}
+
+/* 갈림길 — 양자택일 */
+.cv-forkq{text-align:center;font-size:15px;font-weight:800;margin-bottom:13px}
+.cv-fork{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.cv-forkopt{padding:15px 14px 14px;border:1.5px solid rgba(22,21,15,.16);border-radius:5px;position:relative;background:rgba(22,21,15,.015)}
+.cv-forkopt.chosen{border-color:var(--c);border-width:2px;background:color-mix(in srgb,var(--c) 7%,transparent)}
+.cv-forkflag{position:absolute;top:-9px;left:13px;font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--paper);background:var(--c);padding:2px 9px;border-radius:9px}
+.cv-forklabel{font-size:14.5px;font-weight:800;margin-bottom:6px}
+.cv-forkopt.chosen .cv-forklabel{color:var(--c)}
+.cv-forksub{font-size:12px;line-height:1.6;color:rgba(22,21,15,.72)}
+
+@media(max-width:560px){
+  .cv-deltas,.cv-personas,.cv-fork{grid-template-columns:1fr}
+}
+
 /* ── 5why 사다리 (T타임즈式 — 쉽게 보는 메인) ─────────── */
 .case-why .jy-symptom{font-size:18px;font-weight:800;line-height:1.42;margin-bottom:6px}
 .case-why .jy-sub{font-size:13px;color:rgba(22,21,15,.6);margin-bottom:20px}

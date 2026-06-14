@@ -109,6 +109,12 @@ export interface CaseVisualCombo { label: string; ev: number; cost: number; opti
 export interface CaseVisualBar { label: string; value: number; max?: number; tone?: "good" | "bad" | "neutral"; note?: string; }
 export interface CaseConstraint { label: string; check: string; ok: boolean; } // 제약조건 통과 여부
 
+// ── 히어로 장면 비주얼 (PPT 주요 장면 재현) ──────────────────
+export interface CaseTimelineEvent { date: string; title: string; desc?: string; tone?: "good" | "bad" | "neutral"; } // 사건 전개
+export interface CaseStatDelta { label: string; from: string; to: string; tone?: "good" | "bad" | "neutral"; }       // 극적 수치 변화 from→to
+export interface CasePersona { name: string; tag?: string; strength?: string; risk?: string; pick?: boolean; }        // 인물·후보·렌즈 카드
+export interface CaseForkOption { label: string; sub?: string; chosen?: boolean; }                                    // 갈림길 선택지
+
 // ── 5why 사다리 (T타임즈式 — 쉽게 보는 메인 뷰) ──────────
 export interface CaseJourneyStep { n: number; why: string; because: string; keyword: string; }
 export interface CaseJourney {
@@ -119,7 +125,15 @@ export interface CaseJourney {
 }
 export type CaseStepKey = "surface" | "roots" | "paradigm" | "take" | "connect";
 export interface CaseVisual {
-  kind: "rnd-portfolio" | "score-bars" | "compare-bars" | "constraint-check";
+  kind:
+    | "rnd-portfolio"
+    | "score-bars"
+    | "compare-bars"
+    | "constraint-check"
+    | "timeline"        // 사건 전개 타임라인
+    | "stat-delta"      // 극적 수치 변화 (from→to 큰 숫자)
+    | "persona-grid"    // 인물·후보·렌즈 비교 카드
+    | "fork";           // 갈림길 (양자택일)
   step?: CaseStepKey;      // 어느 단계에 그릴지 (없으면 surface)
   headline?: string;       // 비주얼이 말하는 한 줄
   projects?: CaseVisualProject[];   // rnd-portfolio
@@ -127,6 +141,11 @@ export interface CaseVisual {
   bars?: CaseVisualBar[];           // score-bars / compare-bars
   constraints?: CaseConstraint[];   // constraint-check
   verdict?: string;                 // constraint-check 결론 한 줄
+  events?: CaseTimelineEvent[];     // timeline
+  deltas?: CaseStatDelta[];         // stat-delta
+  personas?: CasePersona[];         // persona-grid
+  forkQuestion?: string;            // fork — 가운데 질문
+  options?: CaseForkOption[];       // fork — 좌우 선택지
 }
 
 export interface TeamCase {
