@@ -278,6 +278,9 @@ export function recommendCards(
       { text: (c.domain || []).join(" "), w: 2 },          // 도메인(마케팅·재무·회계…)
       { text: (c.industry || []).join(" "), w: 2 },        // 산업(제약·바이오·헬스케어…)
       { text: c.professor || "", w: 1 },                   // 교수명
+      // ★ 케이스 카드 — 발표 조 이름("2조"·"NEW 2조"·"5조")·뱃지로 자기 발표를 바로 찾게
+      { text: c._badge || "", w: 4 },                      // "NEW 2조 · 오홍석" (조 이름+교수)
+      { text: c.author || "", w: 2 },                      // sourceGroup(케이스) / "버드"(일반)
     ];
 
     let s = 0;
@@ -345,13 +348,19 @@ export function recommendCards(
   }
 
   // 이유 작성
+  const topScore = top[0]?.s ?? 0;
   const reason = buildReason({
     raw: problem.trim(),
     expansions,
     inferredDomain,
     myIndustries,
-    matched: top[0]?.s ?? 0,
+    matched: topScore,
   });
+
+  // 키워드 모드에서도 '두 번째 뇌의 진단'을 띄운다(1위 카드가 실제로 매칭됐을 때만).
+  // confidence(의미 근접도 %)는 임베딩 전용이므로 키워드 모드에선 생략 → % 미표시.
+  const topCard = topScore > 0 ? cardById.get(top[0].id) : undefined;
+  const diagnosis = topScore > 0 ? buildDiagnosis(problem, inferredDomain, topCard) : undefined;
 
   return {
     ids: top.map((x) => x.id),
@@ -361,6 +370,7 @@ export function recommendCards(
     inferredDomain,
     evidence,
     mode: "keyword",
+    diagnosis,
   };
 }
 

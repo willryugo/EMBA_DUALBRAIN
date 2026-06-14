@@ -79,7 +79,15 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
     }
   }, [val]);
 
-  const { semantic, toggle, dl, runAsk } = useSmartAsk(cards, myIndustries);
+  // 검색창을 비우면 아래 '두 번째 뇌의 답'도 즉시 사라지게 — 이전 결과가 고정되던 버그 수정.
+  useEffect(() => {
+    if (!val.trim()) {
+      setResult(null);
+      setActivePain(null);
+    }
+  }, [val]);
+
+  const { semantic, dl, runAsk } = useSmartAsk(cards, myIndustries);
 
   const doAsk = (text?: string) => {
     const q = (text ?? val).trim();
@@ -220,7 +228,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
         <div className="airesult">
           <div className="airesult-tag">두 번째 뇌의 답 · INSIGHTS</div>
           {activePain && <div className="airesult-q">“{activePain}”</div>}
-          {result.mode === "semantic" && result.diagnosis ? (
+          {result.diagnosis ? (
             <div className="ai-diagnosis">
               <div className="aid-head">
                 🧠 두 번째 뇌의 진단

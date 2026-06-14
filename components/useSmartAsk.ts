@@ -1,47 +1,23 @@
 "use client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import type { Card, Industry } from "@/lib/types";
 import { recommendCards, type RecommendResult } from "@/lib/recommend";
-import { store } from "@/lib/storage";
 
-// 기본: 키워드+의미이웃(즉시, 다운로드 0). 토글 ON: 브라우저 임베딩(최초 1회 ~118MB, 캐시).
-// transformers/임베딩은 토글 ON으로 실제 검색할 때만 동적 import → 평소 번들 0.
+// 키워드 + 의미이웃(오프라인 그래프) 검색만 사용 — 즉시·정확·다운로드 0.
+//
+// ※ 브라우저 임베딩(semantic) 모드는 비활성화했다. 이유:
+//   1) embeddings.json은 빌드타임(cards.json)만 사전계산 → 런타임 변환되는 케이스
+//      카드(case-card-*)는 벡터가 없어 semantic 검색 결과에 절대 안 나온다.
+//      ("terra cog"·"rsh"·"2조 발표"를 쳐도 케이스가 안 잡히던 근본 원인)
+//   2) 짧은 영문 고유명사에 임베딩이 약해 엉뚱한 카드가 1위로 올라온다.
+//   토글 UI도 이미 제거했으므로, 과거 localStorage에 남은 "emba17_semantic=1"은 무시한다.
 export function useSmartAsk(cards: Card[], myIndustries: Industry[]) {
-  const [semantic, setSemantic] = useState(false);
-  const [dl, setDl] = useState<number | null>(null); // 모델 다운로드 진행률(%) — 최초 1회만
-
-  useEffect(() => {
-    setSemantic(store.get<string>("emba17_semantic") === "1");
-  }, []);
-
-  const toggle = useCallback(() => {
-    setSemantic((v) => {
-      const nv = !v;
-      store.set("emba17_semantic", nv ? "1" : "0");
-      return nv;
-    });
-  }, []);
-
   const runAsk = useCallback(
-    async (q: string): Promise<RecommendResult> => {
-      const query = q.trim();
-      if (semantic) {
-        try {
-          const mod = await import("@/lib/semanticSearch");
-          if (!mod.isModelCached()) setDl(0);
-          const r = await mod.semanticRecommend(query, cards, myIndustries, (p) => {
-            if (typeof p.progress === "number") setDl(Math.round(p.progress));
-          });
-          setDl(null);
-          return r;
-        } catch {
-          setDl(null); // 실패 시 키워드로 폴백
-        }
-      }
-      return recommendCards(query, cards, myIndustries);
-    },
-    [semantic, cards, myIndustries]
+    async (q: string): Promise<RecommendResult> =>
+      recommendCards(q.trim(), cards, myIndustries),
+    [cards, myIndustries]
   );
 
-  return { semantic, toggle, dl, runAsk };
+  // 시그니처 호환용 더미(semantic 토글 제거됨). dl은 다운로드 진행률 — 항상 null.
+  return { semantic: false, toggle: () => {}, dl: null as number | null, runAsk };
 }
