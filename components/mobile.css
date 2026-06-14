@@ -295,3 +295,16 @@
 .m-saved-row .sr-star{width:38px;height:38px;flex:none;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--brain-r);border:1px solid var(--line-2);border-radius:50%}
 .m-saved-row .sr-star:active{background:color-mix(in srgb,var(--brain-r) 12%,transparent)}
 
+/* ── 모바일 케이스 카드 — 글로우업 파리티 (뱃지 + 프리뷰) ── */
+.m-card-case{background:color-mix(in srgb,var(--c) 5%,var(--paper))}
+.m-card .mc-badge{color:#fff;background:var(--c);padding:3px 8px;border-radius:3px;align-self:flex-start;text-transform:none;letter-spacing:.04em;padding-right:8px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-card .mc-casetitle{font-family:var(--serif);font-weight:800;font-size:13px;line-height:1.3;letter-spacing:-.01em;color:var(--c);margin:8px 0 5px;word-break:keep-all;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.m-card-case h3{font-size:14.5px;-webkit-line-clamp:2}
+.m-card-case .case-preview{margin-top:auto;width:100%}
+/* 조별 케이스 스트립 카드 */
+.m-tcard.m-tcase .tc-top{margin-bottom:9px}
+.m-tcard.m-tcase h3{margin-bottom:7px}
+.m-tcard.m-tcase .tc-body{-webkit-line-clamp:2;flex:0 0 auto;margin-bottom:2px}
+.m-tcard.m-tcase .case-preview{margin:9px 0 0;border-top-color:color-mix(in srgb,var(--c) 24%,transparent)}
+.m-tcard.m-tcase .tc-foot{margin-top:auto}
+
