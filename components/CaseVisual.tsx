@@ -1,9 +1,64 @@
 "use client";
+import { useEffect, useRef, useState } from "react";
 import type { CaseVisual } from "@/lib/types";
 
+// 숫자 카운트업 — 앞뒤 단위(₩·$·조·억·%) 보존, 가운데 숫자만 0→target 애니메이션.
+// 숫자 못 찾으면(예: "흑자전환") 원문 그대로. 모션 줄이기 설정이면 즉시 최종값.
+function CountUp({ text }: { text: string }) {
+  const m = /^(\D*?)(-?[\d,]+(?:\.\d+)?)(.*)$/.exec(text.trim());
+  const target = m ? parseFloat(m[2].replace(/,/g, "")) : NaN;
+  const decimals = m ? (m[2].split(".")[1] || "").length : 0;
+  const [n, setN] = useState<number | null>(m ? 0 : NaN);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!m || Number.isNaN(target)) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { setN(target); return; }
+    let raf = 0;
+    let start = 0;
+    const dur = 850;
+    const tick = (t: number) => {
+      if (!start) start = t;
+      const p = Math.min(1, (t - start) / dur);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setN(target * eased);
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [text]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!m || Number.isNaN(target)) return <>{text}</>;
+  const shown =
+    n === null
+      ? m[2]
+      : n.toLocaleString(undefined, {
+          minimumFractionDigits: decimals,
+          maximumFractionDigits: decimals,
+        });
+  return (
+    <span ref={ref}>
+      {m[1]}
+      {shown}
+      {m[3]}
+    </span>
+  );
+}
+
 // 케이스 '한눈에' 비주얼 — 텍스트보다 그림 먼저. 자가완결 div/CSS 막대.
-export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: string }) {
+// featured=true → 첫 화면 히어로용 대형 변형(.cv-featured).
+export function CaseVisualView({
+  visual,
+  color,
+  featured,
+}: {
+  visual: CaseVisual;
+  color: string;
+  featured?: boolean;
+}) {
   const styleC = { ["--c" as string]: color } as React.CSSProperties;
+  const cvClass = "cv" + (featured ? " cv-featured" : "");
 
   // ── 신약 R&D 포트폴리오: 매출↔기대이익 역전 + 조합 비교 ──
   if (visual.kind === "rnd-portfolio" && visual.projects) {
@@ -13,7 +68,7 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
     const combos = visual.combos || [];
     const maxCombo = Math.max(...combos.map((c) => c.ev), 1);
     return (
-      <div className="cv" style={styleC}>
+      <div className={cvClass} style={styleC}>
         {visual.headline && <div className="cv-headline">{visual.headline}</div>}
 
         <div className="cv-block">
@@ -69,7 +124,7 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
   if (visual.bars && visual.bars.length > 0) {
     const max = Math.max(...visual.bars.map((b) => b.max || b.value), 1);
     return (
-      <div className="cv" style={styleC}>
+      <div className={cvClass} style={styleC}>
         {visual.headline && <div className="cv-headline">{visual.headline}</div>}
         <div className="cv-block">
           {visual.bars.map((b, i) => (
@@ -94,7 +149,7 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
   // ── 타임라인 (사건 전개 — 케이스의 첫 장면) ──
   if (visual.kind === "timeline" && visual.events) {
     return (
-      <div className="cv" style={styleC}>
+      <div className={cvClass} style={styleC}>
         {visual.headline && <div className="cv-headline">{visual.headline}</div>}
         <div className="cv-block">
           <div className="cv-tl">
@@ -117,7 +172,7 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
   // ── 스탯 변화 (극적 수치 from→to) ──
   if (visual.kind === "stat-delta" && visual.deltas) {
     return (
-      <div className="cv" style={styleC}>
+      <div className={cvClass} style={styleC}>
         {visual.headline && <div className="cv-headline">{visual.headline}</div>}
         <div className="cv-block">
           <div className="cv-deltas">
@@ -127,7 +182,7 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
                 <div className="cv-drow">
                   <span className="cv-dfrom">{d.from}</span>
                   <span className="cv-darrow">→</span>
-                  <span className="cv-dto">{d.to}</span>
+                  <span className="cv-dto"><CountUp text={d.to} /></span>
                 </div>
               </div>
             ))}
@@ -140,7 +195,7 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
   // ── 인물·후보·렌즈 비교 카드 ──
   if (visual.kind === "persona-grid" && visual.personas) {
     return (
-      <div className="cv" style={styleC}>
+      <div className={cvClass} style={styleC}>
         {visual.headline && <div className="cv-headline">{visual.headline}</div>}
         <div className="cv-block">
           <div className="cv-personas">
@@ -174,7 +229,7 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
   // ── 갈림길 (양자택일) ──
   if (visual.kind === "fork" && visual.options) {
     return (
-      <div className="cv" style={styleC}>
+      <div className={cvClass} style={styleC}>
         {visual.headline && <div className="cv-headline">{visual.headline}</div>}
         <div className="cv-block">
           {visual.forkQuestion && <div className="cv-forkq">{visual.forkQuestion}</div>}
@@ -195,7 +250,7 @@ export function CaseVisualView({ visual, color }: { visual: CaseVisual; color: s
   // ── 제약조건 통과 + 최적성 (왜 이 결정이 최적인가) ──
   if (visual.kind === "constraint-check" && visual.constraints) {
     return (
-      <div className="cv" style={styleC}>
+      <div className={cvClass} style={styleC}>
         {visual.headline && <div className="cv-headline">{visual.headline}</div>}
         <div className="cv-block">
           <div className="cv-checks">

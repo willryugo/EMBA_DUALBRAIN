@@ -1506,3 +1506,71 @@ mark.hl {
 .jy-because{font-size:13px;line-height:1.62;color:rgba(22,21,15,.82)}
 .jy-keyword{display:inline-block;margin-top:7px;font-family:var(--mono);font-size:10px;font-weight:700;color:var(--c);background:color-mix(in srgb,var(--c) 11%,transparent);padding:2px 9px;border-radius:9px}
 .jy-result{margin-top:18px;padding:14px 16px;background:var(--ink);color:var(--paper);font-size:14px;font-weight:700;line-height:1.55;border-radius:3px}
+
+/* ════════════════════════════════════════════════════════════
+   UI 글로우업 — 히어로 커버 / 비주얼 위계 / 홈 프리뷰 / 모션
+   ════════════════════════════════════════════════════════════ */
+
+/* ── ① 히어로 커버 — 케이스 첫 화면 '장면' (코스 컬러 필드) ── */
+.case-hero{position:relative;overflow:hidden;background:var(--c);color:var(--paper);border-radius:6px;padding:22px 22px 20px;margin:0 0 22px;box-shadow:6px 6px 0 rgba(22,21,15,.14)}
+.case-hero::after{content:"";position:absolute;right:-34px;top:-34px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none}
+.case-hero>*{position:relative}
+.ch-eyebrow{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:13px}
+.ch-group{font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.06em;background:rgba(255,255,255,.2);color:var(--paper);padding:3px 9px;border-radius:9px}
+.ch-type{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.02em;color:rgba(255,255,255,.82)}
+.ch-title{font-size:24px;font-weight:800;line-height:1.24;letter-spacing:-.01em;margin:0 0 8px;color:var(--paper)}
+.ch-sub{font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.9)}
+.ch-stat{display:flex;align-items:baseline;flex-wrap:wrap;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.22)}
+.chs-from{font-family:var(--mono);font-size:15px;font-weight:700;color:rgba(255,255,255,.6)}
+.chs-arrow{color:rgba(255,255,255,.5)}
+.chs-to{font-family:var(--mono);font-size:26px;font-weight:800;line-height:1;color:var(--paper)}
+.chs-label{font-size:11px;color:rgba(255,255,255,.74);margin-left:auto;align-self:center;max-width:46%;text-align:right}
+@media(max-width:720px){
+  .case-hero{padding:18px 17px 16px;box-shadow:4px 4px 0 rgba(22,21,15,.14)}
+  .ch-title{font-size:20px}
+  .chs-to{font-size:22px}
+}
+
+/* ── ② 비주얼 위계 — 대표 비주얼 featured 대형 + 컬러 틴트 + 2단 ── */
+.cv{background:color-mix(in srgb,var(--c) 4%,var(--paper))}
+.cv-featured{border-width:2.5px;box-shadow:5px 5px 0 rgba(22,21,15,.1)}
+.cv-featured .cv-headline{font-size:15.5px;padding:13px 16px}
+.cv-featured .cv-block{padding:15px 16px}
+.cv-featured .cv-dto{font-size:28px}
+.cv-featured .cv-tltitle{font-size:14.5px}
+.cv-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:14px 0 6px}
+.cv-grid .cv{margin:0}
+@media(min-width:721px){
+  .detail-modal.case-modal{max-width:960px}
+  .cv-grid:has(.cv:nth-child(2)){grid-template-columns:1fr 1fr;align-items:start}
+}
+
+/* ── ③ 홈 카드 미니 프리뷰 — 핵심 수치 + 스파크라인 ── */
+.case-preview{display:flex;align-items:center;gap:11px;margin:11px 0 0;padding-top:10px;border-top:1px dashed rgba(22,21,15,.14)}
+.cp-spark{display:flex;align-items:flex-end;gap:2px;height:26px;width:48px;flex:none}
+.cp-bar{flex:1;background:var(--c);opacity:.4;border-radius:1px 1px 0 0;min-height:3px}
+.cp-bar:last-child{opacity:1}
+.cp-metric{display:flex;flex-direction:column;gap:2px;min-width:0}
+.cp-label{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.04em;color:rgba(22,21,15,.5);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.cp-val{display:flex;align-items:baseline;gap:5px;font-family:var(--mono);flex-wrap:wrap}
+.cp-from{font-size:11px;font-style:normal;color:rgba(22,21,15,.45)}
+.cp-arrow{font-size:10px;color:rgba(22,21,15,.4)}
+.cp-to{font-size:15px;font-weight:800;font-style:normal;color:var(--c);line-height:1.1}
+.cp-to.tone-good{color:#3c8c6e}
+.cp-to.tone-bad{color:#c0506e}
+
+/* ── ④ 모션 한 겹 — fade-up 등장 + 막대 채움 + 숫자 pop ── */
+@keyframes db-fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes db-barfill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes db-pop{from{opacity:0;transform:scale(.72)}to{opacity:1;transform:none}}
+.step-content>*{animation:db-fadeup .42s cubic-bezier(.2,.7,.2,1) both}
+.step-content>*:nth-child(2){animation-delay:.05s}
+.step-content>*:nth-child(3){animation-delay:.1s}
+.step-content>*:nth-child(4){animation-delay:.15s}
+.step-content>*:nth-child(5){animation-delay:.2s}
+.step-content>*:nth-child(n+6){animation-delay:.24s}
+.cv-fill{transform-origin:left center;animation:db-barfill .7s cubic-bezier(.2,.7,.2,1) both}
+.cv-dto{display:inline-block;animation:db-pop .5s cubic-bezier(.2,.7,.2,1) both;animation-delay:.15s}
+@media(prefers-reduced-motion:reduce){
+  .step-content>*,.cv-fill,.cv-dto{animation:none!important}
+}

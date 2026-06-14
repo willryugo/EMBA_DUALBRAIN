@@ -69,6 +69,37 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
   const lectureById = (id: string) => lectures.find((l) => l.id === id);
   const visualsFor = (step: string) =>
     (kase.visuals || []).filter((v) => (v.step || "surface") === step);
+
+  // ── 히어로 커버 — 케이스를 열면 가장 먼저 뜨는 '장면'. 코스 컬러 필드. ──
+  const heroStat = kase.visual?.deltas?.[0] || kase.keyFacts?.[0];
+  const hero = (
+    <div className="case-hero">
+      <div className="ch-eyebrow">
+        <span className="ch-group">{kase.sourceGroup}</span>
+        <span className="ch-type">
+          {SUBJECT_TYPE_LABEL[kase.subjectType] || ""} · {kase.subjectIndustry}
+        </span>
+      </div>
+      <h2 className="ch-title">{kase.title}</h2>
+      <div className="ch-sub">{kase.subtitle}</div>
+      {heroStat && (
+        <div className="ch-stat">
+          {"from" in heroStat ? (
+            <>
+              <span className="chs-from">{heroStat.from}</span>
+              <span className="chs-arrow">→</span>
+              <span className="chs-to">{heroStat.to}</span>
+            </>
+          ) : (
+            <span className="chs-to">{(heroStat as { value: string }).value}</span>
+          )}
+          <span className="chs-label">
+            {"label" in heroStat ? heroStat.label : ""}
+          </span>
+        </div>
+      )}
+    </div>
+  );
   const rootLectures = kase.roots.lectures
     .map(lectureById)
     .filter(Boolean) as Lecture[];
@@ -120,6 +151,7 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
           {/* ── 0. 왜? (5why 사다리) ── */}
           {stepKey === "why" && kase.journey && (
             <div className="step-content case-why">
+              {hero}
               <div className="eyebrow eyebrow-step">5 WHY · 왜?를 따라가 보기</div>
               <div className="jy-symptom">{kase.journey.symptom}</div>
               {kase.journey.symptomSub && (
@@ -145,21 +177,33 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
           {/* ── 1. 과제 개요 ── */}
           {stepKey === "surface" && (
             <div className="step-content case-surface">
-              <div className="eyebrow eyebrow-step">CASE · 과제 개요</div>
-              <div className="cs-head">
-                <span className="cs-type">
-                  {SUBJECT_TYPE_LABEL[kase.subjectType] || kase.subjectType}
-                </span>
-                <span className="cs-industry">{kase.subjectIndustry}</span>
-              </div>
-              <h2 className="cs-title">{kase.title}</h2>
-              <div className="cs-subtitle">{kase.subtitle}</div>
-              {kase.visual && <CaseVisualView visual={kase.visual} color={color} />}
+              {!kase.journey ? (
+                hero
+              ) : (
+                <>
+                  <div className="eyebrow eyebrow-step">CASE · 과제 개요</div>
+                  <div className="cs-head">
+                    <span className="cs-type">
+                      {SUBJECT_TYPE_LABEL[kase.subjectType] || kase.subjectType}
+                    </span>
+                    <span className="cs-industry">{kase.subjectIndustry}</span>
+                  </div>
+                  <h2 className="cs-title">{kase.title}</h2>
+                  <div className="cs-subtitle">{kase.subtitle}</div>
+                </>
+              )}
+              {kase.visual && (
+                <CaseVisualView visual={kase.visual} color={color} featured />
+              )}
               <p className="cs-surface">{rich(kase.surface)}</p>
 
-              {visualsFor("surface").map((v, i) => (
-                <CaseVisualView key={i} visual={v} color={color} />
-              ))}
+              {visualsFor("surface").length > 0 && (
+                <div className="cv-grid">
+                  {visualsFor("surface").map((v, i) => (
+                    <CaseVisualView key={i} visual={v} color={color} />
+                  ))}
+                </div>
+              )}
 
               {kase.keyFacts && kase.keyFacts.length > 0 && (
                 <div className="cs-facts">
@@ -238,9 +282,13 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
                 </div>
               )}
 
-              {visualsFor("roots").map((v, i) => (
-                <CaseVisualView key={i} visual={v} color={color} />
-              ))}
+              {visualsFor("roots").length > 0 && (
+                <div className="cv-grid">
+                  {visualsFor("roots").map((v, i) => (
+                    <CaseVisualView key={i} visual={v} color={color} />
+                  ))}
+                </div>
+              )}
 
               <button className="nextcue" onClick={next}>
                 그래서 — 옛 눈과 새 눈으로 본다 <span>→</span>
@@ -302,9 +350,13 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
                 <p>{rich(kase.paradigm.reading)}</p>
               </div>
 
-              {visualsFor("paradigm").map((v, i) => (
-                <CaseVisualView key={i} visual={v} color={color} />
-              ))}
+              {visualsFor("paradigm").length > 0 && (
+                <div className="cv-grid">
+                  {visualsFor("paradigm").map((v, i) => (
+                    <CaseVisualView key={i} visual={v} color={color} />
+                  ))}
+                </div>
+              )}
 
               <button className="nextcue" onClick={next}>
                 17기는 이렇게 봤다 <span>→</span>
@@ -347,9 +399,13 @@ export function CaseModal({ caseId, cases, lectures, cards, onClose, onOpen }: P
                 </div>
               )}
 
-              {visualsFor("take").map((v, i) => (
-                <CaseVisualView key={i} visual={v} color={color} />
-              ))}
+              {visualsFor("take").length > 0 && (
+                <div className="cv-grid">
+                  {visualsFor("take").map((v, i) => (
+                    <CaseVisualView key={i} visual={v} color={color} />
+                  ))}
+                </div>
+              )}
 
               {!kase.debate && kase.discussion && kase.discussion.length > 0 && (
                 <div className="ct-discussion">

@@ -23,6 +23,43 @@ interface Props {
   onToggleSave?: (id: string) => void;
 }
 
+// 케이스 타일 미니 프리뷰 — 핵심 수치 + 스파크라인. 그리드 자체를 풍부하게.
+function CasePreview({ card }: { card: Card }) {
+  const m = card._metric;
+  const spark = (card._spark || []).filter((v) => Number.isFinite(v));
+  if (!m && spark.length < 2) return null;
+  const max = Math.max(...spark, 1);
+  return (
+    <div className="case-preview">
+      {spark.length >= 2 && (
+        <div className="cp-spark" aria-hidden="true">
+          {spark.slice(0, 7).map((v, i) => (
+            <span
+              key={i}
+              className="cp-bar"
+              style={{ height: Math.max(8, (v / max) * 100) + "%" }}
+            />
+          ))}
+        </div>
+      )}
+      {m && (
+        <div className="cp-metric">
+          <span className="cp-label">{m.label}</span>
+          <span className="cp-val">
+            {m.from && (
+              <>
+                <i className="cp-from">{m.from}</i>
+                <b className="cp-arrow">→</b>
+              </>
+            )}
+            <em className={"cp-to tone-" + (m.tone || "neutral")}>{m.to}</em>
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function MagCard({ card, index, layout, onClick, saved, onToggleSave }: Props) {
   const color = COURSE_COLOR[card.course] || "#16150F";
   const isFeat = layout === "feat";
@@ -172,6 +209,7 @@ export function MagCard({ card, index, layout, onClick, saved, onToggleSave }: P
           <h3>{rich(card.hook)}</h3>
           <div className="concept">{card.concept}</div>
           <p className="ins">{card.insight}</p>
+          {card._badge && <CasePreview card={card} />}
           <div className="foot">
             <div className="inds">{indStr || "범용"}</div>
             <div className="arrow">{card._badge ? "케이스 →" : "→"}</div>
