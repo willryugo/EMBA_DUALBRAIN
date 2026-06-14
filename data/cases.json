@@ -1441,7 +1441,10 @@
       "subject": "쿠팡",
       "subjectIndustry": "이커머스·유통",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l3-ethical-org",
+          "eth-l1-why-ethics"
+        ],
         "sources": []
       },
       "surface": "한국 이커머스 1위 쿠팡에서 터진 세 가지 윤리 실패 — 노동자 과로사와 산재 은폐, 검색 알고리즘 조작, 대규모 개인정보 유출 — 을 하나의 조직문화 문제로 묶어 분석했다. 세 사건이 독립적 우연이 아니라 '윤리는 비용'이라는 경영 철학에서 비롯된 복합적 실패라고 진단한다. Ford Pinto·Sears·TAP·J&J 사례를 각 이슈에 대응시켜 윤리 실패의 본질을 해석하고, 플랫폼 Lock-in은 지금은 기업을 지탱하지만 영원하지 않으며 윤리경영은 비용이 아닌 생존 조건이라 결론짓는다.",
@@ -1471,7 +1474,11 @@
           "value": "누계 약 3,000억"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-ford-pinto-cba",
+        "eth-incentive-misconduct",
+        "eth-stakeholder-mapping"
+      ],
       "tags": [
         "기업윤리",
         "조직문화",
@@ -1578,6 +1585,23 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l1-why-ethics",
+          "concept": "공리주의(최대다수 최대행복)",
+          "how": "'비용 드는 윤리는 안 한다'는 경영 철학은 안전 투자·산재 인정의 비용을 회피하는 비용편익 계산으로, 노동자 과로사를 감수한 Ford Pinto식 잘못된 공리주의로 작동했다."
+        },
+        {
+          "lectureId": "eth-l3-ethical-org",
+          "concept": "조직문화(강한/약한)",
+          "how": "과로사 은폐·검색 알고리즘 조작·개인정보 유출 세 사건을 독립적 우연이 아니라 '윤리는 비용'이라는 단일 조직문화의 필연적 산물로 묶어 진단한다."
+        },
+        {
+          "lectureId": "eth-l1-why-ethics",
+          "concept": "이해관계자",
+          "how": "노동자·소비자·입점업체 등 주요 이해관계자의 신뢰를 비용으로 치환했고, 케이스는 플랫폼 Lock-in이 영원하지 않으므로 윤리경영이 생존 조건이라 결론짓는다."
+        }
       ]
     },
     {
@@ -1593,7 +1617,10 @@
       "subject": "Dior (LVMH)",
       "subjectIndustry": "럭셔리·패션",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l6-ethical-issues",
+          "eth-l4-csr"
+        ],
         "sources": []
       },
       "surface": "디올 핸드백의 이탈리아 하청 노동 착취 논란을 '가격 논란'이 아닌 '브랜드 진정성(authenticity)' 문제로 재정의했다. 소비자가 기대한 장인정신·윤리적 럭셔리·공급망 투명성과, 실제 드러난 대량 하청·이주노동자 착취·하청 관리 실패 사이의 간극을 대비시킨다. 이슈의 본질을 기업이 말하는 가치(SAY)와 실제 운영(DO)의 불일치로 규정하고, 폭스바겐 디젤게이트를 비진정성 대응의 반면교사로 든다.",
@@ -1619,7 +1646,11 @@
           "value": "51조 원 이상"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-subcontractor-management",
+        "eth-greenwashing",
+        "eth-ethical-org-systems"
+      ],
       "tags": [
         "브랜드 진정성",
         "기업윤리",
@@ -1713,6 +1744,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l6-ethical-issues",
+          "concept": "다층 하도급 공급망 관리와 책임",
+          "how": "원가 8만 원 핸드백을 385만 원에 팔며 이탈리아 하청의 이주노동자 착취를 방치한 것은, 장인정신을 표방한 브랜드가 공급망 하청 관리 책임을 실패한 사례다."
+        },
+        {
+          "lectureId": "eth-l4-csr",
+          "concept": "기업 평판·지속가능성",
+          "how": "소비자가 기대한 윤리적 럭셔리·공급망 투명성(SAY)과 실제 대량 하청·착취(DO)의 간극이 브랜드 진정성 자산을 훼손했고, 폭스바겐 디젤게이트를 비진정성 대응의 반면교사로 든다."
+        }
       ]
     },
     {
@@ -1728,7 +1771,10 @@
       "subject": "Shake Shack (쉐이크쉑)",
       "subjectIndustry": "외식·F&B",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l2-genai-business",
+          "ba-l4-llm-business-platform"
+        ],
         "sources": []
       },
       "surface": "변화 속도가 세계 최고인 한국 F&B 시장에서 쉐이크쉑이 생성형 AI를 신제품 개발(NPD) 프로세스에 도입하는 업무 활용 사례다. 기존 연 단위 R&D의 한계를 극복하면서도 글로벌 브랜드 가이드라인과 '파인 캐주얼' 정체성을 지키는 균형을 핵심 과제로 삼는다. Custom AI + Human-in-the-loop, 하이브리드 에셋 제작, SCM 데이터 사전 학습을 대안으로, 컨셉 카드→고객조사(TPO)→출시·피드백의 3단계 검증 프로세스를 설계한다.",
@@ -1754,7 +1800,11 @@
           "value": "30% 향상"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-ai-agent",
+        "ba-llm-onprem-security",
+        "ba-prompt-engineering"
+      ],
       "tags": [
         "생성형AI",
         "신제품개발",
@@ -1842,6 +1892,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l2-genai-business",
+          "concept": "신규 비즈니스 모델(챗봇 서비스·가상비서·맞춤추천)",
+          "how": "쉐이크쉑은 생성형 AI를 신제품 개발(NPD) 워크플로에 탑재해 컨셉 카드 생성·고객조사·하이브리드 에셋 제작을 자동화, 연 단위 R&D 리드타임을 80% 단축하는 새로운 제품개발 운영모델을 설계한다."
+        },
+        {
+          "lectureId": "ba-l4-llm-business-platform",
+          "concept": "On-premises/SaaS/Hybrid 구축형태·sLLM 파인튜닝",
+          "how": "글로벌 브랜드 가이드라인과 '파인 캐주얼' 정체성을 지키기 위해 Custom AI에 SCM 데이터를 사전 학습시키고 Human-in-the-loop로 결과를 통제하는 맞춤형 구축 방식을 택한다."
+        }
       ]
     },
     {
@@ -1857,7 +1919,10 @@
       "subject": "IT 서비스(SI) 기업 (Synthetic Data 기반)",
       "subjectIndustry": "IT 서비스·SI",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ms-l3-lp-min-applications",
+          "ms-l4-portfolio-selection"
+        ],
         "sources": []
       },
       "surface": "AI 에이전트가 지식 노동의 일부를 대체하는 환경을 전제로, IT 서비스 기업이 인간과 AI 에이전트를 공정별로 어떻게 배치해야 이익을 극대화하는지 최적화 모델로 분석했다. 인력 원가 기밀·AI 통계 부재의 한계를 Synthetic Data로 해결하고, MILP로 이익을 극대화하며 NLP로 수익률 대비 위험의 임계선(Efficient Frontier)을 도출한다. 비핵심 업무는 AI 비중 최대화, 핵심 업무는 인간 비중 유지라는 위험조정수익 기반 가이드라인을 제안한다.",
@@ -1883,7 +1948,11 @@
           "value": "StDev 7.2%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ms-integer-programming",
+        "ms-portfolio-diversification",
+        "ms-lp-dantzig"
+      ],
       "tags": [
         "MILP",
         "Efficient Frontier",
@@ -1973,6 +2042,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "자본예산(Capital Budgeting)·정수계획법(Integer Programming)",
+          "how": "공정별 인간·AI 에이전트 배치를 MILP 정수 결정변수로 두고 이익을 극대화한다. 사람 머릿수처럼 분할 불가능한 변수를 정수로 처리해 비핵심 업무엔 AI 비중을 최대화하는 최적 인력 믹스를 산출한다."
+        },
+        {
+          "lectureId": "ms-l4-portfolio-selection",
+          "concept": "효율적 프런티어(Efficient Frontier)",
+          "how": "AI 비중이 높을수록 수익은 오르나 리스크가 커지는 상충을 NLP로 모형화해, 수익률 대비 위험의 임계선(Efficient Frontier)을 도출하고 위험조정수익 기반으로 핵심 업무는 인간 비중을 유지하는 배치 가이드라인을 제안한다."
+        }
       ]
     },
     {
@@ -1988,7 +2069,11 @@
       "subject": "남양유업",
       "subjectIndustry": "유가공·식음료·소비재",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l3-ethical-org",
+          "eth-l4-csr",
+          "eth-l1-why-ethics"
+        ],
         "sources": []
       },
       "surface": "2013년 대리점 밀어내기 갑질을 시작으로 카제인나트륨 공포마케팅, 맘카페 댓글공작, 불가리스 코로나 효과 과장, 오너 횡령·배임까지 10여 년간 누적된 윤리 위반을 4대 유형(공급망·마케팅·오너·지배구조)으로 해부했다. 시장 신뢰 붕괴가 불매운동과 누적 적자로 이어져 결국 60년 오너경영이 법원 판결로 종료되고 한앤컴퍼니 체제로 전환된 과정을 추적한다. 매일유업과의 흥망 대비로 윤리경영이 곧 생존전략임을 입증한다.",
@@ -2018,7 +2103,12 @@
           "value": "징역 3년·횡령배임 약 256억"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-incentive-misconduct",
+        "eth-stakeholder-mapping",
+        "eth-ethical-org-systems",
+        "eth-greenwashing"
+      ],
       "tags": [
         "기업윤리",
         "지배구조",
@@ -2131,6 +2221,23 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l3-ethical-org",
+          "concept": "최고윤리책임자·윤리위원회(이사회 독립성·준법조직)",
+          "how": "통제받지 않는 60년 폐쇄적 가족경영의 오너리스크가 누적 윤리 위반의 구조적 원인이며, 한앤컴퍼니 체제 전환으로 이사회 독립성·준법 통제가 회복되는 거버넌스 개선을 추적한다."
+        },
+        {
+          "lectureId": "eth-l1-why-ethics",
+          "concept": "이해관계자",
+          "how": "대리점 밀어내기 갑질·기만광고로 무너진 시장 신뢰가 불매운동과 누적 적자로 이어져, 시장의 징벌이 법적 제재보다 강하다는 점을 매일유업과의 흥망 대비로 입증한다."
+        },
+        {
+          "lectureId": "eth-l5-ethics-communication",
+          "concept": "행동강령·정책 가이드라인",
+          "how": "카제인나트륨 공포마케팅·맘카페 댓글공작·불가리스 코로나 효과 과장은 대외 커뮤니케이션 자체를 기만 수단으로 삼은 윤리 커뮤니케이션 실패다."
+        }
       ]
     },
     {
@@ -2146,7 +2253,10 @@
       "subject": "LG전자 GITC",
       "subjectIndustry": "전자·가전",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l4-csr",
+          "eth-l8-csv"
+        ],
         "sources": []
       },
       "surface": "LG전자가 2011년부터 운영해 온 장애청소년 IT 경연대회 GITC를 전략적 CSR·CSV·캐롤 피라미드 관점에서 분석했다. 일회성 기부(Charity)가 아닌 자립 역량 강화(Empowerment) 패러다임으로의 전환을 조명하고, 기업 핵심역량(IT·가전 기술)과 사회 이슈(장애인 정보격차)의 교차점에 자원을 집중해 사회적 가치와 기업 경쟁력을 동시에 창출하는 구조를 설명한다. 현장 인사이트가 점자 가전·음성안내 등 접근성 제품 R&D로 환류되는 선순환을 핵심 시사점으로 제시한다.",
@@ -2172,7 +2282,11 @@
           "value": "비장애인 대비 82%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-porter-kramer-csv",
+        "eth-carroll-csr",
+        "eth-friedman-vs-csr"
+      ],
       "tags": [
         "전략적CSR",
         "CSV",
@@ -2262,6 +2376,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l8-csv",
+          "concept": "CSV 3방법(상품·시장 재구상)·가치사슬 생산성 재정의",
+          "how": "GITC 현장에서 얻은 인사이트가 점자 가전·음성안내 등 접근성 제품 R&D로 환류되어, 사회 이슈(장애인 정보격차)와 기업 핵심역량(IT·가전 기술)이 동시에 가치를 키우는 CSV 선순환을 만든다."
+        },
+        {
+          "lectureId": "eth-l4-csr",
+          "concept": "전략적 CSR vs 반응적 CSR",
+          "how": "일회성 기부(Charity)가 아니라 자사 IT 역량을 장애청소년 자립 역량 강화(Empowerment)에 집중한 14년차 프로그램으로, 캐롤 피라미드 상위의 전략적 CSR로 진화한 사례다."
+        }
       ]
     },
     {
@@ -2277,7 +2403,10 @@
       "subject": "게임사 자금운용 (운용자산 200억)",
       "subjectIndustry": "게임",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ms-l2-lp-max",
+          "ms-l4-portfolio-selection"
+        ],
         "sources": []
       },
       "surface": "게임사의 운용가능 자산을 만기·유동성 기준 5개 자산군으로 분류하고, 신작 흥행 결과(대박·중박·쪽박)별 시점별 자금소요를 제약조건으로 모형화한 선형계획법(LP) 자산배분 프로젝트다. 시나리오별 worst-case 자금소요 매트릭스로 유동성 하한 제약을 설정하고, 외화·위험자산 한도 내에서 기대수익률을 최대화한다. 과도한 현금성 보유의 기회비용을 정량적 근거로 줄이는 것이 핵심이다.",
@@ -2303,7 +2432,10 @@
           "value": "연 +2~2.5억"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ms-lp-dantzig",
+        "ms-portfolio-diversification"
+      ],
       "tags": [
         "선형계획법",
         "Solver",
@@ -2411,6 +2543,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ms-l2-lp-max",
+          "concept": "선형계획법(Linear Programming, LP)",
+          "how": "운용 자산을 5개 자산군으로 나눠 투자비중을 결정변수로, 기대수익률을 목적함수로 두고 LP로 최대화한다. 외화·위험자산 한도와 시점별 자금소요를 제약식으로 걸어 놀고 있는 즉시현금 비중을 정밀하게 줄인다."
+        },
+        {
+          "lectureId": "ms-l4-portfolio-selection",
+          "concept": "최소요구수익률 K 제약 하 위험 최소화",
+          "how": "대박·중박·쪽박 시나리오별 worst-case 자금소요를 유동성 하한 제약으로 설정해, 흥행 결과와 무관하게 유동성을 지키면서 기대수익률을 극대화하는 포트폴리오형 자산배분을 구성한다."
+        }
       ]
     },
     {
@@ -2426,7 +2570,11 @@
       "subject": "Expedia Group",
       "subjectIndustry": "여행·OTA",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l2-genai-business",
+          "ba-l4-llm-business-platform",
+          "ba-l1-bae-intro"
+        ],
         "sources": []
       },
       "surface": "Expedia가 ChatGPT 플러그인부터 자체 AI 여행도우미 Romie, 내부 코파일럿 Glean까지 AI를 핵심 인프라로 격상시킨 진화를 분석했다. 고객 AI와 내부 AI는 이미 의사결정 자동화(Agentic) 단계에 진입했으나 호텔 Supplier의 가격·재고 의사결정은 여전히 수동이라는 '전략적 공백'을 포착한다. 이를 메우는 'AI Revenue Copilot'(자연어 인터페이스+실시간 가격 인텔리전스+수요예측)을 제안하고, 수수료 기반에서 구독 기반으로 수익모델을 전환한다는 논리를 편다.",
@@ -2452,7 +2600,11 @@
           "value": "도입 후 80%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-ai-agent",
+        "ba-three-tier-analytics",
+        "ba-time-series-forecasting"
+      ],
       "tags": [
         "생성형AI",
         "Agentic",
@@ -2546,6 +2698,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l4-llm-business-platform",
+          "concept": "Assistant→Agent 진화, 에이전틱 AI",
+          "how": "Expedia의 고객용 Romie·내부 코파일럿 Glean이 이미 의사결정 자동화(Agentic) 단계에 진입했음을 진단하고, 호텔 공급자의 가격·재고 판단까지 자동화하는 'AI Revenue Copilot'을 에이전트 레이어로 제안한다."
+        },
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "처방적 분석(Prescriptive)",
+          "how": "AI Revenue Copilot이 실시간 가격 인텔리전스와 수요예측을 결합해 호텔에게 '얼마에 팔지'라는 최적 행동을 처방하는 처방적 분석 단계의 수익 레이어를 구상한다."
+        }
       ]
     },
     {
@@ -2561,7 +2725,10 @@
       "subject": "가전 제조공정 (TV 패널·PBA)",
       "subjectIndustry": "가전 제조",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l1-bae-intro",
+          "ba-l3-genai-data"
+        ],
         "sources": []
       },
       "surface": "가전 제조의 사후 품질관리 한계를 극복하기 위해 공정 변수 데이터를 실시간 분석해 조립 전 불량 가능성을 예측하는 AI 솔루션을 제안했다. 정밀도 높은 XGBoost와 설명가능성(XAI)이 강한 의사결정나무를 상호 보완적으로 활용해 Pass/Fail을 판정한다. 환경·설비파라미터·검사·이력의 4대 데이터 범주로 수백 개 센서 데이터를 통합 관리하고, 단순 불량률 감소를 넘어 예지보전(Predictive Maintenance)으로 확장하는 로드맵을 제시한다.",
@@ -2583,7 +2750,12 @@
           "value": "환경·설비·검사·이력 4종"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-ai-prevention-pattern",
+        "ba-explainability-tradeoff",
+        "ba-random-forest-ensemble",
+        "ba-supervised-unsupervised"
+      ],
       "tags": [
         "머신러닝",
         "XGBoost",
@@ -2679,6 +2851,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "예측적 분석(Predictive)",
+          "how": "사후 검사 대신 환경·설비파라미터·검사·이력 4대 데이터로 조립 전 단계에서 Pass/Fail 불량 가능성을 미리 예측하는 예측적 분석을 가전 품질관리에 적용한다."
+        },
+        {
+          "lectureId": "ba-l3-genai-data",
+          "concept": "회귀(단순·다중·규제)·의사결정나무·앙상블·딥러닝",
+          "how": "정밀도 높은 XGBoost(앙상블)와 설명가능성이 강한 의사결정나무를 상호 보완적으로 결합해 예측 정확도와 현장 수용성을 동시에 확보한다."
+        }
       ]
     },
     {
@@ -2694,7 +2878,10 @@
       "subject": "타이타닉 데이터셋 (실습)",
       "subjectIndustry": "교육·데이터분석 실습",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l1-bae-intro",
+          "ba-l2-genai-business"
+        ],
         "sources": []
       },
       "surface": "ChatGPT를 데이터 분석 도구로 활용해 타이타닉 승객 데이터로 생존 여부를 예측하는 노코드 그룹 실습이다. 직전 차시 오렌지(Orange)로 한 직원 이직 예측과 동일한 '이진 분류' 구조임을 강조하며, 고객 이탈·대출 부도·구매전환 등 비즈니스 문제로 동일 프레임워크가 확장됨을 학습한다. 객실등급·성별·나이·호칭 등 변수를 VIP등급·고객세그먼트·유입채널 같은 비즈니스 관점으로 재해석한다.",
@@ -2720,7 +2907,11 @@
           "value": "74.5% vs 18.9%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-supervised-unsupervised",
+        "ba-confusion-matrix",
+        "ba-feature-engineering"
+      ],
       "tags": [
         "이진분류",
         "생성형AI",
@@ -2834,6 +3025,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "지도학습(Supervised)",
+          "how": "타이타닉 생존 여부를 정답값으로 학습하는 이진분류가 직전 차시의 직원 이직 예측과 동일한 지도학습 구조임을 강조하고, 고객 이탈·대출 부도·구매전환 등 비즈니스 문제로 동일 프레임을 확장한다."
+        },
+        {
+          "lectureId": "ba-l2-genai-business",
+          "concept": "효과적 대화법(명확·구체·예시·후속질문)",
+          "how": "코딩 없이 ChatGPT를 분석 도구로 쓰며, 변수를 VIP등급·고객세그먼트·유입채널 같은 비즈니스 언어로 재해석해 AI에게 올바른 질문을 던지는 역량을 핵심으로 본다."
+        }
       ]
     },
     {
@@ -2849,7 +3052,10 @@
       "subject": "기업 생성형 AI 도입 (맥도날드 등)",
       "subjectIndustry": "전 산업(경영 일반)",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l4-llm-business-platform",
+          "ba-l2-genai-business"
+        ],
         "sources": []
       },
       "surface": "생성형 AI 도입 시 경영자가 직면하는 핵심 이슈를 5개 주제로 비판적으로 정리한 토의다. AI의 실제 능력·한계 판단(TAM), 직원 비채택과 변화저항, PoC 성공 후 확산이 막히는 Pilot Purgatory, 할루시네이션 리스크와 책임 소재, Build vs Buy를 다룬다. 맥도날드가 IBM과 3년간 개발한 AI 드라이브스루를 현장 변수 과소평가로 종료한 사례를 중심으로, '경쟁사도 하니까'가 아닌 '우리 업무의 어떤 문제를 푸는가'에서 출발해야 함을 강조한다.",
@@ -2875,7 +3081,11 @@
           "value": "100+개 매장 후 종료"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-genai-adoption-chasm",
+        "ba-llm-hallucination",
+        "ba-explainability-tradeoff"
+      ],
       "tags": [
         "생성형AI",
         "TAM",
@@ -2963,6 +3173,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l4-llm-business-platform",
+          "concept": "AI 도입 3대 장벽(보안·조직문화·ROI)과 극복(Quick Win·정량지표)",
+          "how": "PoC 성공 후 확산이 막히는 Pilot Purgatory, 직원 비채택·변화저항, Build vs Buy를 경영자 5대 질문으로 정리하며 '경쟁사도 하니까'가 아닌 우리 업무 문제에서 출발해야 함을 강조한다."
+        },
+        {
+          "lectureId": "ba-l2-genai-business",
+          "concept": "할루시네이션(Hallucination)",
+          "how": "맥도날드 AI 드라이브스루 종료 사례를 들어 할루시네이션 리스크와 책임 소재를 짚고, 엣지 케이스·레드팀 검증과 Human-in-the-loop로 위험을 통제해야 한다고 본다."
+        }
       ]
     },
     {
@@ -2978,7 +3200,9 @@
       "subject": "산업별 데이터 활용 (그룹토의)",
       "subjectIndustry": "전 산업(경영 일반)",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l1-bae-intro"
+        ],
         "sources": []
       },
       "surface": "기술통계(Descriptive)·예측분석(Predictive)·지도학습의 경영 가치를 다룬 그룹토의다. 데이터 시각화가 baseline 설정과 부서 간 공통 언어 형성으로 의사결정 이전 단계에서 갖는 역할, 정확도와 비즈니스 가치가 항상 일치하지 않는다는 점을 논의한다. Confusion Matrix로 오류 유형별 비용을 비교하고, 사람에 대한 예측의 윤리적 경계를 다룬다. 게임·여행·제조·유통 등 조원 산업별로 KPI 대시보드와 예측 적용 영역을 구체화한 점이 특징이다.",
@@ -2996,7 +3220,11 @@
           "value": "수요예측 정밀화 시 10~20%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-three-tier-analytics",
+        "ba-confusion-matrix",
+        "ba-anscombe-visualization"
+      ],
       "tags": [
         "기술통계",
         "예측분석",
@@ -3057,7 +3285,19 @@
             "chosen": true
           }
         ]
-      }
+      },
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "서술적 분석(Descriptive)",
+          "how": "데이터 시각화가 baseline 설정과 부서 간 공통 언어 형성으로 의사결정 이전 단계에서 갖는 역할을 다루고, 조원 산업별 KPI 대시보드로 문제 탐지·우선순위의 기준점을 만든다."
+        },
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "예측적 분석(Predictive)",
+          "how": "Confusion Matrix로 오류 유형별 비용을 비교해 정확도와 비즈니스 가치가 항상 일치하지 않음을 논의하고, 예측모델은 '기존보다 나은가'와 '오류 비용'으로 평가해야 한다고 본다."
+        }
+      ]
     },
     {
       "id": "case-ba-g3-groupmega",
@@ -3072,7 +3312,11 @@
       "subject": "그룹메가 (F&B·부동산 투자 그룹)",
       "subjectIndustry": "외식·F&B·소비재",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l2-genai-business",
+          "ba-l4-llm-business-platform",
+          "ba-l1-bae-intro"
+        ],
         "sources": []
       },
       "surface": "F&B 산업은 부동산·브랜드·운영·마케팅·투자판단이 동시에 얽힌 복합 의사결정 산업이지만 각 판단이 따로 놀아 폐업률이 높다는 문제를 제기한다. 광고·F&B·부동산·건설을 한 그룹에 보유한 그룹메가의 실제 매입-운영-매각 사례를 근거로, 분리된 의사결정을 통합하는 AI 플랫폼 '밸류파인더'를 제안한다. AI 도입 후 분석 기간·인력이 줄고 경상이익이 크게 늘었으며, 컨설팅→패키지→플랫폼의 3단계 비즈니스 모델로 발전시킨다.",
@@ -3098,7 +3342,11 @@
           "value": "2~3개월 → 2~3일"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-ai-agent",
+        "ba-three-tier-analytics",
+        "ba-genai-adoption-chasm"
+      ],
       "tags": [
         "생성형AI",
         "F&B",
@@ -3194,6 +3442,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l2-genai-business",
+          "concept": "신규 비즈니스 모델(챗봇 서비스·가상비서·맞춤추천)",
+          "how": "분리된 부동산·브랜드·운영·투자 판단을 하나로 잇는 생성형 AI 플랫폼 '밸류파인더'를 제안하고, 컨설팅→패키지→플랫폼의 3단계 비즈니스 모델로 발전시킨다."
+        },
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "처방적 분석(Prescriptive)",
+          "how": "그룹메가의 실제 매입-운영-매각 데이터를 근거로 AI가 구조와 근거를 제공해 더 정확한 입지·투자 의사결정을 처방, 분석 기간·인력을 줄이고 경상이익을 크게 늘린다."
+        }
       ]
     },
     {
@@ -3209,7 +3469,10 @@
       "subject": "클루어리 (Cluely)",
       "subjectIndustry": "AI 스타트업·SaaS",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l4-csr",
+          "eth-l1-why-ethics"
+        ],
         "sources": []
       },
       "surface": "화면·오디오를 실시간 분석해 시험·면접·영업에서 들키지 않고(undetectable) 답을 주는 AI 도구 Cluely를 사례로, '사용자에게 실질적 효익을 주더라도 사회적 기만을 유발하는 서비스를 출시하는 것이 정당한가'를 핵심 질문으로 던진다. 기술중립(도구만 제공, 결과는 개인 책임) 입장과 사회적 책임(신뢰 훼손까지 기업 책임) 입장을 대비시키고, 답을 단정하지 않고 '여러분 회사라면 출시하겠는가'라는 토론형 결론으로 청중에게 윤리적 판단을 넘긴다.",
@@ -3235,7 +3498,11 @@
           "value": "21세, 치팅 도구로 퇴학 이력"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-friedman-vs-csr",
+        "eth-normative-frameworks",
+        "eth-stakeholder-mapping"
+      ],
       "tags": [
         "기업윤리",
         "기술중립",
@@ -3296,7 +3563,19 @@
             "chosen": false
           }
         ]
-      }
+      },
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l4-csr",
+          "concept": "프리드먼 주주이익 단독 책임론 vs CSR(시장 실패·외부성)",
+          "how": "기술중립(합법 도구만 제공, 결과는 개인 책임) 입장은 프리드먼식 주주이익 논리이고, 사회적 책임 입장은 사회 신뢰 훼손이라는 외부성을 기업 책임으로 보는 CSR 논리로, 케이스는 두 관점을 정면 대비시킨다."
+        },
+        {
+          "lectureId": "eth-l1-why-ethics",
+          "concept": "윤리적 딜레마(가치 충돌)",
+          "how": "들키지 않고 시험·면접에서 답을 주는 undetectable AI가 사용자 효익과 사회적 기만 사이에서 충돌하는 딜레마를, 답을 단정하지 않고 '여러분 회사라면 출시하겠는가'라는 토론형 결론으로 청중에게 넘긴다."
+        }
+      ]
     },
     {
       "id": "case-be-g3-volkswagen",
@@ -3311,7 +3590,11 @@
       "subject": "폭스바겐 (Volkswagen)",
       "subjectIndustry": "자동차 제조",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l7-global-ethics",
+          "eth-l1-why-ethics",
+          "eth-l4-csr"
+        ],
         "sources": []
       },
       "surface": "친환경을 과장하는 그린워싱의 정의와 유형, 글로벌 규제 강화 흐름을 개관한 뒤, 폭스바겐이 10년간 배출가스 조작장치(defeat device)를 숨기고 '클린디젤'로 광고하다 2015년 EPA에 적발된 디젤게이트를 분석한다. 1,100만 대 조작, 주가 40% 폭락, 총 330억 달러의 벌금·합의금이라는 피해를 정리하고, 칸트 의무론·이해관계자 이론·덕윤리 세 윤리 이론으로 해부한다. 그린워싱은 마케팅 실패가 아니라 기업윤리의 실패이며 ESG 리스크가 곧 재무 리스크임을 강조한다.",
@@ -3337,7 +3620,12 @@
           "value": "40% 폭락"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-greenwashing",
+        "eth-normative-frameworks",
+        "eth-ford-pinto-cba",
+        "eth-stakeholder-mapping"
+      ],
       "tags": [
         "그린워싱",
         "기업윤리",
@@ -3444,6 +3732,23 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l7-global-ethics",
+          "concept": "ESG 경영·MSCI 평가",
+          "how": "'클린디젤' 광고 뒤에 배출가스 조작장치를 숨긴 디젤게이트로 ESG 리스크가 곧 재무 리스크임을 보여주며, 1,100만 대 조작·주가 40% 폭락·330억 달러 벌금이라는 피해로 입증한다."
+        },
+        {
+          "lectureId": "eth-l1-why-ethics",
+          "concept": "의무론(칸트 정언명령)",
+          "how": "10년간의 조직적 기만을 칸트 의무론·이해관계자 이론·덕윤리 세 잣대로 해부해, 그린워싱이 마케팅 실패가 아니라 거짓말 금지 원칙을 어긴 기업윤리의 실패임을 규정한다."
+        },
+        {
+          "lectureId": "eth-l4-csr",
+          "concept": "기업 평판·지속가능성",
+          "how": "단기 이익을 위한 기만이 누적 이익을 한 번의 적발로 소멸시키는 가장 파괴적 리스크임을 보여주며, 진정한 지속가능경영은 보고서가 아니라 의사결정 전반에 윤리를 내재화하는 것이라 권고한다."
+        }
       ]
     },
     {
@@ -3459,7 +3764,10 @@
       "subject": "맥심(슈프림골드) vs 카누(바리스타)",
       "subjectIndustry": "커피·음료·FMCG",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ms-l2-lp-max",
+          "ms-l3-lp-min-applications"
+        ],
         "sources": []
       },
       "surface": "10년째 '작년처럼 7:3' 같은 직관으로 반복되던 광고예산 회의에 수학적 근거가 없다는 문제에서 출발한다. Cash Cow 맥심(점유율 방어)과 Star 카누(신시장 성장)가 50억 예산을 두고 충돌하고 타깃이 겹치는 자기잠식 딜레마를 LP로 푼다. Step 1은 기여이익을 목적함수로 최적 배분(맥심 40억:카누 10억, 기여이익 90억)을 도출하고, Step 2는 확정 예산을 8개 브랜드×채널로 나눠 전환수를 최대화하되 타깃 불일치 페널티와 친화채널 제약으로 자기잠식을 차단한다.",
@@ -3485,7 +3793,10 @@
           "value": "+40.2% · 5.6→8.3배"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ms-lp-dantzig",
+        "ms-wyndor-product-mix"
+      ],
       "tags": [
         "선형계획법",
         "광고예산",
@@ -3586,6 +3897,18 @@
           ],
           "verdict": "모든 제약을 만족하며 총전환수 +40.2%·ROAS 5.6→8.3배 달성 — 분기마다 계수 갱신해 재최적화하는 재현 가능한 시스템."
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ms-l2-lp-max",
+          "concept": "자원배분 문제 vs 비용편익 상충 문제",
+          "how": "50억 한정 예산을 맥심·카누 두 브랜드에 배분하는 자원배분 문제로, 기여이익을 목적함수로 두고 LP Step 1에서 맥심 40억:카누 10억(기여이익 90억)의 최적 배분을 도출한다."
+        },
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "혼합 문제(Mixed Problem) 템플릿",
+          "how": "Step 2에서 확정 예산을 8개 브랜드×채널로 나눠 전환수를 최대화하되, 타깃 불일치 페널티와 친화채널 제약을 동시에 걸어 자기잠식을 차단하는 혼합형 제약 구조로 정식화한다."
+        }
       ]
     },
     {
@@ -3601,7 +3924,10 @@
       "subject": "삼성전자 반도체 (시뮬레이션)",
       "subjectIndustry": "반도체 제조·HR",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ms-l3-lp-min-applications",
+          "ms-l2-lp-max"
+        ],
         "sources": []
       },
       "surface": "핵심인재 1인 이탈이 연봉의 최대 5배 손실을 유발한다는 문제의식에서, 사후·직관·균등배분에 의존하던 기존 HR의 한계를 지적한다. 이를 AI 퇴직예측(P)·영향도 평가(L)·선형계획법(LP) 자원배분의 3단계 통합 프레임워크로 대체한다. 핵심은 퇴직확률이 가장 높은 직원이 아니라 기대손실(P×L)이 큰 직원에게 한정 예산을 우선 투입한다는 점이며, 동일 6억 예산으로 기존 대비 약 2.4배 효과적인 리텐션 성과를 낸다.",
@@ -3627,7 +3953,11 @@
           "value": "35% → 193%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ms-lp-dantzig",
+        "ms-binary-capital-budgeting",
+        "ms-decision-tree"
+      ],
       "tags": [
         "선형계획법",
         "기대손실",
@@ -3715,6 +4045,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "자본예산(Capital Budgeting)·정수계획법(Integer Programming)",
+          "how": "한정된 6억 리텐션 예산을 직원에게 배분하는 자본예산형 LP로, 기대손실(P×L)이 큰 직원에게 등급별 차등 리텐션 액션을 우선 투입해 동일 예산으로 약 2.4배 효과를 낸다."
+        },
+        {
+          "lectureId": "ms-l2-lp-max",
+          "concept": "자원배분 문제 vs 비용편익 상충 문제",
+          "how": "AI 퇴직예측(P)·영향도(L)로 산출한 기대손실을 계수로, 예산 제약 하에서 리텐션 성과를 최대화하는 자원배분 문제로 풀어 '누구를 반드시 지킬까'를 수치로 결정한다."
+        }
       ]
     },
     {
@@ -3730,7 +4072,10 @@
       "subject": "기업 메시징 SaaS의 고객응대",
       "subjectIndustry": "B2B SaaS·기업 메시징",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l4-llm-business-platform",
+          "ba-l2-genai-business"
+        ],
         "sources": []
       },
       "surface": "고객사 증가로 CS 문의가 폭증하면서 반복업무 과중, 24/365 대응 불가, 응답 지연·누락, 상담원별 품질 편차 문제가 드러났고 기존 시나리오 챗봇으로는 복합 문의 처리에 한계가 있다고 진단한다. 해결책으로 3년치 이메일·콜 STT·게시판 데이터를 PII 마스킹 후 RAG로 지식화하고, 생성형 AI가 응답 초안을 만든 뒤 가드레일로 검증해 옴니채널로 배포하는 8단계 자동화 파이프라인을 제안한다. PoC→Pilot→전사 확산의 단계적 도입을 함께 제시한다.",
@@ -3756,7 +4101,12 @@
           "value": "20%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-rag",
+        "ba-llm-hallucination",
+        "ba-genai-adoption-chasm",
+        "ba-llm-onprem-security"
+      ],
       "tags": [
         "생성형AI",
         "RAG",
@@ -3844,6 +4194,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l4-llm-business-platform",
+          "concept": "RAG(검색증강생성, 할루시네이션 보완)",
+          "how": "3년치 이메일·콜 STT·게시판 데이터를 PII 마스킹 후 RAG로 지식화해 생성형 AI가 응답 초안을 만들고, 기존 시나리오 챗봇이 못 푸는 복합 문의를 처리한다."
+        },
+        {
+          "lectureId": "ba-l2-genai-business",
+          "concept": "할루시네이션(Hallucination)",
+          "how": "AI가 생성한 응답 초안을 가드레일로 검증한 뒤 옴니채널로 배포하는 8단계 파이프라인으로 잘못된 응답 위험을 통제한다."
+        }
       ]
     },
     {
@@ -3859,7 +4221,10 @@
       "subject": "웹젠 '뮤 아크엔젤'·넥슨 '메이플 키우기'",
       "subjectIndustry": "게임",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l2-can-people-change",
+          "eth-l6-ethical-issues"
+        ],
         "sources": []
       },
       "surface": "2024년 확률 공개 의무화를 전환점으로, 게임사 내부 정보였던 확률이 표시값과 실제값의 불일치로 드러난 두 사례를 분석한다. 웹젠은 0.25~1.16%로 안내한 뽑기가 실제로는 일정 횟수 전까지 사실상 당첨 불가인 '바닥 시스템'을 숨겨 공정위 제재를 받았고, 넥슨 메이플 키우기는 확률 오류를 인지하고도 비공개 수정했다가 은폐 의혹이 커지자 전액 환불에 이르렀다. 포드 핀토 사례와 비교해 '오류 자체보다 먼저 알리지 않은 것'이 더 큰 신뢰 손실을 부른다는 공통 메커니즘을 도출한다.",
@@ -3885,7 +4250,11 @@
           "value": "2024.3.22"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-incentive-misconduct",
+        "eth-ford-pinto-cba",
+        "eth-whistleblower"
+      ],
       "tags": [
         "기업윤리",
         "확률형아이템",
@@ -3980,6 +4349,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l2-can-people-change",
+          "concept": "강화이론·보상시스템(성과 압박)",
+          "how": "웹젠의 숨긴 '바닥 시스템'과 넥슨의 확률 오류 비공개 수정은 개인 일탈이 아니라 정보 비대칭·성과 압박·은폐 유인이 만드는 구조적 위험임을 도출한다."
+        },
+        {
+          "lectureId": "eth-l6-ethical-issues",
+          "concept": "고객 신뢰(비밀유지·진실말하기)",
+          "how": "확률이라는 핵심 정보를 표시값과 실제값이 다르게 운영한 것이 고객 신뢰를 깼고, 포드 핀토 비교로 '오류 자체보다 먼저 알리지 않은 것'이 더 큰 신뢰 손실을 부른다는 메커니즘을 짚는다."
+        }
       ]
     },
     {
@@ -3995,7 +4376,10 @@
       "subject": "테크랩스 '아만다·너랑나랑'",
       "subjectIndustry": "소개팅앱·매칭 플랫폼",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l6-ethical-issues",
+          "eth-l1-why-ethics"
+        ],
         "sources": []
       },
       "surface": "소개팅앱 이용자가 실제로 구매하는 것은 매칭·메시지 기능이 아니라 '진짜 사람의 관심'이라는 신뢰라는 문제의식에서 출발한다. 운영사 테크랩스가 약 270개의 가짜 여성회원 계정을 직접 만들어 사진 도용·프로필 위장·좋아요/매치 알림으로 진짜처럼 활동시켜 남성 회원 결제를 유도한 사건을 분석한다. 성비 불균형이라는 구조적 결함을 실제 회원 확보가 아닌 조작으로 메운 것이 본질이며, 공정위는 기만적 소비자 유인으로 보고 과징금을 부과했다.",
@@ -4021,7 +4405,11 @@
           "value": "남성 약 2,200명·23억"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-greenwashing",
+        "eth-incentive-misconduct",
+        "eth-stakeholder-mapping"
+      ],
       "tags": [
         "기업윤리",
         "신뢰",
@@ -4109,6 +4497,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l6-ethical-issues",
+          "concept": "고객 신뢰(비밀유지·진실말하기)",
+          "how": "테크랩스가 약 270개 가짜 여성회원 계정으로 사진 도용·좋아요/매치 알림을 보내 남성 결제를 유도한 것은, 이용자가 실제 구매하는 '진짜 사람의 관심'이라는 신뢰를 거짓 신호로 속인 진실말하기 위반이다."
+        },
+        {
+          "lectureId": "eth-l1-why-ethics",
+          "concept": "인간을 수단 아닌 목적으로",
+          "how": "성비 불균형이라는 구조적 결함을 실제 회원 확보가 아닌 조작으로 메워 결제 유도의 수단으로만 이용자를 다뤘고, 공정위는 이를 기만적 소비자 유인으로 보고 과징금을 부과했다."
+        }
       ]
     },
     {
@@ -4124,7 +4524,9 @@
       "subject": "Ralph 식단·캠프 점심 (교재 문제)",
       "subjectIndustry": "교육·식음료(영양)",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ms-l3-lp-min-applications"
+        ],
         "sources": []
       },
       "surface": "선형계획법으로 영양 제약을 만족하면서 비용을 최소화하는 두 교재 문제를 풀었다. Ralph 문제는 탄수화물·단백질·지방 제약 하에서 스테이크 1.27단위·감자 2.91단위 조합으로 최소비용 $10.91을 도출하고 도해법·대수법·스프레드시트 세 방식으로 검증했다. 캠프 점심 문제는 우유 선택 시 비타민C 제약 위반으로 실행불가능(infeasible)임을 보이고, 주스 선택 시 65센트가 최적해임을 밝힌다.",
@@ -4150,7 +4552,11 @@
           "value": "65센트"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ms-diet-blending",
+        "ms-lp-dantzig",
+        "ms-sensitivity-analysis"
+      ],
       "tags": [
         "선형계획법",
         "도해법",
@@ -4241,6 +4647,18 @@
           ],
           "verdict": "비분할 음료 조건은 케이스를 나눠 풀어야 한다 — 주스 65센트가 최적해"
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "다이어트 문제(Diet Problem) — 최소비용 영양 충족",
+          "how": "탄수화물·단백질·지방 영양 제약을 만족하며 비용을 최소화하는 전형적 다이어트 문제로, Ralph 문제에서 스테이크 1.27단위·감자 2.91단위로 최소비용 $10.91을 도해법·대수법·스프레드시트 세 방식으로 검증한다."
+        },
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "제약식 3유형: 자원(≤)·편익(≥)·고정요구(=)",
+          "how": "캠프 점심 문제에서 우유 선택 시 비타민C 편익(≥) 제약을 위반해 실행불가능(infeasible)임을 보이고, 주스 선택 케이스로 분할해 65센트 최적해를 도출한다."
+        }
       ]
     },
     {
@@ -4256,7 +4674,9 @@
       "subject": "AmeriBank·Sophisticated Surveys (교재)",
       "subjectIndustry": "금융·시장조사",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ms-l3-lp-min-applications"
+        ],
         "sources": []
       },
       "surface": "웹뱅킹 도입을 앞둔 AmeriBank의 2,000명 설문을 3개 지역×4개 연령대 12개 셀로 나눠, 지역·연령 최소비율 제약을 만족하며 설문비용을 최소화하는 입찰가를 LP로 산출했다. 기본 최적비용 $11,200에 15% 마진을 더해 입찰가 $12,880을 도출하고, 셀별 최소 인원·상한·단가 상승·비율 고정 등 제약을 순차 추가하며 비용 민감도를 분석한다. 가장 저렴한 셀에 인원이 몰리는 구조가 핵심이다.",
@@ -4282,7 +4702,11 @@
           "value": "2,000명·12개 셀"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ms-lp-dantzig",
+        "ms-sensitivity-analysis",
+        "ms-diet-blending"
+      ],
       "tags": [
         "선형계획법",
         "민감도분석",
@@ -4375,6 +4799,18 @@
           ],
           "verdict": "상한·고정·단가변동 제약이 늘수록 저가 셀이 막혀 비용이 계단식으로 상승"
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "비용편익 상충 문제(Cost-Benefit Trade-off)",
+          "how": "2,000명 설문을 3개 지역×4개 연령대 12개 셀에 배분하며, 지역·연령 최소비율(≥) 제약을 만족하면서 설문비용을 최소화해 기본 최적비용 $11,200에 15% 마진을 더한 입찰가 $12,880을 산출한다."
+        },
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "제약식 3유형: 자원(≤)·편익(≥)·고정요구(=)",
+          "how": "셀별 최소 인원·상한(≤)·비율 고정(=) 제약을 순차 추가하며, 가장 저렴한 셀이 막힐수록 비용이 단계적으로 상승하는 민감도를 분석한다."
+        }
       ]
     },
     {
@@ -4390,7 +4826,11 @@
       "subject": "Abbott·시밀락(Similac)",
       "subjectIndustry": "헬스케어·영유아 식품(분유)",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l3-ethical-org",
+          "eth-l1-why-ethics",
+          "eth-l4-csr"
+        ],
         "sources": []
       },
       "surface": "2022년 애보트 시밀락 크로노박터균 오염 리콜 사태를 의무론·공리주의·덕윤리 세 관점과 Carroll CSR 피라미드·이해관계자·ESG 틀로 분석했다. 내부고발 묵살과 안전 은폐가 보편화 원칙·인간 존엄성을 위반했고(의무론), 단기 비용절감 편익보다 영아 사망·전국 분유대란이라는 사회적 총비용이 압도적으로 컸으며(공리주의), 정직·책임·배려라는 덕목이 모두 실패했다고 진단한다. 분유 시장 과점과 FDA 점검 빈도 감소라는 구조적 한계까지 짚는다.",
@@ -4416,7 +4856,12 @@
           "value": "10년간 -43%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-whistleblower",
+        "eth-ford-pinto-cba",
+        "eth-normative-frameworks",
+        "eth-carroll-csr"
+      ],
       "tags": [
         "기업윤리",
         "내부고발",
@@ -4517,6 +4962,23 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l3-ethical-org",
+          "concept": "내부고발(신중한 위험감수)",
+          "how": "크로노박터균 오염 경고를 담은 내부고발이 묵살되고 안전이 은폐되어 영아가 사망한 것이, 신고를 수용·보호하는 시스템 부재가 부른 윤리적 붕괴임을 보여준다."
+        },
+        {
+          "lectureId": "eth-l1-why-ethics",
+          "concept": "공리주의(최대다수 최대행복)",
+          "how": "단기 비용절감 편익보다 영아 사망·전국 분유대란이라는 사회적 총비용이 압도적으로 컸음을 공리주의로 계산하고, 동시에 보편화·인간 존엄성을 어긴 의무론 위반으로도 진단한다."
+        },
+        {
+          "lectureId": "eth-l4-csr",
+          "concept": "캐롤의 CSR 피라미드·이해관계자 모형",
+          "how": "분유 시장 과점과 FDA 점검 빈도 감소라는 구조적 한계 속에서 이해관계자 중심 경영과 ESG가 리스크 관리의 핵심임을 캐롤 피라미드 틀로 분석한다."
+        }
       ]
     },
     {
@@ -4532,7 +4994,10 @@
       "subject": "오스템임플란트",
       "subjectIndustry": "의료기기·회계감사",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l3-ethical-org",
+          "eth-l6-ethical-issues"
+        ],
         "sources": []
       },
       "surface": "2022년 오스템임플란트 자금팀장의 2,215억 원(자기자본 대비 108%) 횡령 사건을 미덕윤리·의무론·이해관계자이론으로 분석했다. 재무팀장 1인이 자금 요청·기록·이체를 모두 수행한 직무분리·이중승인 부재가 핵심 원인이며, 2020년 '적정' 감사의견을 낸 회계법인의 책임론까지 짚는다. 경영진 해임권고·과징금, 횡령자 징역 35년·추징금 917억의 제재가 내려졌고, 감사인의 독립성·직업적 회의주의 포기를 전문직 윤리 위반으로 규정한다.",
@@ -4558,7 +5023,12 @@
           "value": "40%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-audit-independence",
+        "eth-conflict-of-interest",
+        "eth-whistleblower",
+        "eth-ethical-org-systems"
+      ],
       "tags": [
         "기업윤리",
         "내부통제",
@@ -4651,6 +5121,18 @@
           ],
           "verdict": "직무분리·이중승인·감사 독립성이라는 구조가 핵심 개선과제 — 제도는 필요조건일 뿐"
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l3-ethical-org",
+          "concept": "성과관리·보상·징계(내부통제·직무분리)",
+          "how": "자금팀장 1인이 자금 요청·기록·이체를 모두 수행한 직무분리·이중승인 부재가 자기자본 108%(2,215억) 횡령의 핵심 원인으로, 제도개선이 필요조건일 뿐임을 보여준다."
+        },
+        {
+          "lectureId": "eth-l6-ethical-issues",
+          "concept": "수탁책임(fiduciary)",
+          "how": "2020년 '적정' 감사의견을 낸 회계법인의 독립성·직업적 회의주의 포기를 전문직 수탁책임 위반으로 규정하고, 감사 독립성 확보를 핵심 개선과제로 제시한다."
+        }
       ]
     },
     {
@@ -4666,7 +5148,9 @@
       "subject": "지도학습 예측모델 (그룹토의)",
       "subjectIndustry": "HR·예측분석(범용)",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l1-bae-intro"
+        ],
         "sources": []
       },
       "surface": "지도학습 예측모델을 경영에 적용할 때의 세 가지 쟁점을 토의했다. 첫째, 과거 패턴 학습 모델의 미래 유효성과 경영진이 신뢰하려면 확인해야 할 데이터 조건. 둘째, Confusion Matrix를 근거로 '정확도 높은 모델'과 '틀렸을 때 비용 작은 모델' 중 무엇이 좋은가 — 99% 정확도라도 1% 예외가 치명적인 고위험 사안에서는 비즈니스 비용을 우선해야 한다고 봤다. 셋째, 사람 대상 예측의 허용 범위로, 낙인·설명가능성 문제를 들어 예측은 보조지표로만 쓰고 최종 판단은 경영진이 한다는 통제장치를 제안한다.",
@@ -4679,7 +5163,12 @@
       "ourTake": "예측 정확도만으로 모델을 평가하지 말고 오류의 비즈니스 비용을 고려해야 하며, 사람 관련 예측은 의사결정의 절대 척도가 아닌 보조지표로만 활용하고 최종 판단은 사람이 견제해야 한다.",
       "ourTakeExtra": "",
       "keyFacts": [],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-confusion-matrix",
+        "ba-overfitting",
+        "ba-explainability-tradeoff",
+        "ba-supervised-unsupervised"
+      ],
       "tags": [
         "지도학습",
         "Confusion Matrix",
@@ -4740,7 +5229,19 @@
             "chosen": true
           }
         ]
-      }
+      },
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "예측적 분석(Predictive)",
+          "how": "Confusion Matrix를 근거로 '정확도 높은 모델'과 '틀렸을 때 비용 작은 모델'을 비교해, 99% 정확도라도 1% 예외가 치명적인 고위험 사안에서는 오류의 비즈니스 비용을 우선해야 한다고 본다."
+        },
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "지도학습(Supervised)",
+          "how": "과거 패턴을 학습한 지도학습 모델의 미래 유효성을 신뢰하려면 어떤 데이터 조건을 확인해야 하는지를 따지고, 사람 대상 예측은 낙인·설명가능성 문제로 보조지표로만 쓰고 최종 판단은 사람이 견제한다."
+        }
+      ]
     },
     {
       "id": "case-ba-g5-price-simulator",
@@ -4755,7 +5256,10 @@
       "subject": "자사 판매·손익 시뮬레이터",
       "subjectIndustry": "제조·유통(가격전략)",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l1-bae-intro",
+          "ba-l3-genai-data"
+        ],
         "sources": []
       },
       "surface": "과거 3개년 손익계산서·판매 데이터를 '이익 증가'를 정답값으로 지도학습시켜, 최적 판매단가와 그에 따른 판매량·영업이익 변화를 예측하는 시뮬레이터 구축안이다. 가격↓→판매량↑ 관계를 input/output으로 정의하고 매출 조정에 따른 판관비·영업이익 증감을 시뮬레이션한다. 가격-수요 데이터 부족과 정부정책·전쟁 등 과거에 없던 변수 대응이라는 두 문제점에 단계별 보완책과 위기 시 R&D·인프라 투자 전환 시나리오를 제안한다.",
@@ -4773,7 +5277,12 @@
           "value": "과거 3개년 손익"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-supervised-unsupervised",
+        "ba-overfitting",
+        "ba-feature-engineering",
+        "ba-confidence-interval"
+      ],
       "tags": [
         "지도학습",
         "가격전략",
@@ -4834,7 +5343,19 @@
             "chosen": true
           }
         ]
-      }
+      },
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "지도학습(Supervised)",
+          "how": "과거 3개년 손익계산서·판매 데이터에서 '이익 증가'를 정답값으로 지도학습시켜 가격↓→판매량↑ 관계를 input/output으로 정의하고 최적 판매단가를 예측한다."
+        },
+        {
+          "lectureId": "ba-l3-genai-data",
+          "concept": "다단계 모형·시나리오 기반 예측",
+          "how": "가격-수요 데이터 부족과 정부정책·전쟁 등 과거에 없던 변수에 대비해 단계별 보완책과 위기 시 R&D·인프라 투자 전환이라는 시나리오 기반 예측을 함께 설계한다."
+        }
+      ]
     },
     {
       "id": "case-ba-g5-ai-failure",
@@ -4849,7 +5370,10 @@
       "subject": "맥도날드·IBM 왓슨 등 실패사례",
       "subjectIndustry": "외식·헬스케어(AI 도입 일반)",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l4-llm-business-platform",
+          "ba-l2-genai-business"
+        ],
         "sources": []
       },
       "surface": "생성형AI 도입 실패의 구조적 원인을 글로벌 실패사례와 경영이론으로 토의했다. 맥도날드의 AI 음성주문은 현장 변수 과소평가로 IBM과의 파트너십을 종료했고, IBM 왓슨 종양학은 워크플로 부적합·직무불안으로 50억 달러 투자 대비 80% 손실을 냈다. TAM·Kotter 8단계·ADKAR을 적용해 변화저항을 진단하고, 'AI 투자의 70%는 사람(업무방식 변화)에 써야 한다'는 원칙과 PoC-현장 괴리를 막는 단계적 확장·중단시점 사전 결정을 강조한다.",
@@ -4875,7 +5399,11 @@
           "value": "알고리즘10·데이터20·사람70"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-genai-adoption-chasm",
+        "ba-llm-hallucination",
+        "ba-explainability-tradeoff"
+      ],
       "tags": [
         "생성형AI",
         "TAM",
@@ -4976,6 +5504,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l4-llm-business-platform",
+          "concept": "AI 도입 3대 장벽(보안·조직문화·ROI)과 극복(Quick Win·정량지표)",
+          "how": "맥도날드 AI 음성주문·IBM 왓슨 종양학 실패를 TAM·Kotter 8단계·ADKAR로 진단하고, 'AI 투자의 70%는 사람에 써야 한다'는 원칙과 단계적 확장·중단시점 사전 결정으로 PoC-현장 괴리를 막는다."
+        },
+        {
+          "lectureId": "ba-l2-genai-business",
+          "concept": "할루시네이션(Hallucination)",
+          "how": "왓슨 종양학이 워크플로 부적합과 신뢰성 문제로 50억 달러 투자 대비 80% 손실을 낸 사례를 들어 기술 성능이 아닌 사람·프로세스 검증이 성패를 가른다고 본다."
+        }
       ]
     },
     {
@@ -4991,7 +5531,11 @@
       "subject": "시스메이트 AI 포토키오스크 '샤방네컷'",
       "subjectIndustry": "셀프 포토부스·체험 키오스크",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "mk-l2-consumer-needs",
+          "mk-l4-diagnosis-workshop",
+          "mk-l1-innovation-driver"
+        ],
         "sources": []
       },
       "surface": "시스메이트의 43인치 4K AI 포토키오스크 '샤방네컷'을 대상으로 고객욕구를 4분면(혜택·잠재혜택·문제·잠재문제 욕구)×Why/When/Where/How 매트릭스로 분석했다. 단순촬영의 한계로 성숙기에 진입한 3,000억 셀프포토 시장에서, 고객이 이미 불만을 인식한 '문제 욕구(새로운 체험 수요)'를 전환속도가 가장 빠른 1순위로 선정한다. 직관적 UX와 QR 즉시공유의 '혜택 욕구'를 2순위, 경쟁사 미진입 블루오션인 브랜드·IP 콜라보를 3순위로 둔다.",
@@ -5017,7 +5561,12 @@
           "value": "+480%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "mkt-customer-needs-matrix",
+        "mkt-segment-attractiveness",
+        "mkt-stp",
+        "mkt-4p-to-4c"
+      ],
       "tags": [
         "마케팅",
         "고객욕구",
@@ -5092,7 +5641,24 @@
             "risk": "전환속도 가장 느림"
           }
         ]
-      }
+      },
+      "theoryApplications": [
+        {
+          "lectureId": "mk-l2-consumer-needs",
+          "concept": "고객욕구 분석 Matrix (Why·When·Where·How)",
+          "how": "'샤방네컷' 키오스크의 고객욕구를 혜택·잠재혜택·문제·잠재문제 4분면 × Why/When/Where/How 매트릭스로 분해해, 이미 인식된 '문제 욕구(새로운 체험 수요)'를 전환속도가 가장 빠른 1순위로 식별했다."
+        },
+        {
+          "lectureId": "mk-l4-diagnosis-workshop",
+          "concept": "STP (시장 세분화·세분시장 분석·표적시장 선정)",
+          "how": "포화된 3,000억 셀프포토 시장에서 어떤 욕구·세그먼트를 먼저 칠지 우선순위를 매겨, 문제욕구 1순위·혜택욕구(직관 UX·QR 공유) 2순위·IP 콜라보 블루오션 3순위로 표적을 순차 선정했다."
+        },
+        {
+          "lectureId": "mk-l1-innovation-driver",
+          "concept": "Value Innovation",
+          "how": "단순촬영 한계로 성숙기에 든 시장에 AI 변신 체험이라는 새 가치를 제시하고, 경쟁사 미진입 IP 콜라보·SNS 바이럴 선순환으로 차별화·록인을 노리는 시장창조형 가치혁신을 적용했다."
+        }
+      ]
     },
     {
       "id": "case-ba-g5-general-idea",
@@ -5107,7 +5673,10 @@
       "subject": "General Idea (패션 브랜드)",
       "subjectIndustry": "패션·이커머스",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l4-llm-business-platform",
+          "ba-l2-genai-business"
+        ],
         "sources": []
       },
       "surface": "패션 브랜드 General Idea에 생성형AI 에이전트를 적용해 트렌드 모니터링·상품전략·경영보고를 자동화한 실전 사례다. NAS+Docker+OpenClaw 기반으로 무신사·Zigzag·29CM 랭킹을 매일 크롤링해 텔레그램으로 인사이트를 발송하고, '가방이 약하다' 한마디면 16페이지 상품전략서를 자동 생성한다. API 비용 폭증은 복잡/일반/경량 3-Tier 모델 전략으로 절감했다. 트렌드 전문가·전략 기획자·비즈니스 설계자라는 'AI 분신 3명'으로 사업계획서를 1일 1건 생성하고 CEO는 RISK 검토 후 YES/NO만 결정하는 구조를 제시한다.",
@@ -5133,7 +5702,11 @@
           "value": "월 1~2건 → 연 300+건"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-ai-agent",
+        "ba-prompt-engineering",
+        "ba-llm-onprem-security"
+      ],
       "tags": [
         "AI에이전트",
         "자동화",
@@ -5226,6 +5799,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l4-llm-business-platform",
+          "concept": "Assistant→Agent 진화, 에이전틱 AI",
+          "how": "트렌드 전문가·전략 기획자·비즈니스 설계자라는 'AI 분신 3명'이 무신사·Zigzag·29CM 랭킹을 매일 크롤링·분석하고 16페이지 상품전략서를 자동 생성, CEO는 RISK 검토 후 YES/NO만 결정하는 에이전틱 구조를 만든다."
+        },
+        {
+          "lectureId": "ba-l4-llm-business-platform",
+          "concept": "유료 LLM vs 무료 LLM(성능·사용량·API 차이)",
+          "how": "API 비용 폭증 문제를 복잡/일반/경량 3-Tier 모델 전략으로 분배해 절감하며 자동화를 운영한다."
+        }
       ]
     },
     {
@@ -5241,7 +5826,10 @@
       "subject": "물류센터 인력 운영 (실제 3PL)",
       "subjectIndustry": "물류·3PL",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ms-l3-lp-min-applications",
+          "ms-l2-lp-max"
+        ],
         "sources": []
       },
       "surface": "조원 중 실제 물류회사를 운영하는 사람이 직면한 신규 물류센터 인력 산정 문제를 선형계획법으로 풀었다. 당일·익일 두 발송 사이클과 업무별 처리속도(PPH) 차이를 제약식에 반영하고, 잔여 작업은 다음 시간대로 이월되지만 유휴시간은 소멸한다는 점을 점화식으로 모델링했다. 일용직·파트타임 일급과 배치 제약 아래 인건비를 최소화하는 정수 최적해를 Excel 해찾기로 도출한다. 단순 총시간 나눗셈은 인력을 과소 산정한다는 점이 핵심 통찰이다.",
@@ -5267,7 +5855,11 @@
           "value": "11명·141만원/일"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ms-shift-scheduling",
+        "ms-integer-programming",
+        "ms-lp-dantzig"
+      ],
       "tags": [
         "선형계획법",
         "정수계획",
@@ -5370,6 +5962,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "인력 스케줄링(Union Airways 교대근무)",
+          "how": "당일·익일 두 발송 사이클과 업무별 처리속도(PPH)를 제약식에 반영한 인력 교대 스케줄링 문제로, 일용직·파트타임 일급과 배치 제약 아래 인건비를 최소화하는 인력 구성을 산출한다."
+        },
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "분할성 가정 위배(비행기 대수 같은 정수 변수)",
+          "how": "사람 머릿수는 분할 불가능하므로 정수 결정변수로 두고 Excel 해찾기로 정수 최적해를 도출한다. 잔여 작업의 다음 시간대 이월을 점화식으로 모델링해 단순 나눗셈의 과소 산정을 교정한다."
+        }
       ]
     },
     {
@@ -5385,7 +5989,11 @@
       "subject": "Dell Technologies",
       "subjectIndustry": "B2B IT·기업용 하드웨어",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l2-genai-business",
+          "ba-l1-bae-intro",
+          "ba-l4-llm-business-platform"
+        ],
         "sources": []
       },
       "surface": "Dell이 전통적 직관 의존 영업의 한계를 데이터와 생성형 AI 결합으로 극복한 사례를 분석했다. LTB(Likely To Buy) 머신러닝 모델이 구매 가능성 높은 계정을 선별해 '누구에게'를 정하고, Glean 플랫폼 위 OpenAI 모델로 작동하는 SalesChat이 맥락 맞춤 메시지·제안서를 자동 생성해 '무엇을 어떻게'를 해결한다. 두 시스템을 통합해 GTM 속도·파이프라인·수주율을 동시에 끌어올리는 구조와 도입 장애물·보안 가이드라인까지 다룬다.",
@@ -5398,7 +6006,12 @@
       "ourTake": "영업 패러다임을 직관에서 데이터·AI 중심으로 전환하되, LTB(타겟 선별)와 SalesChat(메시지 생성)의 역할 분업·통합이 핵심이다. 생산성·속도 향상과 수주율 상승으로 매출 증대·비용 절감까지 이어지며, 데이터 정합성·AI 신뢰·거버넌스가 전제된다.",
       "ourTakeExtra": "",
       "keyFacts": [],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-cac-trap",
+        "ba-ai-agent",
+        "ba-llm-onprem-security",
+        "ba-prompt-engineering"
+      ],
       "tags": [
         "생성형AI",
         "B2B영업",
@@ -5489,6 +6102,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "예측적 분석(Predictive)",
+          "how": "LTB(Likely To Buy) 머신러닝 모델이 구매 가능성 높은 계정을 선별해 '누구에게'를 정하는 예측적 분석으로 직관 의존 영업의 한계를 극복한다."
+        },
+        {
+          "lectureId": "ba-l2-genai-business",
+          "concept": "ChatGPT API(앱 내 탑재·자동화)",
+          "how": "Glean 플랫폼 위 OpenAI 모델로 작동하는 SalesChat이 맥락 맞춤 메시지·제안서를 자동 생성해 '무엇을 어떻게'를 풀고, LTB 예측과 통합해 GTM 속도·수주율을 동시에 끌어올린다."
+        }
       ]
     },
     {
@@ -5504,7 +6129,10 @@
       "subject": "롯데칠성음료",
       "subjectIndustry": "음료·식음료·소비재",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l3-ethical-org",
+          "eth-l2-can-people-change"
+        ],
         "sources": []
       },
       "surface": "글로벌 수준의 윤리경영 제도(윤리강령·행동준칙·ISO 37001·CP)를 갖춘 롯데칠성에서 비현실적 매출 목표가 '가판(가상판매)'이라는 구조적 탈세 관행을 낳은 사건을 분석했다. 전직 영업사원의 내부고발로 493억 원이 추징됐으나, 회사는 보호 대신 형사 고소로 보복했고 제보자는 징역 2년에 포상금 0원을 받았다. 성과주의와 윤리의 충돌, 내부통제의 형식화, 신고채널과 신고자 보호의 괴리, 제도와 조직문화의 간극이라는 네 쟁점으로 다층 분석한다.",
@@ -5530,7 +6158,12 @@
           "value": "2019년 3월"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-whistleblower",
+        "eth-incentive-misconduct",
+        "eth-ethical-org-systems",
+        "ethics-groupthink"
+      ],
       "tags": [
         "기업윤리",
         "내부고발",
@@ -5631,6 +6264,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l3-ethical-org",
+          "concept": "내부고발(신중한 위험감수)·준수 기반 vs 가치 기반",
+          "how": "윤리강령·ISO 37001·CP를 갖췄음에도 제보자에게 보호 대신 형사 고소로 보복해 징역 2년·포상금 0원이 돌아간 것이, 윤리경영의 성패가 문서·인증이 아니라 신고자를 보호하는 가치 기반 조직문화에서 결정됨을 보여준다."
+        },
+        {
+          "lectureId": "eth-l2-can-people-change",
+          "concept": "강화이론·보상시스템(성과주의)",
+          "how": "비현실적 매출 목표라는 성과 압박이 '가판(가상판매)'이라는 구조적 탈세 관행을 낳아 493억 추징으로 이어졌고, 성과주의와 윤리의 충돌이 사건의 뿌리임을 짚는다."
+        }
       ]
     },
     {
@@ -5646,7 +6291,10 @@
       "subject": "아르마니 (Armani Group)",
       "subjectIndustry": "럭셔리·패션·의류",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l4-csr",
+          "eth-l6-ethical-issues"
+        ],
         "sources": []
       },
       "surface": "공급망 전반의 인권·노동 기준 준수를 약속한 아르마니가, 실제로는 하청에서 불법·미등록 노동 고용과 장시간·저임금·안전 미달 작업을 묵인한 사실이 이탈리아 규제당국(AGCM) 조사로 드러난 사건을 분석했다. 밀라노 법원이 아르마니 오퍼레이션스를 법정관리에 처분하고 윤리 마케팅을 기만적 상거래로 판단한 흐름을 정리한다. Carroll CSR 피라미드와 도구적 vs 규범적 CSR 틀로 ESG가 무너진 지점을 짚고 이해관계자 영향을 분석한다.",
@@ -5668,7 +6316,12 @@
           "value": "25억 유로"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-greenwashing",
+        "eth-subcontractor-management",
+        "eth-carroll-csr",
+        "eth-ethical-org-systems"
+      ],
       "tags": [
         "ESG",
         "기업윤리",
@@ -5769,6 +6422,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l4-csr",
+          "concept": "전략적 CSR vs 반응적 CSR(도구적 vs 규범적 CSR)·캐롤 피라미드",
+          "how": "공급망 인권 준수를 약속한 아르마니가 하청의 불법·미등록 노동을 묵인해 ESG가 무너진 지점을, 캐롤 피라미드와 도구적 vs 규범적 CSR 틀로 분석한다."
+        },
+        {
+          "lectureId": "eth-l6-ethical-issues",
+          "concept": "다층 하도급 공급망의 책임 사슬",
+          "how": "밀라노 법원이 윤리 마케팅을 기만적 상거래로 보고 아르마니 오퍼레이션스를 법정관리에 처분한 것은, 브랜드 메시지와 하청 공급망 운영의 거버넌스 단절이 본질임을 드러낸다."
+        }
       ]
     },
     {
@@ -5784,7 +6449,10 @@
       "subject": "광고 채널별 예산 배분 (모델 케이스)",
       "subjectIndustry": "마케팅·디지털 광고",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ms-l3-lp-min-applications",
+          "ms-l2-lp-max"
+        ],
         "sources": []
       },
       "surface": "담당자 경험과 전년 관행에 의존하던 광고 예산 배분을 데이터 기반 정수 선형계획 모델로 대체하려는 프로젝트다. 광고는 '1회 단위'로만 집행되므로 집행 횟수를 정수 결정변수로 두고, 단위가 다른 매출과 신규 유입 지표를 각각 정규화한 뒤 가중치로 묶어 단일 목적함수를 구성했다. 총예산과 인력 소요시간을 제약으로 걸어 Excel Solver의 Branch & Bound로 최적 집행 횟수를 도출한다. 소수해가 아닌 현장에 즉시 적용 가능한 정수해를 얻는 것이 핵심이다.",
@@ -5806,7 +6474,11 @@
           "value": "5개(유튜브·인스타 등)"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ms-integer-programming",
+        "ms-lp-dantzig",
+        "ms-binary-capital-budgeting"
+      ],
       "tags": [
         "정수계획법",
         "광고예산",
@@ -5897,6 +6569,18 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "ms-l3-lp-min-applications",
+          "concept": "분할성 가정 위배(비행기 대수 같은 정수 변수)",
+          "how": "광고가 '1회 단위'로만 집행되므로 집행 횟수를 정수 결정변수로 두고, Excel Solver의 Branch & Bound로 소수해가 아닌 현장 적용 가능한 정수 최적해를 도출한다."
+        },
+        {
+          "lectureId": "ms-l2-lp-max",
+          "concept": "Excel Solver (데이터셀·변경셀·목표셀)",
+          "how": "단위가 다른 매출·신규 유입을 각각 정규화해 가중치로 묶은 단일 목적함수를 구성하고, 총예산과 인력 소요시간 두 제약을 걸어 Solver로 최적 집행 횟수를 산출한다."
+        }
       ]
     },
     {
@@ -5912,7 +6596,11 @@
       "subject": "HBM 반도체 제조 수율",
       "subjectIndustry": "반도체 제조·메모리·HBM",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "ba-l1-bae-intro",
+          "ba-l3-genai-data",
+          "ba-l4-llm-business-platform"
+        ],
         "sources": []
       },
       "surface": "AI 서버 수요 급증으로 폭증하는 HBM 시장에서 초기 양산 수율 확보가 시장 선점을 좌우한다는 문제의식에서 출발한 솔루션 제안이다. 공정·장비·검사·설계 데이터를 모아 지도학습으로 수율을 정량 예측하고 비지도학습으로 이상을 탐지하는 하이브리드 ML 엔진을 제안하며, 그 결과를 ChatGPT가 자연어로 해석해 엔지니어 의사결정을 돕는 구조를 그린다. 데이터 품질·보안·모델 신뢰성 문제는 전처리 고도화, 온프레미스 프라이빗 LLM, XAI·Human-in-the-Loop로 해결한다.",
@@ -5938,7 +6626,12 @@
           "value": "CAGR 62%"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "ba-supervised-unsupervised",
+        "ba-ai-prevention-pattern",
+        "ba-explainability-tradeoff",
+        "ba-llm-onprem-security"
+      ],
       "tags": [
         "머신러닝",
         "반도체수율",
@@ -6012,7 +6705,19 @@
             "tone": "good"
           }
         ]
-      }
+      },
+      "theoryApplications": [
+        {
+          "lectureId": "ba-l1-bae-intro",
+          "concept": "비지도학습(Unsupervised)",
+          "how": "공정·장비·검사·설계 데이터를 지도학습으로 HBM 수율을 정량 예측하는 동시에 비지도학습으로 이상을 탐지하는 하이브리드 ML 엔진을 구성한다."
+        },
+        {
+          "lectureId": "ba-l4-llm-business-platform",
+          "concept": "On-premises/SaaS/Hybrid 구축형태·sLLM 파인튜닝",
+          "how": "ML 예측 결과를 ChatGPT가 자연어로 해석해 엔지니어를 돕되, 보안 문제는 온프레미스 프라이빗 LLM으로, 신뢰성 문제는 XAI·Human-in-the-Loop로 해결한다."
+        }
+      ]
     },
     {
       "id": "case-be-g7-hakdong",
@@ -6027,7 +6732,11 @@
       "subject": "HDC현대산업개발 학동 붕괴",
       "subjectIndustry": "건설·재개발·철거",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l2-can-people-change",
+          "eth-l1-why-ethics",
+          "eth-l3-ethical-org"
+        ],
         "sources": []
       },
       "surface": "2021년 광주 학동 철거 붕괴로 시내버스 탑승객 9명이 사망한 사고를 경영윤리 관점에서 분석했다. 28만 원에서 4만 원으로 약 85.7% 삭감된 불법 다단계 재하도급 구조가 안전 시공을 구조적으로 불가능하게 만들었음을 짚고, 이를 Ford Pinto의 비용-편익 계산과 같은 '잘못된 공리주의'로 해석한다. Kohlberg 도덕성 발달, Gioia의 Script화, Brunsson 제도적 위선으로 조직이 침묵한 이유를 설명하고, 7개월 만의 화정아이파크 붕괴를 Swiss Cheese 모델로 조직 학습 실패의 증거로 제시한다.",
@@ -6053,7 +6762,12 @@
           "value": "2,000만원"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-ford-pinto-cba",
+        "eth-subcontractor-management",
+        "eth-can-people-change",
+        "ethics-groupthink"
+      ],
       "tags": [
         "기업윤리",
         "공리주의",
@@ -6154,6 +6868,23 @@
             }
           ]
         }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l1-why-ethics",
+          "concept": "법과 윤리의 불일치·공리주의(최대다수 최대행복)",
+          "how": "28만 원에서 4만 원으로 85.7% 삭감된 불법 다단계 재하도급이 안전 시공을 구조적으로 불가능하게 만든 것을, '비용 < 보상' 계산으로 9명의 죽음을 예약한 Ford Pinto식 잘못된 공리주의로 해석한다."
+        },
+        {
+          "lectureId": "eth-l2-can-people-change",
+          "concept": "콜버그 도덕성 발달·역할/몰개성화·집단 침묵",
+          "how": "Kohlberg 도덕성 발달과 Gioia의 Script화, Brunsson 제도적 위선으로 현장이 위험을 알고도 침묵한 이유를 설명한다."
+        },
+        {
+          "lectureId": "eth-l3-ethical-org",
+          "concept": "성과관리·보상·징계(현장중단권·KPI)",
+          "how": "7개월 만의 화정아이파크 붕괴를 Swiss Cheese 모델로 조직 학습 실패의 증거로 들며, 현장중단권·KPI 등 기업 내부 구조 개혁을 비극 반복 방지의 한 층위로 제시한다."
+        }
       ]
     },
     {
@@ -6169,7 +6900,10 @@
       "subject": "배드뱅크 '상록수'·새도약기금",
       "subjectIndustry": "금융·부실채권·정책금융",
       "roots": {
-        "lectures": [],
+        "lectures": [
+          "eth-l4-csr",
+          "eth-l8-csv"
+        ],
         "sources": []
       },
       "surface": "대통령이 '약탈적 금융'으로 지목한 배드뱅크 '상록수' SPC를 출발점으로 금융 ESG와 포용금융의 딜레마를 분석했다. 부실채권을 떼어내 처리하는 배드뱅크의 순기능과, 민간이 23년간 장기 추심을 이어온 상록수의 그림자를 대비하고, 추심 중단·소각을 지향하는 정부 기구 새도약기금으로의 패러다임 전환을 소개한다. 포용금융 확대→취약계층 대출 증가→NPL 급증→민간 배드뱅크 이관→약탈적 추심→비판으로 회귀하는 6단계 '포용금융의 역설'을 제시한다.",
@@ -6191,7 +6925,11 @@
           "value": "13.6조 (역대 최대)"
         }
       ],
-      "cardLinks": [],
+      "cardLinks": [
+        "eth-friedman-vs-csr",
+        "eth-stakeholder-mapping",
+        "eth-porter-kramer-csv"
+      ],
       "tags": [
         "기업윤리",
         "포용금융",
@@ -6278,6 +7016,18 @@
               "tone": "good"
             }
           ]
+        }
+      ],
+      "theoryApplications": [
+        {
+          "lectureId": "eth-l4-csr",
+          "concept": "시장 실패·외부성·이해관계자 모형",
+          "how": "포용금융 확대→취약계층 대출 증가→NPL 급증→민간 배드뱅크 이관→약탈적 추심으로 회귀하는 6단계 '포용금융의 역설'은, 선의의 정책이 시장 논리를 거쳐 외부성으로 되돌아오는 시장 실패 구조를 보여준다."
+        },
+        {
+          "lectureId": "eth-l8-csv",
+          "concept": "공유가치(shared value)·피라미드 하층부(BOP) 시장",
+          "how": "'얼마나 빌려줬는가'보다 '다시 일어설 수 있는가'를 묻는 재기 중심 금융으로 전환해, 취약계층(BOP)의 재기와 금융질서가 공존하는 공유가치 설계를 제언한다."
         }
       ]
     }
