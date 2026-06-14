@@ -24,7 +24,8 @@ interface Props {
 }
 
 // 케이스 타일 미니 프리뷰 — 핵심 수치 + 스파크라인. 그리드 자체를 풍부하게.
-function CasePreview({ card }: { card: Card }) {
+// 데스크톱·모바일 공용 (.case-preview 스타일은 globals.css — 전역 로드).
+export function CasePreview({ card }: { card: Card }) {
   const m = card._metric;
   const spark = (card._spark || []).filter((v) => Number.isFinite(v));
   if (!m && spark.length < 2) return null;

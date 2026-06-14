@@ -13,7 +13,15 @@ import type { CSSProperties } from "react";
 import cardsData from "@/data/cards.json";
 import ownerPainsData from "@/data/owner-pains.json";
 import cardFitsData from "@/data/card-fits.json";
-import type { Card, Industry, OwnerPainCategory } from "@/lib/types";
+import casesData from "@/data/cases.json";
+import lecturesData from "@/data/lectures.json";
+import type {
+  Card,
+  Industry,
+  OwnerPainCategory,
+  CasesFile,
+  LecturesFile,
+} from "@/lib/types";
 import {
   COURSE_COLOR,
   COURSE_SHORT,
@@ -29,6 +37,9 @@ import { applyTheme, applyFont } from "@/lib/themes";
 import { store } from "@/lib/storage";
 import { rich } from "./rich";
 import { OntologyGraph } from "./OntologyGraph";
+import { CaseModal } from "./CaseModal";
+import { CasePreview } from "./MagCard";
+import { caseToCard, isCaseCardId, toCaseId } from "@/lib/caseToCard";
 import { getProbe } from "@/lib/probe";
 import {
   buildSteps,
@@ -45,6 +56,11 @@ import {
 import "./mobile.css";
 
 const CARDS = cardsData as Card[];
+// 조별 케이스(42) → 카드 변환 (데스크톱과 동일 lib). 그리드·검색·저장에 통합.
+const ALL_CASES = (casesData as CasesFile).cases;
+const LECTURES = (lecturesData as LecturesFile).lectures;
+const CASE_CARDS: Card[] = ALL_CASES.map(caseToCard);
+const ALL_CARDS: Card[] = [...CARDS, ...CASE_CARDS];
 // 카드별 '이럴 때' 후킹 부제 (상황) — 그리드 카드 제목 아래 빈칸을 채운다.
 const FITS = (cardFitsData as { fits: Record<string, string> }).fits || {};
 const fitOf = (id: string): string => FITS[id] || "";
@@ -61,14 +77,6 @@ const PAINS: OwnerPainCategory[] = [
     Boolean
   ) as OwnerPainCategory[],
   ...ALL_PAINS.filter((p) => !PAIN_ORDER.includes(p.cat)),
-];
-
-// 조별 발표 케이스 (실데이터 — DualBrainApp와 동일)
-const TEAM_CASES: { id: string; team: string; caseTitle: string }[] = [
-  { id: "mpo-rob-parson", team: "1조", caseTitle: "Morgan Stanley · Rob Parson" },
-  { id: "mpo-terracog", team: "2조", caseTitle: "TerraCog GPS" },
-  { id: "mpo-martha-rinaldi", team: "3조", caseTitle: "Martha Rinaldi" },
-  { id: "mpo-recruitment-vs-promote", team: "4조", caseTitle: "Recruitment of a Star" },
 ];
 
 type CssVars = CSSProperties & Record<string, string | number>;
@@ -364,38 +372,38 @@ const DualAsk = forwardRef<
 });
 
 // ───────────────────────── TEAM CASE ─────────────────────────
-function TeamCase({ onOpen }: { onOpen: (id: string) => void }) {
-  const cards = TEAM_CASES.map((tc) => {
-    const card = CARDS.find((c) => c.id === tc.id);
-    return card ? { ...card, _team: tc.team, _case: tc.caseTitle } : null;
-  }).filter(Boolean) as (Card & { _team: string; _case: string })[];
-  if (!cards.length) return null;
-  const color = COLOR(cards[0].course);
+function TeamCase({ cards, onOpen }: { cards: Card[]; onOpen: (id: string) => void }) {
+  // 조별 대표 — 그룹(sourceGroup=author)별 첫 케이스 1장씩 (탭하면 풀 CaseModal)
+  const seen = new Set<string>();
+  const reps = cards.filter((c) => {
+    const g = c.author || "";
+    if (!g || seen.has(g)) return false;
+    seen.add(g);
+    return true;
+  });
+  if (!reps.length) return null;
   return (
     <section className="m-sec">
       <div className="m-sec-head">
         <h2>조별 케이스</h2>
-        <span className="e">TEAM CASE · 오홍석 교수 · 조직문화</span>
+        <span className="e">TEAM CASE · 7개 조 실전 · 탭하면 발표 전체</span>
       </div>
       <div className="m-team-cards hscroll">
-        {cards.map((c) => (
+        {reps.map((c) => (
           <article
             key={c.id}
-            className="m-tcard"
-            style={css({ "--c": color })}
+            className="m-tcard m-tcase"
+            style={css({ "--c": COLOR(c.course) })}
             onClick={() => onOpen(c.id)}
           >
             <div className="tc-top">
-              <span className="tc-team">{c._team}</span>
-              <span className="tc-case">{c._case}</span>
+              <span className="tc-team">{c._badge || c.author}</span>
             </div>
-            <div className="tc-concept">{c.concept}</div>
-            <h3>{rich(c.hook)}</h3>
-            <p className="tc-body">{c.case_body || c.insight}</p>
+            <h3>{c.concept}</h3>
+            <p className="tc-body">{rich(c.hook)}</p>
+            <CasePreview card={c} />
             <div className="tc-foot">
-              <span>
-                {c.professor || "오홍석"} 교수{c.week ? " · " + c.week + "주차" : ""}
-              </span>
+              <span>{(c.industry && c.industry[0]) || "범용"}</span>
               <span className="a">발표 보기 →</span>
             </div>
           </article>
@@ -422,7 +430,7 @@ function MagCard({
   const wk = card.week ? " · WK " + String(card.week).padStart(2, "0") : "";
   return (
     <article
-      className="m-card"
+      className={"m-card" + (card._badge ? " m-card-case" : "")}
       style={css({ "--c": COLOR(card.course), animationDelay: Math.min(index, 12) * 0.035 + "s" })}
       onClick={() => onOpen(card.id)}
     >
@@ -436,18 +444,29 @@ function MagCard({
       >
         {saved ? "★" : "☆"}
       </button>
-      <div className="mc-course">
-        {SHORT(card.course)}
-        {wk}
-      </div>
-      <h3>{rich(card.hook)}</h3>
-      {fitOf(card.id) && (
-        <div className="mc-fit">
-          <span className="t">이럴 때</span>
-          {fitOf(card.id)}
-        </div>
+      {card._badge ? (
+        <>
+          <div className="mc-course mc-badge">{card._badge}</div>
+          <div className="mc-casetitle">{card.concept}</div>
+          <h3>{rich(card.hook)}</h3>
+          <CasePreview card={card} />
+        </>
+      ) : (
+        <>
+          <div className="mc-course">
+            {SHORT(card.course)}
+            {wk}
+          </div>
+          <h3>{rich(card.hook)}</h3>
+          {fitOf(card.id) && (
+            <div className="mc-fit">
+              <span className="t">이럴 때</span>
+              {fitOf(card.id)}
+            </div>
+          )}
+          <div className="mc-meta">{card.concept}</div>
+        </>
       )}
-      <div className="mc-meta">{card.concept}</div>
     </article>
   );
 }
@@ -694,7 +713,7 @@ function SavedSheet({
   onOpen: (id: string) => void;
   onStar: (id: string) => void;
 }) {
-  const cards = CARDS.filter((c) => savedSet.has(c.id));
+  const cards = ALL_CARDS.filter((c) => savedSet.has(c.id));
   return (
     <>
       <div className="m-scrim" onClick={onClose}></div>
@@ -861,6 +880,7 @@ export function MobileApp() {
   const [savedSheetOpen, setSavedSheetOpen] = useState(false);
   const [ontologyOpen, setOntologyOpen] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
+  const [openCaseId, setOpenCaseId] = useState<string | null>(null);
   const [savedOnly, setSavedOnly] = useState(false);
   const [saved, setSaved] = useState<Set<string>>(new Set());
   const [myIndustries, setMyIndustries] = useState<Industry[]>([]);
@@ -920,7 +940,14 @@ export function MobileApp() {
   };
 
   const openDetail = (id: string) => {
-    setOpenId(id);
+    // 케이스 카드(case-card-*)는 풀 CaseModal(히어로·5why·비주얼), 일반 카드는 DetailSheet
+    if (isCaseCardId(id)) {
+      setOpenCaseId(toCaseId(id));
+      setOpenId(null);
+    } else {
+      setOpenCaseId(null);
+      setOpenId(id);
+    }
     setPainOpen(false);
     setSavedSheetOpen(false);
     setOntologyOpen(false);
@@ -928,7 +955,7 @@ export function MobileApp() {
 
   const filtered = useMemo(
     () =>
-      CARDS.filter((c) => {
+      ALL_CARDS.filter((c) => {
         if (state.course.length && !state.course.includes(c.course)) return false;
         if (state.domain.length && !(c.domain || []).some((d) => state.domain.includes(d)))
           return false;
@@ -1007,7 +1034,7 @@ export function MobileApp() {
           onOpen={openDetail}
           onRequestPain={() => setPainOpen(true)}
         />
-        <TeamCase onOpen={openDetail} />
+        <TeamCase cards={CASE_CARDS} onOpen={openDetail} />
         <MagGrid
           cards={filtered}
           filterCount={filterCount}
@@ -1057,6 +1084,19 @@ export function MobileApp() {
           onStar={star}
           onClose={() => setOpenId(null)}
           onOpen={openDetail}
+        />
+      )}
+      {openCaseId && (
+        <CaseModal
+          caseId={openCaseId}
+          cases={ALL_CASES}
+          lectures={LECTURES}
+          cards={ALL_CARDS}
+          onClose={() => setOpenCaseId(null)}
+          onOpen={(id) => {
+            setOpenCaseId(null);
+            openDetail(id);
+          }}
         />
       )}
       {ontologyOpen && (
