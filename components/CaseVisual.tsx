@@ -67,6 +67,13 @@ export function CaseVisualView({
     const maxEv = Math.max(...projects.map((p) => p.ev), 1);
     const combos = visual.combos || [];
     const maxCombo = Math.max(...combos.map((c) => c.ev), 1);
+    // 순위 역전을 드러내기 위한 랭킹(1=최고). 매출 순위 ↔ 기대이익 순위.
+    const revRank = new Map(
+      [...projects].sort((a, b) => b.revenue - a.revenue).map((p, i) => [p.id, i + 1])
+    );
+    const evRank = new Map(
+      [...projects].sort((a, b) => b.ev - a.ev).map((p, i) => [p.id, i + 1])
+    );
     return (
       <div className={cvClass} style={styleC}>
         {visual.headline && <div className="cv-headline">{visual.headline}</div>}
@@ -77,25 +84,51 @@ export function CaseVisualView({
             <span className="lg rev">■ 성공 시 매출</span>
             <span className="lg ev">■ 기대이익 = 매출 × 확률 − 비용</span>
           </div>
-          {projects.map((p) => (
-            <div key={p.id} className={"cv-prow" + (p.pick ? " pick" : "")}>
-              <div className="cv-pname">
-                <b>{p.id}</b> {p.name}
-                <span className="cv-prob">성공 {p.prob}%</span>
-                {p.pick && <span className="cv-pickflag">최적해 ✓</span>}
-              </div>
-              <div className="cv-twobar">
-                <div className="cv-bar">
-                  <div className="cv-fill rev" style={{ width: (p.revenue / maxRev) * 100 + "%" }} />
-                  <span className="cv-val">{p.revenue.toLocaleString()}</span>
+          {projects.map((p) => {
+            const rr = revRank.get(p.id)!;
+            const er = evRank.get(p.id)!;
+            const drop = er - rr; // 양수 = 매출 대비 기대이익 순위 하락(함정)
+            const trap = !p.pick && drop >= 2; // 매출 높지만 확률 낮아 밀린 함정
+            return (
+              <div
+                key={p.id}
+                className={
+                  "cv-prow" + (p.pick ? " pick" : "") + (trap ? " trap" : "")
+                }
+              >
+                <div className="cv-pname">
+                  <b>{p.id}</b> {p.name}
+                  <span className="cv-prob">성공 {p.prob}%</span>
+                  {p.pick && <span className="cv-pickflag">최적해 ✓</span>}
+                  {trap && <span className="cv-trapflag">매출의 함정 ✕</span>}
                 </div>
-                <div className="cv-bar">
-                  <div className="cv-fill ev" style={{ width: (p.ev / maxEv) * 100 + "%" }} />
-                  <span className="cv-val">{p.ev}</span>
+                <div className="cv-twobar">
+                  <div className="cv-bar">
+                    <span className="cv-axislab">매출</span>
+                    <div className="cv-fill rev" style={{ width: (p.revenue / maxRev) * 100 + "%" }}>
+                      <span className="cv-rank rev">{rr}위</span>
+                    </div>
+                    <span className="cv-val"><CountUp text={p.revenue.toLocaleString()} /></span>
+                  </div>
+                  <div className="cv-bar">
+                    <span className="cv-axislab">EV</span>
+                    <div className="cv-fill ev" style={{ width: (p.ev / maxEv) * 100 + "%" }}>
+                      <span className="cv-rank ev">{er}위</span>
+                    </div>
+                    <span className="cv-val"><CountUp text={String(p.ev)} /></span>
+                  </div>
                 </div>
+                {drop !== 0 && (
+                  <div className={"cv-flip " + (drop > 0 ? "down" : "up")}>
+                    매출 <b>{rr}위</b> <span className="cv-flip-arrow">→</span> 기대이익 <b>{er}위</b>
+                    <span className="cv-flip-tag">
+                      {drop > 0 ? `${drop}계단 추락` : `${-drop}계단 상승`}
+                    </span>
+                  </div>
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {combos.length > 0 && (
