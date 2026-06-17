@@ -33,6 +33,7 @@ import {
 import { useSmartAsk } from "./useSmartAsk";
 import { useRotatingExample } from "./useRotatingExample";
 import type { RecommendResult } from "@/lib/recommend";
+import { fetchAiDiagnosis } from "@/lib/aiDiagnosis";
 import { applyTheme, applyFont } from "@/lib/themes";
 import { store } from "@/lib/storage";
 import { rich } from "./rich";
@@ -215,10 +216,11 @@ function AskResult({
     .filter((c): c is Card => Boolean(c));
   return (
     <div className="m-result">
-      {result.mode === "semantic" && result.diagnosis ? (
+      {(result.mode === "semantic" || result.mode === "ai") && result.diagnosis ? (
         <div className="ai-diagnosis">
           <div className="aid-head">
             🧠 두 번째 뇌의 진단
+            {result.mode === "ai" && <span className="aid-ai">AI</span>}
             {typeof result.diagnosis.confidence === "number" && (
               <span className="aid-conf"> · 의미 근접도 {result.diagnosis.confidence}%</span>
             )}
@@ -285,6 +287,21 @@ const DualAsk = forwardRef<
           .querySelector(".m-ask .m-search")
           ?.scrollIntoView({ block: "start", behavior: "smooth" });
       }, 60);
+      // 생성형 진단 업그레이드(키 설정 시). 키 없으면 null → 키워드 결과 그대로.
+      const topCards = r.ids
+        .map((id) => ALL_CARDS.find((c) => c.id === id))
+        .filter((c): c is Card => Boolean(c));
+      if (topCards.length > 0) {
+        fetchAiDiagnosis(q, topCards, r.inferredDomain, myIndustries).then((ai) => {
+          if (ai) {
+            setResult((prev) =>
+              prev && prev.ids === r.ids
+                ? { ...prev, diagnosis: ai, mode: "ai" }
+                : prev
+            );
+          }
+        });
+      }
     });
   };
   useImperativeHandle(ref, () => ({ runAsk }));
