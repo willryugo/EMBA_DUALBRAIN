@@ -1362,7 +1362,7 @@
         {
           "kind": "constraint-check",
           "step": "take",
-          "headline": "왜 A+D+E가 최적해인가 — 7개 제약을 모두 통과한 조합 중 기대이익 최대",
+          "headline": "왜 A+D+E가 최적해인가 — 6개 제약을 모두 통과한 조합 중 기대이익 최대",
           "constraints": [
             {
               "label": "예산 한도",
