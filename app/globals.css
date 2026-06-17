@@ -1413,14 +1413,26 @@ mark.hl {
 .cv-pname b{font-family:var(--mono);color:var(--c)}
 .cv-prob{font-family:var(--mono);font-size:10px;font-weight:700;color:rgba(22,21,15,.5);background:rgba(22,21,15,.06);padding:1px 6px;border-radius:8px}
 .cv-pickflag{font-family:var(--mono);font-size:9.5px;font-weight:700;color:var(--paper);background:var(--c);padding:1px 7px;border-radius:8px}
-.cv-twobar{display:flex;flex-direction:column;gap:3px}
-.cv-bar{position:relative;height:18px;background:rgba(22,21,15,.05);border-radius:2px;overflow:hidden;display:flex;align-items:center}
-.cv-fill{height:100%;border-radius:2px}
-.cv-fill.rev{background:rgba(22,21,15,.26)}
+.cv-twobar{display:flex;flex-direction:column;gap:5px}
+.cv-bar{position:relative;height:22px;background:rgba(22,21,15,.06);border-radius:3px;overflow:hidden;display:flex;align-items:center}
+.cv-axislab{position:absolute;left:7px;z-index:2;font-family:var(--mono);font-size:9px;font-weight:800;letter-spacing:.04em;color:rgba(22,21,15,.42)}
+.cv-fill{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;min-width:3px}
+.cv-fill.rev{background:repeating-linear-gradient(135deg,rgba(22,21,15,.34),rgba(22,21,15,.34) 5px,rgba(22,21,15,.22) 5px,rgba(22,21,15,.22) 10px)}
 .cv-fill.ev{background:var(--c)}
 .cv-fill.combo{background:var(--c);opacity:.45}
 .cv-fill.scored{background:var(--c)}
-.cv-val{position:absolute;right:7px;font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink)}
+.cv-rank{font-family:var(--mono);font-size:9px;font-weight:800;color:var(--paper);padding:0 5px 0 0;white-space:nowrap;text-shadow:0 1px 1px rgba(0,0,0,.25)}
+.cv-rank.rev{color:#fff}
+.cv-val{position:absolute;right:7px;font-family:var(--mono);font-size:11px;font-weight:800;color:var(--ink)}
+/* 순위 역전 한 줄 — 매출 N위 → 기대이익 M위 */
+.cv-flip{margin-top:5px;font-size:10.5px;font-weight:700;display:flex;align-items:center;gap:5px;flex-wrap:wrap;color:rgba(22,21,15,.6)}
+.cv-flip b{font-family:var(--mono);font-weight:800;color:var(--ink)}
+.cv-flip-arrow{color:rgba(22,21,15,.4);font-weight:800}
+.cv-flip-tag{font-family:var(--mono);font-size:9px;font-weight:800;padding:1px 7px;border-radius:8px}
+.cv-flip.down .cv-flip-tag{color:#fff;background:#c0506e}
+.cv-flip.up .cv-flip-tag{color:#fff;background:#3c8c6e}
+.cv-prow.trap{background:color-mix(in srgb,#c0506e 8%,transparent);margin:0 -8px;padding:7px 8px;border-radius:3px;border-top:none;box-shadow:inset 3px 0 0 #c0506e}
+.cv-trapflag{font-family:var(--mono);font-size:9.5px;font-weight:800;color:#fff;background:#c0506e;padding:1px 7px;border-radius:8px}
 .cv-crow{display:grid;grid-template-columns:70px 1fr 46px;align-items:center;gap:8px;padding:4px 0}
 .cv-clabel{font-family:var(--mono);font-size:11px;font-weight:700}
 .cv-crow.opt .cv-clabel{color:var(--c)}
@@ -1534,10 +1546,16 @@ mark.hl {
 /* ── ② 비주얼 위계 — 대표 비주얼 featured 대형 + 컬러 틴트 + 2단 ── */
 .cv{background:color-mix(in srgb,var(--c) 4%,var(--paper))}
 .cv-featured{border-width:2.5px;box-shadow:5px 5px 0 rgba(22,21,15,.1)}
-.cv-featured .cv-headline{font-size:15.5px;padding:13px 16px}
-.cv-featured .cv-block{padding:15px 16px}
+.cv-featured .cv-headline{font-size:16.5px;padding:15px 18px;line-height:1.4}
+.cv-featured .cv-block{padding:17px 18px}
 .cv-featured .cv-dto{font-size:28px}
 .cv-featured .cv-tltitle{font-size:14.5px}
+.cv-featured .cv-bar{height:28px}
+.cv-featured .cv-pname{font-size:13.5px}
+.cv-featured .cv-val{font-size:12px}
+.cv-featured .cv-axislab{font-size:10px}
+.cv-featured .cv-rank{font-size:10px}
+.cv-featured .cv-flip{font-size:11.5px}
 .cv-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:14px 0 6px}
 .cv-grid .cv{margin:0}
 @media(min-width:721px){
