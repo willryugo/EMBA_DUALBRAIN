@@ -19,7 +19,7 @@ export interface RecommendResult {
   relatedIds: string[];        // 4~8위 — "혹시 이런 카드도?" 칩으로 노출
   inferredDomain?: Domain;     // 쿼리에서 추론한 도메인 (UI 뱃지용)
   evidence?: Record<string, string>; // 카드별 '왜 골랐는지' 한 줄 근거
-  mode?: "keyword" | "semantic"; // 어떤 엔진이 쓰였는지
+  mode?: "keyword" | "semantic" | "ai"; // 어떤 엔진이 쓰였는지 (ai = /api/ask 생성형 진단)
   diagnosis?: Diagnosis;       // AI 정밀검색일 때, 카드 위에 펼치는 '두 번째 뇌의 진단'
 }
 

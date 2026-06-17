@@ -4,6 +4,7 @@ import type { Card, Industry, OwnerPainCategory } from "@/lib/types";
 import { COURSE_COLOR, COURSE_SHORT } from "@/lib/manifest";
 import { type RecommendResult } from "@/lib/recommend";
 import { logEvent } from "@/lib/events";
+import { fetchAiDiagnosis } from "@/lib/aiDiagnosis";
 import { rich } from "./rich";
 import { useSmartAsk } from "./useSmartAsk";
 import { useRotatingExample } from "./useRotatingExample";
@@ -108,6 +109,22 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
           .querySelector(".airesult")
           ?.scrollIntoView({ block: "center", behavior: "smooth" });
       }, 80);
+      // 생성형 진단 업그레이드(키 설정 시) — 키워드 결과는 이미 떠 있고,
+      // AI 진단이 오면 진단 블록만 교체한다. 키 없으면 null → 그대로 유지.
+      const topCards = r.ids
+        .map((id) => cards.find((c) => c.id === id))
+        .filter((c): c is Card => Boolean(c));
+      if (topCards.length > 0) {
+        fetchAiDiagnosis(q, topCards, r.inferredDomain, myIndustries).then((ai) => {
+          if (ai) {
+            setResult((prev) =>
+              prev && prev.ids === r.ids
+                ? { ...prev, diagnosis: ai, mode: "ai" }
+                : prev
+            );
+          }
+        });
+      }
     });
   };
 
@@ -232,6 +249,7 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
             <div className="ai-diagnosis">
               <div className="aid-head">
                 🧠 두 번째 뇌의 진단
+                {result.mode === "ai" && <span className="aid-ai">AI</span>}
                 {typeof result.diagnosis.confidence === "number" && (
                   <span className="aid-conf"> · 의미 근접도 {result.diagnosis.confidence}%</span>
                 )}
