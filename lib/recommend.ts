@@ -209,23 +209,45 @@ interface Expansion {
   expansions: string[];  // 사용자에게 보여줄 "이렇게 확장했어" 목록
 }
 
-function expand(query: string): Expansion {
-  const baseTokens = query
-    .split(/[\s.,?!·…\-\/]+/)
+// 짧은 영문/숫자 약어(cf·bs·pl·lp·ai·hr·ml·csr·csv·rag·kpi·stp·llm…)는
+// 부분문자열로 매칭하면 다른 단어 속에 끼어 오탐을 낸다 — 예: "CFO"가 "cf"를 포함해
+// 현금흐름·재무제표로 빨려간다. → 이런 약어는 토큰이 '정확히 같을 때'만 매칭한다.
+function isShortAcro(s: string): boolean {
+  return /^[a-z0-9]{1,3}$/.test(s);
+}
+
+// 한국어 조사 — 토큰 끝에서 떼어내 "cfo가→cfo", "성과는→성과", "전부를→전부"처럼
+// 핵심어가 별칭·힌트와 매칭되게 한다. (원본 토큰도 함께 보존해 리콜 손실 0)
+const JOSA = /(으로서|으로써|이라고|에게서|으로|로서|로써|라고|에서|에게|한테|까지|부터|마다|조차|밖에|이나|이란|은|는|이|가|을|를|의|와|과|도|만|로|에)$/;
+
+function tokenize(query: string): string[] {
+  const base = query
+    .split(/[\s.,?!·…/—~()"'\-]+/)
     .filter((t) => t.length >= 2)
     .map(norm);
+  const out = new Set<string>();
+  for (const t of base) {
+    out.add(t);
+    const stripped = t.replace(JOSA, "");
+    if (stripped.length >= 2 && stripped !== t) out.add(stripped);
+  }
+  return Array.from(out);
+}
+
+// 토큰 t 가 사전어 term 과 매칭되는지 — 짧은 약어는 정확일치, 그 외엔 부분일치(양방향).
+function tokenMatches(t: string, term: string): boolean {
+  const nt = norm(term);
+  if (isShortAcro(nt)) return t === nt;
+  return nt === t || t.includes(nt) || nt.includes(t);
+}
+
+function expand(query: string): Expansion {
+  const baseTokens = tokenize(query);
   const expansions = new Set<string>();
 
   baseTokens.forEach((t) => {
     Object.entries(CONCEPT_MAP).forEach(([key, syns]) => {
-      const nkey = norm(key);
-      const matched =
-        t.includes(nkey) ||
-        nkey.includes(t) ||
-        syns.some((s) => {
-          const ns = norm(s);
-          return ns === t || t.includes(ns) || ns.includes(t);
-        });
+      const matched = tokenMatches(t, key) || syns.some((s) => tokenMatches(t, s));
       if (matched) {
         expansions.add(key);
         syns.forEach((s) => expansions.add(s));
@@ -241,11 +263,14 @@ function expand(query: string): Expansion {
 }
 
 function inferDomain(query: string): Domain | undefined {
-  const q = norm(query);
+  const toks = tokenize(query);
   let bestDom: Domain | undefined;
   let bestScore = 0;
   (Object.entries(DOMAIN_HINTS) as [Domain, string[]][]).forEach(([dom, hints]) => {
-    const score = hints.reduce((acc, h) => (q.includes(norm(h)) ? acc + 1 : acc), 0);
+    const score = hints.reduce(
+      (acc, h) => (toks.some((t) => tokenMatches(t, h)) ? acc + 1 : acc),
+      0
+    );
     if (score > bestScore) {
       bestScore = score;
       bestDom = dom;
