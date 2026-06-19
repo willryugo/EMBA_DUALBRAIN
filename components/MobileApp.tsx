@@ -272,7 +272,7 @@ const DualAsk = forwardRef<
   const taRef = useRef<HTMLTextAreaElement | null>(null);
   const placeholder = useRotatingExample(!!val.trim());
   // 검색 풀에 케이스 카드 포함(ALL_CARDS) — "terracog"·"2조"·"선형계획" 등이 케이스를 찾도록.
-  const { semantic, toggle, dl, runAsk: smartAsk } = useSmartAsk(ALL_CARDS, myIndustries);
+  const { runAsk: smartAsk } = useSmartAsk(ALL_CARDS, myIndustries);
 
   const runAsk = (text: string, salt?: number) => {
     const q = (text || "").trim();
@@ -311,11 +311,7 @@ const DualAsk = forwardRef<
   };
   useImperativeHandle(ref, () => ({ runAsk }));
 
-  const goLabel = loading
-    ? dl !== null
-      ? `AI 두뇌 내려받는 중 ${dl}%`
-      : "찾는 중…"
-    : "두 번째 뇌에게 묻기";
+  const goLabel = loading ? "찾는 중…" : "두 번째 뇌에게 묻기";
 
   useEffect(() => {
     if (taRef.current) {
@@ -363,18 +359,6 @@ const DualAsk = forwardRef<
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
           )}
-        </button>
-        <button
-          type="button"
-          className={"m-ai-toggle" + (semantic ? " on" : "")}
-          onClick={toggle}
-          aria-pressed={semantic}
-        >
-          <span className="ait-sw" aria-hidden="true">
-            <span className="ait-knob" />
-          </span>
-          ✨ AI 정밀검색 {semantic ? "ON" : "OFF"}
-          {semantic && <small> · 최초 1회 다운로드</small>}
         </button>
       </div>
 
