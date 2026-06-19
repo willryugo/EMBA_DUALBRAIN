@@ -7,12 +7,12 @@ import { DBMark } from "./DBMark";
 
 interface Props {
   onClose: () => void;
-  /** 편집 모드 — Tweaks에서 다시 열 때. 기존 선택값을 미리 채움. */
+  /** 편집 모드 — '내 산업'에서 다시 열 때. 기존 선택값을 미리 채움. */
   mode?: "first" | "edit";
   initial?: Industry[];
 }
 
-// 산업 선택 모달. 첫 방문 시 자동 + Tweaks에서 재편집 가능. 복수 선택 가능.
+// 산업 선택 모달. 첫 방문 시 자동 + '내 산업' 칩에서 재편집 가능. 복수 선택 가능.
 // 개인 식별 없이 산업만 부착해 추천·심화 진단·로그 분석의 차원 확보.
 export function IndustryModal({ onClose, mode = "first", initial = [] }: Props) {
   const [selected, setSelected] = useState<Industry[]>(initial);
@@ -27,7 +27,7 @@ export function IndustryModal({ onClose, mode = "first", initial = [] }: Props) 
 
   const save = (industries: Industry[]) => {
     store.set("emba17_my_industries", industries);
-    // 다른 컴포넌트 트리(DualBrainApp)도 즉시 반영 — GlobalGates/Tweaks와 분리돼 있어 이벤트로 동기화.
+    // 다른 컴포넌트 트리(DualBrainApp)도 즉시 반영 — GlobalGates와 분리돼 있어 이벤트로 동기화.
     try {
       window.dispatchEvent(
         new CustomEvent("emba17:industries-changed", { detail: industries })
@@ -80,7 +80,7 @@ export function IndustryModal({ onClose, mode = "first", initial = [] }: Props) 
             type="button"
             className="im-skip"
             onClick={() => save([])}
-            title={isEdit ? "산업 설정 비우기" : "나중에 Tweaks에서 선택할 수 있어요"}
+            title={isEdit ? "산업 설정 비우기" : "나중에 '내 산업'에서 선택할 수 있어요"}
           >
             {isEdit ? "설정 안 함" : "건너뛰기"}
           </button>

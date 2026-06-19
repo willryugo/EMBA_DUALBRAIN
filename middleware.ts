@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { COOKIE_NAME, isValidToken } from "@/lib/auth";
 
 // 입장 게이트 — 유효한 인증 쿠키가 없으면 /welcome 으로 리다이렉트.
-// 17기 내부 공유 전용. 관리자(0604)·원우(2580) 둘 다 입장 가능, 역할 구분은 클라이언트(Tweaks 노출)에서.
+// 17기 내부 공유 전용. 관리자(0604)·원우(2580) 둘 다 입장 가능(현재 역할별 UI 차이 없음 — 전원 동일).
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get(COOKIE_NAME)?.value;
   if (await isValidToken(token)) {

@@ -11,7 +11,6 @@ import type {
   FilterState,
   Industry,
   OwnerPainCategory,
-  TweakState,
   CasesFile,
   LecturesFile,
 } from "@/lib/types";
@@ -40,13 +39,6 @@ const LECTURES = (lecturesData as LecturesFile).lectures;
 const CASE_CARDS: Card[] = ALL_CASES.map(caseToCard);
 const CARDS: Card[] = [...(cardsData as Card[]), ...CASE_CARDS];
 
-const TWEAK_DEFAULTS: TweakState = {
-  theme: "dawn",
-  font: "allsans", // 웹·모바일 Pretendard 통일 (굵기 대비로 위계)
-  quoteCards: true,
-  density: "regular",
-};
-
 const FILTER_DEFAULTS: FilterState = {
   course: [],
   domain: [],
@@ -67,8 +59,6 @@ export function DualBrainApp() {
   const [view, setView] = useState<"home" | "graph">("home");
   const [openId, setOpenId] = useState<string | null>(null);
   const [openCaseId, setOpenCaseId] = useState<string | null>(null);
-  // Tweaks 제거 — 전원 동일 UI(여명 테마 · Pretendard · regular). 고정값.
-  const tweaks: TweakState = TWEAK_DEFAULTS;
   const [filter, setFilter] = useState<FilterState>(FILTER_DEFAULTS);
   const [savedIds, setSavedIds] = useState<string[]>([]);
   const [myIndustries, setMyIndustries] = useState<Industry[]>(MY_INDUSTRIES_DEFAULT);
@@ -109,7 +99,7 @@ export function DualBrainApp() {
     if (bm === "b2b" || bm === "b2c" || bm === "all") setBizMode(bm);
   }, []);
 
-  // 첫 방문 산업 모달(GlobalGates)·Tweaks 편집은 별도 트리라 저장만으론 여기 상태가 안 바뀐다.
+  // 첫 방문 산업 모달(GlobalGates)·'내 산업' 재편집은 별도 트리라 저장만으론 여기 상태가 안 바뀐다.
   // CustomEvent로 즉시 동기화 — 새로고침 없이 '내 산업'이 바로 반영되게.
   useEffect(() => {
     const onInd = (e: Event) => {
@@ -291,7 +281,7 @@ export function DualBrainApp() {
                 key={c.id}
                 card={c}
                 index={i}
-                layout={layoutClass(i, filterActive, tweaks.quoteCards)}
+                layout={layoutClass(i, filterActive, true)}
                 onClick={handleCardClick}
                 saved={savedIds.includes(c.id)}
                 onToggleSave={toggleSave}
