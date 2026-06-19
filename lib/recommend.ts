@@ -209,23 +209,53 @@ interface Expansion {
   expansions: string[];  // 사용자에게 보여줄 "이렇게 확장했어" 목록
 }
 
-function expand(query: string): Expansion {
-  const baseTokens = query
-    .split(/[\s.,?!·…\-\/]+/)
+// 짧은 영문/숫자 약어(cf·bs·pl·lp·ai·hr·ml·csr·csv·rag·kpi·stp·llm…)는
+// 부분문자열로 매칭하면 다른 단어 속에 끼어 오탐을 낸다 — 예: "CFO"가 "cf"를 포함해
+// 현금흐름·재무제표로 빨려간다. → 이런 약어는 토큰이 '정확히 같을 때'만 매칭한다.
+function isShortAcro(s: string): boolean {
+  return /^[a-z0-9]{1,3}$/.test(s);
+}
+
+// 카드 id + salt → [0,1) 결정론적 의사난수(FNV류, salt 프리믹스) — 결과 셔플 지터용.
+// 단순 곱셈 해시는 짧은 id·작은 salt에서 값이 뭉쳐 셔플이 안 됐다 → 큰 상수로 섞는다.
+function hash01(id: string, salt: number): number {
+  let h = Math.imul((salt >>> 0) + 1, 2654435761) >>> 0;
+  for (let i = 0; i < id.length; i++) h = Math.imul(h ^ id.charCodeAt(i), 16777619) >>> 0;
+  return ((h >>> 8) % 100000) / 100000;
+}
+
+// 한국어 조사 — 토큰 끝에서 떼어내 "cfo가→cfo", "성과는→성과", "전부를→전부"처럼
+// 핵심어가 별칭·힌트와 매칭되게 한다. (원본 토큰도 함께 보존해 리콜 손실 0)
+const JOSA = /(으로서|으로써|이라고|에게서|으로|로서|로써|라고|에서|에게|한테|까지|부터|마다|조차|밖에|이나|이란|은|는|이|가|을|를|의|와|과|도|만|로|에)$/;
+
+function tokenize(query: string): string[] {
+  const base = query
+    .split(/[\s.,?!·…/—~()"'\-]+/)
     .filter((t) => t.length >= 2)
     .map(norm);
+  const out = new Set<string>();
+  for (const t of base) {
+    out.add(t);
+    const stripped = t.replace(JOSA, "");
+    if (stripped.length >= 2 && stripped !== t) out.add(stripped);
+  }
+  return Array.from(out);
+}
+
+// 토큰 t 가 사전어 term 과 매칭되는지 — 짧은 약어는 정확일치, 그 외엔 부분일치(양방향).
+function tokenMatches(t: string, term: string): boolean {
+  const nt = norm(term);
+  if (isShortAcro(nt)) return t === nt;
+  return nt === t || t.includes(nt) || nt.includes(t);
+}
+
+function expand(query: string): Expansion {
+  const baseTokens = tokenize(query);
   const expansions = new Set<string>();
 
   baseTokens.forEach((t) => {
     Object.entries(CONCEPT_MAP).forEach(([key, syns]) => {
-      const nkey = norm(key);
-      const matched =
-        t.includes(nkey) ||
-        nkey.includes(t) ||
-        syns.some((s) => {
-          const ns = norm(s);
-          return ns === t || t.includes(ns) || ns.includes(t);
-        });
+      const matched = tokenMatches(t, key) || syns.some((s) => tokenMatches(t, s));
       if (matched) {
         expansions.add(key);
         syns.forEach((s) => expansions.add(s));
@@ -241,11 +271,14 @@ function expand(query: string): Expansion {
 }
 
 function inferDomain(query: string): Domain | undefined {
-  const q = norm(query);
+  const toks = tokenize(query);
   let bestDom: Domain | undefined;
   let bestScore = 0;
   (Object.entries(DOMAIN_HINTS) as [Domain, string[]][]).forEach(([dom, hints]) => {
-    const score = hints.reduce((acc, h) => (q.includes(norm(h)) ? acc + 1 : acc), 0);
+    const score = hints.reduce(
+      (acc, h) => (toks.some((t) => tokenMatches(t, h)) ? acc + 1 : acc),
+      0
+    );
     if (score > bestScore) {
       bestScore = score;
       bestDom = dom;
@@ -260,10 +293,22 @@ function inferDomain(query: string): Domain | undefined {
 export function recommendCards(
   problem: string,
   cards: Card[],
-  myIndustries: Industry[] = []
+  myIndustries: Industry[] = [],
+  salt = 0
 ): RecommendResult {
   const { tokens, expansions } = expand(problem);
   const inferredDomain = inferDomain(problem);
+
+  // 토큰 매처 — 짧은 영숫자 약어(ai·cf·bs·pl…)는 카드 본문 단어 속에 끼는 오탐
+  // (예: "ai"가 email·retail·domain, "cf"가 specific 속에 매칭)을 막기 위해
+  // '단어 경계'로만 매칭. 그 외 토큰은 부분문자열 매칭.
+  const tokenMatchers = tokens.map((tok) => {
+    if (isShortAcro(tok)) {
+      const re = new RegExp(`(^|[^a-z0-9])${tok}([^a-z0-9]|$)`);
+      return (t: string) => re.test(t);
+    }
+    return (t: string) => t.includes(tok);
+  });
 
   const scored = cards.map((c) => {
     // 오프라인 별칭 — 사용자의 비유적/구어체 질문이 이 별칭과 매칭되도록.
@@ -300,8 +345,8 @@ export function recommendCards(
     fields.forEach(({ text, w }) => {
       if (!text) return;
       const t = norm(text);
-      tokens.forEach((tok) => {
-        if (t.includes(tok)) s += w;
+      tokenMatchers.forEach((test) => {
+        if (test(t)) s += w;
       });
     });
 
@@ -341,8 +386,14 @@ export function recommendCards(
     s: x.s + (boost.get(x.id) || 0),
   }));
 
-  diffused.sort((a, b) => b.s - a.s);
-  const scoredFinal = diffused;
+  // salt가 있으면 점수에 ±15% 의사난수 지터 — 동률·근접 후보가 매번 다른 순서로
+  // 올라와 '같은 질문도 신선한 연결'을 준다(점수차 큰 강한 매칭은 위에 유지 → 관련도 보존).
+  const ranked = salt
+    ? diffused.map((x) => ({ id: x.id, s: x.s * (1 + (hash01(x.id, salt) - 0.5) * 0.30) }))
+    : diffused;
+
+  ranked.sort((a, b) => b.s - a.s);
+  const scoredFinal = ranked;
   const matched = scoredFinal.filter((x) => x.s > 0);
   const pool = matched.length > 0 ? matched : scoredFinal;
 

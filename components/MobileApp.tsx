@@ -267,18 +267,23 @@ const DualAsk = forwardRef<
   const [val, setVal] = useState("");
   const [result, setResult] = useState<RecommendResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [askSalt, setAskSalt] = useState(0); // 매 질문마다 +1 → 같은 질문도 다른 연결(셔플)
+  const [lastQ, setLastQ] = useState("");     // '🔀 다른 연결' 재셔플용 마지막 질문
   const taRef = useRef<HTMLTextAreaElement | null>(null);
   const placeholder = useRotatingExample(!!val.trim());
   // 검색 풀에 케이스 카드 포함(ALL_CARDS) — "terracog"·"2조"·"선형계획" 등이 케이스를 찾도록.
-  const { semantic, toggle, dl, runAsk: smartAsk } = useSmartAsk(ALL_CARDS, myIndustries);
+  const { runAsk: smartAsk } = useSmartAsk(ALL_CARDS, myIndustries);
 
-  const runAsk = (text: string) => {
+  const runAsk = (text: string, salt?: number) => {
     const q = (text || "").trim();
     if (!q) return;
+    const useSalt = salt ?? askSalt + 1; // 매 호출마다 새 salt → 같은 질문도 다른 카드 연결
+    setAskSalt(useSalt);
+    setLastQ(q);
     setVal(q);
     setLoading(true);
     setResult(null);
-    smartAsk(q).then((r) => {
+    smartAsk(q, useSalt).then((r) => {
       setResult(r);
       setLoading(false);
       // 결과가 보이도록 검색창을 마스트헤드 바로 아래로 끌어올린다(결과는 그 밑에 등장).
@@ -306,11 +311,7 @@ const DualAsk = forwardRef<
   };
   useImperativeHandle(ref, () => ({ runAsk }));
 
-  const goLabel = loading
-    ? dl !== null
-      ? `AI 두뇌 내려받는 중 ${dl}%`
-      : "찾는 중…"
-    : "두 번째 뇌에게 묻기";
+  const goLabel = loading ? "찾는 중…" : "두 번째 뇌에게 묻기";
 
   useEffect(() => {
     if (taRef.current) {
@@ -359,22 +360,30 @@ const DualAsk = forwardRef<
             </svg>
           )}
         </button>
-        <button
-          type="button"
-          className={"m-ai-toggle" + (semantic ? " on" : "")}
-          onClick={toggle}
-          aria-pressed={semantic}
-        >
-          <span className="ait-sw" aria-hidden="true">
-            <span className="ait-knob" />
-          </span>
-          ✨ AI 정밀검색 {semantic ? "ON" : "OFF"}
-          {semantic && <small> · 최초 1회 다운로드</small>}
-        </button>
       </div>
 
       {/* 결과는 검색창 바로 아래 — 검색하면 그 자리에서 바뀐다(고민 버튼에 밀리지 않게) */}
       <AskResult result={result} onOpen={onOpen} />
+      {result && (
+        <button
+          type="button"
+          onClick={() => runAsk(lastQ)}
+          title="같은 질문, 다른 카드로 다시 연결"
+          style={{
+            margin: "12px auto 0",
+            display: "block",
+            fontSize: 13,
+            fontWeight: 700,
+            color: "#b25b86",
+            background: "none",
+            border: "1px solid #e7d3df",
+            borderRadius: 999,
+            padding: "7px 16px",
+          }}
+        >
+          🔀 다른 연결로
+        </button>
+      )}
 
       <div className={"m-or" + (result ? " after" : "")}>
         <span>{result ? "다른 각도로 — 임원들의 질문" : "또는, 임원들이 묻는 질문에서"}</span>

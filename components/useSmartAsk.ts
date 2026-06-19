@@ -12,9 +12,10 @@ import { recommendCards, type RecommendResult } from "@/lib/recommend";
 //   2) 짧은 영문 고유명사에 임베딩이 약해 엉뚱한 카드가 1위로 올라온다.
 //   토글 UI도 이미 제거했으므로, 과거 localStorage에 남은 "emba17_semantic=1"은 무시한다.
 export function useSmartAsk(cards: Card[], myIndustries: Industry[]) {
+  // salt > 0 이면 결과에 ±12% 지터 → 같은 질문도 매번 다른 '연결'(셔플). 0이면 결정론적.
   const runAsk = useCallback(
-    async (q: string): Promise<RecommendResult> =>
-      recommendCards(q.trim(), cards, myIndustries),
+    async (q: string, salt = 0): Promise<RecommendResult> =>
+      recommendCards(q.trim(), cards, myIndustries, salt),
     [cards, myIndustries]
   );
 

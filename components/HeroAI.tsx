@@ -44,6 +44,8 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
   const placeholder = useRotatingExample(!!val.trim());
   const [refreshNonce, setRefreshNonce] = useState(0);
   const [activePain, setActivePain] = useState<string | null>(null);
+  const [askSalt, setAskSalt] = useState(0); // 매 질문마다 +1 → 같은 질문도 다른 연결(셔플)
+  const [lastQ, setLastQ] = useState("");     // '🔀 다른 연결' 재셔플용 마지막 질문
   // 방문할 때마다 질문이 새로 섞이게 — 마운트 후 client에서만(하이드레이션 안전).
   useEffect(() => {
     const n = typeof performance !== "undefined" ? performance.now() : 1;
@@ -90,13 +92,16 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
 
   const { semantic, dl, runAsk } = useSmartAsk(cards, myIndustries);
 
-  const doAsk = (text?: string) => {
+  const doAsk = (text?: string, salt?: number) => {
     const q = (text ?? val).trim();
     if (!q) return;
+    const useSalt = salt ?? askSalt + 1; // 매 호출마다 새 salt → 같은 질문도 다른 카드 연결
+    setAskSalt(useSalt);
+    setLastQ(q);
     setLoading(true);
     setResult(null);
-    // 기본: 키워드+의미이웃(즉시). 토글 ON: 브라우저 임베딩 시맨틱(최초 1회 다운로드).
-    runAsk(q).then((r) => {
+    // 기본: 키워드+의미이웃(즉시) + salt 지터로 결과 셔플. 토글 ON: 브라우저 임베딩 시맨틱.
+    runAsk(q, useSalt).then((r) => {
       setResult(r);
       setLoading(false);
       logEvent("question_asked", {
@@ -243,7 +248,27 @@ export function HeroAI({ cards, ownerPains, myIndustries, bizMode = "all", onOpe
 
       {result && (
         <div className="airesult">
-          <div className="airesult-tag">두 번째 뇌의 답 · INSIGHTS</div>
+          <div className="airesult-tag" style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span>두 번째 뇌의 답 · INSIGHTS</span>
+            <button
+              type="button"
+              onClick={() => doAsk(lastQ)}
+              title="같은 질문, 다른 카드로 다시 연결"
+              style={{
+                marginLeft: "auto",
+                fontSize: 12,
+                fontWeight: 700,
+                color: "#b25b86",
+                background: "none",
+                border: "1px solid #e7d3df",
+                borderRadius: 999,
+                padding: "3px 11px",
+                cursor: "pointer",
+              }}
+            >
+              🔀 다른 연결
+            </button>
+          </div>
           {activePain && <div className="airesult-q">“{activePain}”</div>}
           {result.diagnosis ? (
             <div className="ai-diagnosis">
