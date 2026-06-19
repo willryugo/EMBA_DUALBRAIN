@@ -246,13 +246,6 @@ export type FontKey =
 
 export type Density = "compact" | "regular" | "airy";
 
-export interface TweakState {
-  theme: ThemeKey;
-  font: FontKey;
-  quoteCards: boolean;
-  density: Density;
-}
-
 export interface FilterState {
   course: Course[];
   domain: Domain[];
