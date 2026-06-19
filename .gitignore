@@ -40,3 +40,6 @@ data/emba.sqlite
 
 # 케이스/강의 추출 원본 (HBS 원문·강의안 — 저작권, 빌드 미사용)
 data/_src_raw/
+
+.vercel
+.env*

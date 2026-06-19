@@ -301,5 +301,39 @@ export function CaseVisualView({
     );
   }
 
+  // ── 악순환 / 선순환 루프 (구조적 반복 — 텍스트로만 있던 고리를 한 컷에) ──
+  if (visual.kind === "cycle" && visual.steps2 && visual.steps2.length > 0) {
+    const steps = visual.steps2;
+    const vicious = visual.cycleKind !== "virtuous";
+    return (
+      <div className={cvClass} style={styleC}>
+        {visual.headline && <div className="cv-headline">{visual.headline}</div>}
+        <div className="cv-block">
+          <div className={"cv-cyc " + (vicious ? "vicious" : "virtuous")}>
+            <div className="cv-cyc-tag">{vicious ? "악순환 ↻" : "선순환 ↻"}</div>
+            {steps.map((s, i) => (
+              <div key={i} className="cv-cycrow">
+                <div className="cv-cycnode">
+                  <span className="cv-cycn">{i + 1}</span>
+                  <div className="cv-cycbody">
+                    <div className="cv-cyclabel">{s.label}</div>
+                    {s.note && <div className="cv-cycnote">{s.note}</div>}
+                  </div>
+                </div>
+                <div className="cv-cycarrow">{i === steps.length - 1 ? "↺ 다시 처음으로" : "↓"}</div>
+              </div>
+            ))}
+          </div>
+          {visual.cycleBreak && (
+            <div className="cv-cycbreak">
+              <span className="cv-cycbreak-mk">✂</span>
+              {visual.cycleBreak}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }
