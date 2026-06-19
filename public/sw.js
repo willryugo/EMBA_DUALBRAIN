@@ -2,7 +2,8 @@
 // 전략: 네비게이션(HTML)은 network-first(최신 우선, 오프라인 시 캐시),
 //       정적 자산(_next/아이콘/폰트)은 stale-while-revalidate.
 // 외부 CDN(pretendard·google fonts)은 건드리지 않음 → 오프라인 시 시스템 폰트로 폴백.
-const CACHE = "dualbrain-v1";
+// v2: 옛 셸 HTML(렌더 차단 CDN 폰트 link 포함)을 캐시에서 강제 축출 — activate가 v1을 지운다.
+const CACHE = "dualbrain-v2";
 const PRECACHE = ["/", "/?s=pwa"];
 
 self.addEventListener("install", (e) => {
