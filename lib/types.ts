@@ -135,7 +135,8 @@ export interface CaseVisual {
     | "timeline"        // 사건 전개 타임라인
     | "stat-delta"      // 극적 수치 변화 (from→to 큰 숫자)
     | "persona-grid"    // 인물·후보·렌즈 비교 카드
-    | "fork";           // 갈림길 (양자택일)
+    | "fork"            // 갈림길 (양자택일)
+    | "cycle";          // 악순환/선순환 루프 (구조적 반복)
   step?: CaseStepKey;      // 어느 단계에 그릴지 (없으면 surface)
   headline?: string;       // 비주얼이 말하는 한 줄
   projects?: CaseVisualProject[];   // rnd-portfolio
@@ -148,7 +149,12 @@ export interface CaseVisual {
   personas?: CasePersona[];         // persona-grid
   forkQuestion?: string;            // fork — 가운데 질문
   options?: CaseForkOption[];       // fork — 좌우 선택지
+  cycleKind?: "vicious" | "virtuous"; // cycle — 악순환/선순환
+  steps2?: CaseCycleStep[];         // cycle — 루프 단계 (closes back to first)
+  cycleBreak?: string;              // cycle — 고리를 끊는 지점 한 줄
 }
+
+export interface CaseCycleStep { label: string; note?: string; } // cycle 단계 노드
 
 export interface TeamCase {
   id: string;
