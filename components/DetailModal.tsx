@@ -223,7 +223,7 @@ export function StepProblem({ card, onNext }: { card: Card; onNext: () => void }
   return (
     <div className="step-content step-problem">
       <div className="eyebrow eyebrow-step">SCENE · 문제 인식</div>
-      <div className="ask">이 상황, 익숙하지?</div>
+      <div className="ask">이 상황, 익숙하죠?</div>
       <p className="scene">{rich(card.problem_scene)}</p>
       <div className="problem-meta">
         <div className="pm-l">현실에서 우리는 이 문제를 보통 이렇게 만난다.</div>
