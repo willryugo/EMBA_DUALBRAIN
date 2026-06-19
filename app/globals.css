@@ -20,13 +20,13 @@
   --mark-l:#4E5DB6;
   --mark-r:#D55E92;
   --bg-image:radial-gradient(80% 60% at 100% 0%, rgba(209,128,158,.18) 0%, transparent 55%), radial-gradient(60% 60% at 0% 100%, rgba(140,150,191,.16) 0%, transparent 55%);
-  /* 웹·모바일 Pretendard 통일 — 헤드라인도 Pretendard. 굵기(900/800/700)와
-     본문(500/400) 대비로 위계를 준다. (관리자 Tweaks에서 명조 등으로 전환은 여전히 가능) */
-  --serif:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
-  --sans:"Pretendard Variable",Pretendard,-apple-system,system-ui,sans-serif;
-  /* JetBrains Mono엔 한글 글리프가 없다 → 한글은 Pretendard로 폴백(영문만 mono).
-     이걸 빼면 라벨의 한글이 시스템 명조/고딕으로 떨어져 깨져 보인다. */
-  --mono:"JetBrains Mono",ui-monospace,Menlo,"Pretendard Variable",Pretendard,monospace;
+  /* 웹·모바일 Pretendard 통일 — 헤드라인도 Pretendard. 굵기(900/800/700)와 본문(500/400) 대비로 위계를 준다.
+     ※ Pretendard CDN(jsdelivr)이 느리거나 차단돼도 즉시 읽히게 한국어 시스템 폰트(Apple SD Gothic Neo·맑은 고딕)를
+        폴백 체인에 명시한다 — 회사망/방화벽에서 CDN이 막혀도 화면은 시스템 폰트로 정상 렌더. */
+  --serif:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",system-ui,sans-serif;
+  --sans:"Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",system-ui,sans-serif;
+  /* JetBrains Mono엔 한글 글리프가 없다 → 한글은 Pretendard, 다시 시스템 한국어 폰트로 폴백(영문만 mono). */
+  --mono:"JetBrains Mono",ui-monospace,Menlo,"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);background-image:var(--bg-image,none);background-attachment:fixed;color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
