@@ -45,14 +45,15 @@ export function LibraryView() {
     [savedIds]
   );
 
-  // 도메인별 그룹 — 한 카드가 여러 도메인 가지면 각 섹션에 모두 보임
+  // 도메인별 그룹 — 한 카드는 '대표 도메인(첫 유효 도메인)' 한 곳에만 넣어 중복 노출 방지.
+  // (이전엔 다중 도메인 카드 1장이 섹터마다 중복으로 보였음 — 예: CAC 카드가 마케팅·재무에 동시 노출)
   const byDomain = useMemo(() => {
     const m: Record<Domain, Card[]> = {} as Record<Domain, Card[]>;
     for (const d of DOMAINS) m[d] = [];
     for (const c of savedCards) {
-      for (const d of c.domain) {
-        if (m[d]) m[d].push(c);
-      }
+      const primary = (c.domain || []).find((d) => m[d]); // 카드의 첫 유효 도메인 = 대표 섹터
+      if (primary) m[primary].push(c);
+      else if (DOMAINS.length) m[DOMAINS[0]].push(c); // 도메인 미지정 시 유실 방지
     }
     return m;
   }, [savedCards]);
