@@ -170,9 +170,35 @@ export function applyTheme(themeKey: ThemeKey) {
   r.style.setProperty("--line-3", `rgba(${inkRgb},.55)`);
 }
 
+// 테마별 장식 serif는 무거운 한국어 웹폰트라 '선택 시'에만 구글폰트를 지연 로드한다
+// (초기 로드 폭주 방지). 기본(allsans)·본문(Pretendard)·모노(JetBrains)는 layout에서 즉시 로드.
+const GOOGLE_FONT_HREF: Partial<Record<FontKey, string>> = {
+  editorial: "https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700;900&display=swap",
+  classic: "https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap",
+  modern: "https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&display=swap",
+  display: "https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap",
+  cormorant:
+    "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500;1,700&family=Noto+Serif+KR:wght@500;700&display=swap",
+  // allsans: Pretendard만 쓰므로 추가 폰트 불필요
+};
+
+function ensureFontStylesheet(fontKey: FontKey) {
+  if (typeof document === "undefined") return;
+  const href = GOOGLE_FONT_HREF[fontKey];
+  if (!href) return;
+  const id = "gfont-" + fontKey;
+  if (document.getElementById(id)) return;
+  const link = document.createElement("link");
+  link.id = id;
+  link.rel = "stylesheet";
+  link.href = href;
+  document.head.appendChild(link);
+}
+
 export function applyFont(fontKey: FontKey) {
   if (typeof document === "undefined") return;
   const f = FONTS[fontKey] || FONTS.classic;
+  ensureFontStylesheet(fontKey); // 선택된 테마의 장식폰트만 지연 로드
   const r = document.documentElement;
   r.style.setProperty("--serif", f.serif);
   r.style.setProperty("--sans", f.sans);
