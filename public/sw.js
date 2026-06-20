@@ -1,29 +1,25 @@
-// 듀얼브레인 서비스워커 — 오프라인 셸 + 빠른 재방문.
-// 전략: 네비게이션(HTML)은 network-first(최신 우선, 오프라인 시 캐시),
-//       정적 자산(_next/아이콘/폰트)은 stale-while-revalidate.
-// 외부 CDN(pretendard·google fonts)은 건드리지 않음 → 오프라인 시 시스템 폰트로 폴백.
-// v2: 옛 셸 HTML(렌더 차단 CDN 폰트 link 포함)을 캐시에서 강제 축출 — activate가 v1을 지운다.
-const CACHE = "dualbrain-v2";
-const PRECACHE = ["/", "/?s=pwa"];
+// 듀얼브레인 서비스워커 v3 — '절대 화면을 막지 않는' 안전 설계.
+// 배경: 과거 SW가 HTML 셸을 캐시·중계하다가 깨진 셸/낡은 청크를 내줘
+//       '빈 화면 + 무한 로딩'이 반복됨(고질적). 구조적으로 차단한다.
+// 원칙:
+//   1) HTML 문서(navigate 요청)는 SW가 '절대' 가로채지 않는다 → 항상 네트워크의 최신 HTML.
+//      → 캐시된 셸로 인한 빈 화면이 구조적으로 불가능.
+//   2) 불변 해시 자산(/_next/static/·아이콘·폰트)만 cache-first(파일명이 빌드마다 바뀌어 stale 위험 없음).
+//   3) activate 때 과거 캐시를 '전부' 삭제 → 멈춘 클라이언트의 깨진 캐시까지 강제 정리.
+const CACHE = "dualbrain-v3";
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(
-    caches
-      .open(CACHE)
-      .then((c) => c.addAll(PRECACHE))
-      .then(() => self.skipWaiting())
-      .catch(() => self.skipWaiting())
-  );
+self.addEventListener("install", () => {
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches
-      .keys()
-      .then((keys) =>
-        Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-      )
-      .then(() => self.clients.claim())
+    (async () => {
+      // 옛 캐시(v1·v2의 HTML 셸·청크 포함)를 전부 축출 — 멈춘 클라이언트 강제 정리
+      const keys = await caches.keys();
+      await Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)));
+      await self.clients.claim();
+    })()
   );
 });
 
@@ -34,54 +30,41 @@ self.addEventListener("message", (e) => {
 self.addEventListener("fetch", (e) => {
   const { request } = e;
   if (request.method !== "GET") return;
+
+  // 🚫 문서(navigation)는 손대지 않는다 — 항상 네트워크에서 최신 HTML을 받는다.
+  //    (SW가 셸을 캐시·중계하지 않으므로 '깨진 빈 화면'이 발생할 수 없다.)
+  if (request.mode === "navigate") return;
+
   let url;
   try {
     url = new URL(request.url);
   } catch {
     return;
   }
-  if (url.origin !== self.location.origin) return; // 외부 도메인은 패스
+  if (url.origin !== self.location.origin) return; // 외부(CDN 폰트 등)는 패스
 
-  // HTML 문서: network-first + 3초 타임아웃 → 캐시 폴백.
-  // 네트워크가 '느릴' 때도(엣지 콜드스타트 등) 3초 후 캐시 셸을 즉시 보여줘
-  // '10초 먹통' 체감을 제거한다. 네트워크 응답은 도착하는 대로 캐시를 갱신(다음 방문엔 최신).
-  // 게이트(미들웨어)는 그대로: 네트워크를 우선 시도하고, 느릴 때만 캐시로 폴백한다.
-  if (request.mode === "navigate") {
-    e.respondWith(
-      (async () => {
-        const net = fetch(request).then((res) => {
+  // 불변 해시 자산만 cache-first. CSS·JS 청크는 /_next/static/ 아래라 파일명이 빌드마다 바뀜 → stale 안전.
+  // API·기타 동적 요청은 손대지 않고 네트워크 기본 처리.
+  const immutable =
+    url.pathname.startsWith("/_next/static/") ||
+    url.pathname.startsWith("/icon") ||
+    /\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$/.test(url.pathname);
+  if (!immutable) return;
+
+  e.respondWith(
+    (async () => {
+      const cached = await caches.match(request);
+      if (cached) return cached;
+      try {
+        const res = await fetch(request);
+        if (res && res.ok) {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(request, copy)).catch(() => {});
-          return res;
-        });
-        const timeout = new Promise((resolve) => setTimeout(() => resolve(null), 3000));
-        const winner = await Promise.race([net.catch(() => null), timeout]);
-        if (winner) return winner; // 네트워크가 3초 내 응답(또는 즉시 성공)
-        // 느림/오프라인 → 캐시 셸 즉시 반환(네트워크는 백그라운드로 계속 받아 캐시 갱신)
-        const cached = (await caches.match(request)) || (await caches.match("/"));
-        return cached || net; // 캐시 없으면(최초 방문) 네트워크를 기다린다
-      })()
-    );
-    return;
-  }
-
-  // 정적 자산: stale-while-revalidate
-  const isAsset =
-    url.pathname.startsWith("/_next/") ||
-    url.pathname.startsWith("/icon") ||
-    /\.(?:png|jpg|jpeg|svg|webp|ico|woff2?|css|js|json)$/.test(url.pathname);
-  if (isAsset) {
-    e.respondWith(
-      caches.match(request).then((cached) => {
-        const network = fetch(request)
-          .then((res) => {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(request, copy)).catch(() => {});
-            return res;
-          })
-          .catch(() => cached);
-        return cached || network;
-      })
-    );
-  }
+        }
+        return res;
+      } catch {
+        return cached || Response.error();
+      }
+    })()
+  );
 });
