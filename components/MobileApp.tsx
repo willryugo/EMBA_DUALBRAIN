@@ -922,16 +922,18 @@ export function MobileApp() {
 
   // 부트스트랩 — 테마/폰트/저장/산업 (클라이언트에서만 마운트되므로 안전)
   useEffect(() => {
+    // 깨진 localStorage 키(형 불일치) 선제 정화 — 렌더 중 throw → 흰 화면 방지.
+    store.heal();
     // 전원 동일 UI — 여명 테마 · 올 산세리프 고정(저장값 무시).
     applyTheme("dawn" as never);
     applyFont("allsans" as never);
-    setSaved(new Set(store.get<string[]>("emba17_saved") || []));
-    setMyIndustries((store.get<Industry[]>("emba17_my_industries") as Industry[]) || []);
+    setSaved(new Set(store.getArray<string>("emba17_saved")));
+    setMyIndustries(store.getArray<Industry>("emba17_my_industries"));
     const bm = store.get<string>("emba17_biz_mode");
     if (bm === "b2c" || bm === "B2C") setBizMode("B2C");
     const onInd = (e: Event) => {
       const d = (e as CustomEvent).detail as Industry[] | undefined;
-      setMyIndustries(d || (store.get<Industry[]>("emba17_my_industries") as Industry[]) || []);
+      setMyIndustries(Array.isArray(d) ? d : store.getArray<Industry>("emba17_my_industries"));
     };
     window.addEventListener("emba17:industries-changed", onInd as EventListener);
     return () =>
