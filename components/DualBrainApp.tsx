@@ -73,6 +73,8 @@ export function DualBrainApp() {
 
   // 마운트 후 1회: 고정 UI 적용 + localStorage 복원(필터·저장·산업만)
   useEffect(() => {
+    // 깨진 localStorage 키(형 불일치) 선제 정화 — 렌더 중 .includes/.map throw → 흰 화면 방지.
+    store.heal();
     setToday(todayStr());
     // 전원 동일 — 여명 테마 · Pretendard · regular 밀도 고정(테마/폰트 저장값 무시).
     applyTheme("dawn");
@@ -82,19 +84,19 @@ export function DualBrainApp() {
       document.body.classList.add("density-regular");
     }
 
+    const searchVal = store.get<string>("emba17_filter_search");
     setFilter({
-      course: (store.get<Course[]>("emba17_filter_course")) || [],
-      domain: (store.get<Domain[]>("emba17_filter_domain")) || [],
-      industry: (store.get<Industry[]>("emba17_filter_industry")) || [],
-      search: (store.get<string>("emba17_filter_search")) || "",
-      myOnly: (store.get<boolean>("emba17_filter_myOnly")) || false,
+      course: store.getArray<Course>("emba17_filter_course"),
+      domain: store.getArray<Domain>("emba17_filter_domain"),
+      industry: store.getArray<Industry>("emba17_filter_industry"),
+      search: typeof searchVal === "string" ? searchVal : "",
+      myOnly: store.get<boolean>("emba17_filter_myOnly") === true,
       savedOnly: false,
     });
 
-    setSavedIds(store.get<string[]>("emba17_saved") || []);
-    setMyIndustries(
-      store.get<Industry[]>("emba17_my_industries") || MY_INDUSTRIES_DEFAULT
-    );
+    setSavedIds(store.getArray<string>("emba17_saved"));
+    const mine = store.getArray<Industry>("emba17_my_industries");
+    setMyIndustries(mine.length ? mine : MY_INDUSTRIES_DEFAULT);
     const bm = store.get<"all" | "b2b" | "b2c">("emba17_biz_mode");
     if (bm === "b2b" || bm === "b2c" || bm === "all") setBizMode(bm);
   }, []);
