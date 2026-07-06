@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // 3분 매거진 정적 페이지: 확장자 없는 깔끔한 /magazine 을 public/magazine.html 로 매핑.
+  async rewrites() {
+    return [{ source: "/magazine", destination: "/magazine.html" }];
+  },
   // SMB/네트워크 드라이브(NAS)에서 readlink가 EISDIR로 잘못 답하는 이슈 회피.
   // 로컬 빌드에서도 모듈 심볼릭링크 추적 불필요.
   webpack: (config) => {
