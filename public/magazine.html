@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#05090F">
 <meta name="description" content="연세 EMBA 17기의 3분 매거진 — 강의·조별과제를 카드로 잇는 두 번째 뇌">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="듀얼브레인">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/magazine.webmanifest">
 <title>듀얼브레인 — EMBA 17기의 두 번째 뇌</title>
 </head>
 <body>
@@ -27,7 +33,7 @@
     --line:rgba(152,172,206,.11); --line-strong:rgba(154,176,210,.22);
     --edge-light:rgba(255,255,255,.055); --edge-dark:rgba(0,0,0,.28);
     /* ── TEXT (warm ivory on cool navy) ── */
-    --paper:#ECE6DB; --paper-hi:#FBFAF5; --paper-2:#C6CFDD; --muted:#98A8C2; --muted-deep:#5E7089;
+    --paper:#F0EAE0; --paper-hi:#FBFAF5; --paper-2:#DCE2EC; --muted:#B6C2D6; --muted-deep:#7686A0;
     --btn-cream:linear-gradient(180deg,#F1EBDD,#DED4BF);
     --grad-deep:#0F1B30;               /* 커버·스탯 카드 하단 딥스톱 */
     --hl-bg:rgba(203,167,94,.20);       /* 헤드라인 골드 하이라이트 */
@@ -84,7 +90,7 @@
   }
   /* 그래프 패널(두뇌지도·북마크)은 두 테마 모두 다크 인스트루먼트로 유지 → 내부 토큰만 다크로 재선언 */
   html[data-theme="light"] .map-wrap, html[data-theme="light"] .bm-wrap{
-    --paper:#ECE6DB; --paper-2:#C6CFDD; --muted:#98A8C2; --muted-deep:#5E7089;
+    --paper:#F0EAE0; --paper-2:#DCE2EC; --muted:#B6C2D6; --muted-deep:#7686A0;
     --line:rgba(152,172,206,.14); --line-strong:rgba(154,176,210,.24);
     --glass:rgba(14,24,40,.82); --surface-1:#131E2E; --rec-bg:linear-gradient(180deg,#101A28,#0D1622); --rec-sh:inset 0 1px 0 rgba(255,255,255,.05),inset 0 -1px 0 rgba(0,0,0,.45); --gold:#CBA75E; --gold-line:rgba(203,167,94,.30); --blue:#7CA6E8;
   }
@@ -99,7 +105,7 @@
   a{color:var(--blue)}
   :focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:var(--r-xs)}
 
-  .mag{max-width:430px;margin:0 auto;background:transparent;min-height:100vh;box-shadow:inset 0 1px 0 var(--edge-light), inset 1px 0 0 rgba(255,255,255,.02), inset -1px 0 0 rgba(0,0,0,.28), 0 0 110px rgba(0,0,0,.5);padding-bottom:var(--s5)}
+  .mag{max-width:430px;margin:0 auto;background:transparent;min-height:100vh;min-height:100dvh;box-shadow:inset 0 1px 0 var(--edge-light), inset 1px 0 0 rgba(255,255,255,.02), inset -1px 0 0 rgba(0,0,0,.28), 0 0 110px rgba(0,0,0,.5);padding-top:env(safe-area-inset-top);padding-bottom:calc(var(--s5) + env(safe-area-inset-bottom))}
   section{scroll-margin-top:14px}
 
   /* ── masthead ── */
@@ -467,13 +473,13 @@
   .cn-quote::before{content:'“';color:var(--gold-deep);font-size:22px}
   .cn-quote::after{content:'”';color:var(--gold-deep);font-size:22px}
   .sw-nav{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px var(--gut) calc(var(--s4) + env(safe-area-inset-bottom));border-top:1px solid var(--line-strong);background:var(--glass);backdrop-filter:blur(24px) saturate(1.25);-webkit-backdrop-filter:blur(24px) saturate(1.25)}
-  .sw-arrow{font-size:13px;font-weight:600;color:var(--paper-2);background:rgba(255,255,255,.03);border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:9px 16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);display:inline-flex;align-items:center;gap:6px;transition:background .14s,border-color .14s,transform .1s}
-  .sw-arrow:hover:not(:disabled){background:rgba(255,255,255,.06);border-color:var(--muted)}
+  .sw-arrow{font-size:13px;font-weight:600;color:var(--paper-2);background:rgba(255,255,255,.03);border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:9px 16px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04);display:inline-flex;align-items:center;gap:6px;-webkit-tap-highlight-color:transparent;transition:background .14s,border-color .14s,transform .1s}
+  .sw-arrow:hover:not(:disabled):not(.sw-next){background:rgba(255,255,255,.06);border-color:var(--muted)}
   .sw-arrow:active:not(:disabled){transform:translateY(1px)}
   .sw-arrow:disabled{opacity:.3;cursor:default}
   .sw-arrow svg{width:14px;height:14px}
   .sw-prev svg{transform:scaleX(-1)}
-  .sw-next{color:var(--bg-1);background:var(--btn-cream);border-color:transparent;font-weight:700;box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 6px 16px -6px rgba(0,0,0,.55)}
+  .sw-next{color:var(--bg-1);background:var(--btn-cream);background-color:#E7DEC9;border-color:transparent;font-weight:700;box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 6px 16px -6px rgba(0,0,0,.55)}
   .sw-next:hover{filter:brightness(1.03)}
   .sw-next:active{transform:translateY(1px);box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 2px 8px -4px rgba(0,0,0,.5)}
   .sw-step{font-family:var(--num);font-variant-numeric:tabular-nums;font-size:11px;color:var(--muted)}
@@ -928,18 +934,25 @@ DATA.subjects.forEach(s=>{
   nm.append(s.name, Object.assign(document.createElement('span'), {className:'prof', textContent:s.prof+' 교수님'}));
   const one = document.createElement('p'); one.className='subj-row-one'; one.textContent = s.one_liner;
   meta.append(nm, one);
-  const cnt = document.createElement('span'); cnt.className='subj-row-count'; cnt.textContent = s.cards.length+'장';
+  // "과목별로 다 보기" = 이 과목 전체 카드: 커버(큐레이션) + 아직 커버 안 된 이 과목 이론카드 전부
+  const shownIds = new Set();
+  const allCards = [];
+  s.cards.forEach(c=>{ if(c.db_id) shownIds.add(c.db_id); allCards.push({...c, k:s.key}); });
+  Object.entries(DATA.theory||{}).forEach(([id,th])=>{
+    if(th.k===s.key && !shownIds.has(id)) allCards.push({tag:'심화', title:th.concept, hook:th.hook, body:'', db_id:id, k:s.key});
+  });
+  const cnt = document.createElement('span'); cnt.className='subj-row-count'; cnt.textContent = allCards.length+'장';
   const chev = document.createElement('span'); chev.className='subj-row-chev'; chev.appendChild(icon('ic-chev', 16));
   head.append(ic, meta, cnt, chev);
   const body = document.createElement('div'); body.className='subj-row-body';
   const rail = document.createElement('div'); rail.className='rail';
-  s.cards.forEach(c=>{
+  allCards.forEach(c=>{
     const b = document.createElement('button'); b.className='card';
     const tag = document.createElement('span'); tag.className='tag '+(TAGCLS[c.tag]||''); tag.textContent=c.tag;
     const hk = document.createElement('span'); hk.className='card-hook'; hk.textContent=c.hook;
     const tt = document.createElement('span'); tt.className='card-title'; tt.textContent=c.title;
     b.append(tag, hk, tt);
-    b.addEventListener('click', ()=>openSheet({key:s.key, lbl:`${s.name} · ${s.prof} 교수님`}, {...c, k:s.key}));
+    b.addEventListener('click', ()=>openSheet({key:s.key, lbl:`${s.name} · ${s.prof} 교수님`}, c));
     rail.appendChild(b);
   });
   body.appendChild(rail);
