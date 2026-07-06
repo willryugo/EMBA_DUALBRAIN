@@ -36,8 +36,11 @@
     --paper:#F0EAE0; --paper-hi:#FBFAF5; --paper-2:#DCE2EC; --muted:#B6C2D6; --muted-deep:#7686A0;
     --btn-cream:linear-gradient(180deg,#F1EBDD,#DED4BF);
     --grad-deep:#0F1B30;               /* 커버·스탯 카드 하단 딥스톱 */
-    --hl-bg:rgba(203,167,94,.20);       /* 헤드라인 골드 하이라이트 */
-    --page-glow:#16223A;                /* body 상단 라디얼 글로우 (블룸 강화) */
+    --hl-bg:rgba(203,167,94,0);         /* 헤드라인 강조 = 박스 폐기 → 골드 밑줄로 전환(얼룩 제거) */
+    --gold-underline:linear-gradient(90deg, rgba(230,206,136,0) 0%, var(--gold-hi) 16%, var(--gold) 84%, rgba(203,167,94,0) 100%);
+    --gold-bloom:radial-gradient(58% 40% at 26% 7%, rgba(230,206,136,.18), rgba(203,167,94,.05) 34%, transparent 62%);
+    --nameplate-rule:linear-gradient(90deg, transparent, var(--gold-line) 12%, var(--gold) 50%, var(--gold-line) 88%, transparent);
+    --page-glow:#1D2A44;                /* body 상단 라디얼 글로우 — 골드 블룸과 톤 맞춤(focal 강화) */
     --backdrop:rgba(3,8,16,.72);        /* 시트 뒤 스크림 */
     /* ── GOLD (two-tone champagne/antique — replaces canary) ── */
     --gold:#CBA75E; --gold-hi:#E6CE88; --gold-deep:#8E7233;
@@ -80,7 +83,9 @@
     --elev-2:inset 0 1px 0 var(--edge-light), 0 2px 6px rgba(30,42,64,.06), 0 20px 46px -20px rgba(30,42,64,.26);
     --elev-sheet:inset 0 1px 0 rgba(255,255,255,.85), 0 -18px 50px -18px rgba(30,42,64,.22);
     --btn-cream:linear-gradient(180deg,#2C3A4C,#1A2634);
-    --grad-deep:#EDE6D6; --hl-bg:rgba(196,150,58,.30);
+    --grad-deep:#EDE6D6; --hl-bg:rgba(196,150,58,0);
+    --gold-underline:linear-gradient(90deg, rgba(120,96,24,0) 0%, var(--gold) 18%, var(--gold-deep) 82%, rgba(120,96,24,0) 100%);
+    --gold-bloom:radial-gradient(58% 40% at 26% 7%, rgba(135,103,28,.07), transparent 60%);
     --page-glow:#FCFAF3; --backdrop:rgba(22,30,44,.44);
     /* 라이트: recessed·raised 모두 깨끗한 화이트 카드 + 부드러운 그림자 */
     --rec-bg:#FFFFFF;
@@ -97,9 +102,11 @@
   html[data-theme="light"] .tag-team{color:#2C5FB8}
   html[data-theme="light"] .rich-body .rq{color:#2C57A2}
   html[data-theme="light"] body::after{opacity:.02}
+  html[data-theme="light"] .logo{filter:drop-shadow(0 1px 2px rgba(40,52,72,.18))}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
   body{background:var(--bg-0);background:radial-gradient(130% 68% at 50% -8%, var(--page-glow) 0%, transparent 46%), linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 92%);font-family:var(--font);color:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.55;word-break:keep-all;overflow-wrap:break-word;transition:background .3s ease,color .3s ease}
+  body::before{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background:var(--gold-bloom)}
   body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:60;opacity:.06;mix-blend-mode:soft-light;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")}
   button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
   a{color:var(--blue)}
@@ -109,14 +116,16 @@
   section{scroll-margin-top:14px}
 
   /* ── masthead ── */
-  .mast{padding:var(--s5) var(--gut) 0}
+  .mast{padding:var(--s5) var(--gut) var(--s4);position:relative}
+  .mast::after{content:'';position:absolute;left:var(--gut);right:var(--gut);bottom:0;height:1px;background:var(--nameplate-rule);opacity:.9;pointer-events:none}
   .mast-top{display:flex;justify-content:space-between;align-items:center}
-  .eyebrow{font-family:var(--font);font-weight:600;font-size:var(--fs-cap);letter-spacing:.05em;color:var(--muted)}
-  .eyebrow .num{font-family:var(--num);letter-spacing:.12em;font-variant-numeric:tabular-nums}
+  .eyebrow{font-family:var(--font);font-weight:600;font-size:var(--fs-cap);letter-spacing:.14em;color:var(--gold)}
+  .eyebrow .num{font-family:var(--num);letter-spacing:.18em;font-variant-numeric:tabular-nums;color:var(--gold-hi)}
   .badge{font-family:var(--font);font-weight:700;font-size:10px;letter-spacing:.02em;color:var(--gold);background:var(--gold-tint);border:1px solid var(--gold-line);border-radius:var(--r-xs);padding:4px 9px;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
   .brandrow{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4)}
-  .logo{flex:0 0 auto;display:block}
-  .wordmark{font-size:28px;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--paper-hi);margin-top:1px}
+  .logo{flex:0 0 auto;display:block;filter:drop-shadow(0 0 9px rgba(230,206,136,.26)) drop-shadow(0 1px 2px rgba(0,0,0,.5));animation:markIgnite .9s ease-out both}
+  @keyframes markIgnite{from{filter:drop-shadow(0 0 3px rgba(230,206,136,.10)) drop-shadow(0 1px 2px rgba(0,0,0,.5))}to{filter:drop-shadow(0 0 9px rgba(230,206,136,.26)) drop-shadow(0 1px 2px rgba(0,0,0,.5))}}
+  .wordmark{font-size:30px;font-weight:800;letter-spacing:-.025em;line-height:1;color:var(--paper-hi);margin-top:1px;text-shadow:0 0 22px rgba(230,206,136,.09)}
   .subtitle{margin:var(--s2) 0 0;font-size:var(--fs-sm);color:var(--paper-2);font-weight:600;letter-spacing:.01em}
   .dek{margin:5px 0 0;font-size:var(--fs-cap);color:var(--muted)}
   .mast-actions{display:flex;justify-content:flex-end;gap:var(--s2);margin-top:var(--s4)}
@@ -137,13 +146,12 @@
   /* 헤드라인 골드 하이라이트 — 로드 시 좌→우로 그어진 뒤 은은하게 숨쉬듯 점멸 */
   .hook mark{
     color:var(--paper-hi);
-    background:linear-gradient(var(--hl-bg),var(--hl-bg)) left center / 0% 82% no-repeat;
-    padding:.02em .12em;border-radius:3px;
+    background:var(--gold-underline) left bottom / 0% 1.5px no-repeat;
+    padding:0 .02em .04em;border-radius:0;
     -webkit-box-decoration-break:clone;box-decoration-break:clone;
-    animation:hlDraw .68s .2s cubic-bezier(.22,.61,.36,1) forwards, hlPulse 2.6s 1s ease-in-out infinite;
+    animation:hlDraw .66s .22s cubic-bezier(.22,.61,.36,1) forwards;
   }
-  @keyframes hlDraw{from{background-size:0% 82%}to{background-size:100% 82%}}
-  @keyframes hlPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.28)}}
+  @keyframes hlDraw{from{background-size:0% 1.5px}to{background-size:100% 1.5px}}
   /* hero 가짜 검색바 */
   .hero-search{display:flex;align-items:center;gap:9px;width:100%;margin-top:var(--s3);background:linear-gradient(180deg,var(--surface-2),var(--surface-1));border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:12px 15px;text-align:left;box-shadow:var(--elev-1);transition:border-color .15s,filter .14s,transform .1s}
   .hero-search[aria-expanded="true"]{display:none}
@@ -514,7 +522,8 @@
   .cn-net-item-txt{font-size:13px;line-height:1.45}
 
   @media (prefers-reduced-motion:reduce){
-    .hook mark{animation:none;background-size:100% 82%;filter:none}
+    .hook mark{animation:none;background-size:100% 1.5px}
+    .logo{animation:none}
     .cue-arrow{animation:none}
     .hero-arrow{animation:none!important;opacity:.6}
     .cn-info-cue{animation:none!important;opacity:.75;transform:none}
@@ -551,12 +560,15 @@
       <span class="badge">내부 공유용</span>
     </div>
     <div class="brandrow">
-      <svg class="logo" width="38" height="26" viewBox="0 0 38 26" aria-hidden="true">
+      <svg class="logo" width="46" height="32" viewBox="0 0 38 26" aria-hidden="true">
         <defs><linearGradient id="lgGold" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0" stop-color="#B8933F"/><stop offset=".5" stop-color="#E6CE88"/><stop offset="1" stop-color="#C29A48"/>
-        </linearGradient></defs>
+        </linearGradient>
+        <radialGradient id="lgGoldGlow" cx=".34" cy=".30" r=".85">
+          <stop offset="0" stop-color="#FBEFC4"/><stop offset=".42" stop-color="#E6CE88"/><stop offset="1" stop-color="#B8933F"/>
+        </radialGradient></defs>
         <circle cx="14" cy="13" r="10" fill="none" stroke="#ECE6DB" stroke-width="2"/>
-        <circle cx="24" cy="13" r="10" fill="url(#lgGold)"/>
+        <circle class="db-lit" cx="24" cy="13" r="10" fill="url(#lgGoldGlow)"/>
         <path d="M19 5.1a10 10 0 0 0 0 15.8 10 10 0 0 0 0-15.8Z" fill="#0C1420"/>
         <circle cx="19" cy="13" r="1.7" fill="#ECE6DB"/>
       </svg>
