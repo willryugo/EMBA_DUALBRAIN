@@ -17,8 +17,10 @@ export async function middleware(req: NextRequest) {
 
 // /welcome, 인증 API, Next 내부 자산, PWA(manifest·서비스워커), 정적 파일은 게이트에서 제외.
 // ※ manifest.webmanifest·sw.js를 빼면 비번 게이트가 PWA 자산을 /welcome으로 리다이렉트해 설치가 안 됨.
+// ※ magazine — 3분 매거진 정적 페이지(public/magazine.html). 비번 없이 링크만으로 열리게 게이트 제외
+//    (17기 카톡 공유용, 마찰 최소화). /magazine·/magazine.html 둘 다 커버.
 export const config = {
   matcher: [
-    "/((?!welcome|api/auth|_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|icon.png|icon.svg|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$).*)",
+    "/((?!magazine|welcome|api/auth|_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|icon.png|icon.svg|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$).*)",
   ],
 };
