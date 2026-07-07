@@ -1283,19 +1283,34 @@ const G = DATA.graph;
     applyFocus();
   }
 
-  // 좌표 변환
-  const toSvg = (cx,cy)=>{ const r=svg.getBoundingClientRect(); return {x:view.x+(cx-r.left)/r.width*view.w, y:view.y+(cy-r.top)/r.height*view.h}; };
+  // 화면좌표 → SVG 사용자좌표 (viewBox + preserveAspectRatio=meet 레터박스까지 정확 반영)
+  const _pt = (svg.createSVGPoint ? svg.createSVGPoint() : null);
+  function clientToUser(cx, cy){
+    const m = svg.getScreenCTM(); if(!m || !_pt) return null;
+    _pt.x=cx; _pt.y=cy; const u=_pt.matrixTransform(m.inverse()); return {x:u.x, y:u.y};
+  }
+  // 새 뷰(nw×nh)에서 화면점(cx,cy) 밑에 사용자좌표 u가 오도록 viewBox 원점 계산 — meet 레터박스 보정
+  function anchoredView(u, cx, cy, nw, nh){
+    const r=svg.getBoundingClientRect();
+    const s=Math.min(r.width/nw, r.height/nh);        // meet = 균일 스케일
+    const offX=(r.width - s*nw)/2, offY=(r.height - s*nh)/2;  // 레터박스 중앙정렬 오프셋
+    return {x:u.x-(cx-r.left-offX)/s, y:u.y-(cy-r.top-offY)/s, w:nw, h:nh};
+  }
+  const clampW = w => Math.max(W*0.14, Math.min(W, w));
   // 팬 + 탭
-  let press=null, didPan=false;
+  let press=null, pinch=null, didPan=false;
   svg.addEventListener('pointerdown', e=>{
-    press={cx:e.clientX, cy:e.clientY, vx:view.x, vy:view.y, id:e.target.dataset.id||null};
-    didPan=false; svg.setPointerCapture(e.pointerId);
+    if(pinch) return;
+    const r=svg.getBoundingClientRect();
+    press={cx:e.clientX, cy:e.clientY, vx:view.x, vy:view.y, id:e.target.dataset.id||null,
+           s:Math.min(r.width/view.w, r.height/view.h)}; // 균일 스케일 고정(팬 중 줌 불변)
+    didPan=false; try{ svg.setPointerCapture(e.pointerId); }catch(_){}
   });
   svg.addEventListener('pointermove', e=>{
     if(!press || pinch) return;
     const dx=e.clientX-press.cx, dy=e.clientY-press.cy;
-    if(!didPan && dx*dx+dy*dy>30) didPan=true;
-    if(didPan){ const r=svg.getBoundingClientRect(); setView({...view, x:press.vx-(dx/r.width)*view.w, y:press.vy-(dy/r.height)*view.h}); }
+    if(!didPan && dx*dx+dy*dy>36) didPan=true;
+    if(didPan) setView({...view, x:press.vx-dx/press.s, y:press.vy-dy/press.s}); // 두 축 동일 스케일
   });
   svg.addEventListener('pointerup', e=>{
     if(press && !didPan){
@@ -1306,27 +1321,28 @@ const G = DATA.graph;
     press=null;
   });
   svg.addEventListener('pointercancel', ()=>{ press=null; });
-  // 휠 줌
+  // 휠 줌 (데스크톱) — 커서 밑 지점 고정
   svg.addEventListener('wheel', e=>{
     e.preventDefault();
-    const r=svg.getBoundingClientRect(); const fx=(e.clientX-r.left)/r.width, fy=(e.clientY-r.top)/r.height;
-    const mx=view.x+fx*view.w, my=view.y+fy*view.h;
-    const sc = e.deltaY<0 ? 0.85 : 1/0.85;
-    let nw = Math.max(W*0.14, Math.min(W, view.w*sc)); const nh=nw*(H/W);
-    setView({x:mx-fx*nw, y:my-fy*nh, w:nw, h:nh}); applyFocus();
+    const u=clientToUser(e.clientX,e.clientY); if(!u) return;
+    const nw=clampW(view.w*(e.deltaY<0 ? 0.85 : 1/0.85));
+    setView(anchoredView(u, e.clientX, e.clientY, nw, nw*(H/W))); applyFocus();
   }, {passive:false});
-  // 핀치 줌
-  let pinch=null;
-  svg.addEventListener('touchstart', e=>{ if(e.touches.length===2){ press=null; const[a,b]=e.touches; pinch={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1, v:{...view}}; } }, {passive:false});
+  // 핀치 줌 — 두 손가락 중점 밑 지점을 고정한 채 확대/축소 (손가락 따라 자연스럽게)
+  svg.addEventListener('touchstart', e=>{
+    if(e.touches.length===2){
+      press=null; const[a,b]=e.touches;
+      const mcx=(a.clientX+b.clientX)/2, mcy=(a.clientY+b.clientY)/2;
+      pinch={ d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1, vw:view.w, u:clientToUser(mcx,mcy) };
+    }
+  }, {passive:false});
   svg.addEventListener('touchmove', e=>{
-    if(e.touches.length!==2||!pinch) return; e.preventDefault();
-    const r=svg.getBoundingClientRect(); if(!r.width) return;
-    const[a,b]=e.touches; const nd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;
-    const ncx=(a.clientX+b.clientX)/2, ncy=(a.clientY+b.clientY)/2;
-    const fx=(ncx-r.left)/r.width, fy=(ncy-r.top)/r.height;
-    const mx=pinch.v.x+fx*pinch.v.w, my=pinch.v.y+fy*pinch.v.h;
-    let nw=Math.max(W*0.14, Math.min(W, pinch.v.w*(pinch.d/nd))); const nh=nw*(H/W);
-    setView({x:mx-fx*nw, y:my-fy*nh, w:nw, h:nh});
+    if(e.touches.length!==2||!pinch||!pinch.u) return; e.preventDefault();
+    const[a,b]=e.touches;
+    const nd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;
+    const mcx=(a.clientX+b.clientX)/2, mcy=(a.clientY+b.clientY)/2;
+    const nw=clampW(pinch.vw*(pinch.d/nd));
+    setView(anchoredView(pinch.u, mcx, mcy, nw, nw*(H/W)));
   }, {passive:false});
   svg.addEventListener('touchend', e=>{ if(e.touches.length<2){ pinch=null; applyFocus(); } });
   $('mapReset').addEventListener('click', e=>{ e.stopPropagation(); setView({x:0,y:0,w:W,h:H}); setActive(null); });
