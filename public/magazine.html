@@ -210,9 +210,53 @@
   @keyframes heroArrowPulse{0%,100%{opacity:.3}50%{opacity:.72}}
 
   /* ── 두뇌지도 / 북마크 wrap ── */
-  .map-wrap{display:none;margin:var(--s4) var(--gut) 0;background:radial-gradient(120% 90% at 50% 12%,#0E2038,#070F1C);border:1px solid var(--line-strong);border-radius:var(--r-lg);overflow:hidden;position:relative;box-shadow:var(--elev-1)}
-  .map-wrap.open{display:block;animation:mapReveal .3s ease}
+  /* 두뇌지도 = 전체화면 은하수 모달 (삽입형 아님) */
+  .map-wrap{display:none}
+  .map-wrap.open{display:flex;flex-direction:column;position:fixed;inset:0;z-index:70;overflow:hidden;padding-top:env(safe-area-inset-top);
+    background:
+      radial-gradient(1.6px 1.6px at 12% 15%,rgba(255,255,255,.95),transparent 60%),
+      radial-gradient(1px 1px at 19% 27%,rgba(255,255,255,.55),transparent 60%),
+      radial-gradient(1.3px 1.3px at 26% 41%,rgba(228,238,255,.7),transparent 60%),
+      radial-gradient(1px 1px at 33% 9%,rgba(255,255,255,.6),transparent 60%),
+      radial-gradient(1.5px 1.5px at 43% 22%,rgba(255,255,255,.85),transparent 60%),
+      radial-gradient(1px 1px at 39% 34%,rgba(255,255,255,.5),transparent 60%),
+      radial-gradient(1px 1px at 52% 13%,rgba(228,238,255,.6),transparent 60%),
+      radial-gradient(1.4px 1.4px at 61% 27%,rgba(255,255,255,.8),transparent 60%),
+      radial-gradient(1px 1px at 68% 8%,rgba(255,255,255,.5),transparent 60%),
+      radial-gradient(1.5px 1.5px at 77% 18%,rgba(255,255,255,.9),transparent 60%),
+      radial-gradient(1px 1px at 84% 30%,rgba(220,230,255,.55),transparent 60%),
+      radial-gradient(1px 1px at 91% 14%,rgba(255,255,255,.6),transparent 60%),
+      radial-gradient(1.3px 1.3px at 7% 34%,rgba(255,255,255,.65),transparent 60%),
+      radial-gradient(1px 1px at 15% 48%,rgba(255,255,255,.45),transparent 60%),
+      radial-gradient(1px 1px at 48% 47%,rgba(255,255,255,.5),transparent 60%),
+      radial-gradient(1.4px 1.4px at 72% 44%,rgba(255,255,255,.7),transparent 60%),
+      radial-gradient(1px 1px at 88% 48%,rgba(255,255,255,.5),transparent 60%),
+      radial-gradient(1px 1px at 5% 58%,rgba(255,255,255,.5),transparent 60%),
+      radial-gradient(1.3px 1.3px at 22% 66%,rgba(255,255,255,.6),transparent 60%),
+      radial-gradient(1px 1px at 44% 72%,rgba(228,238,255,.5),transparent 60%),
+      radial-gradient(1.5px 1.5px at 66% 64%,rgba(255,255,255,.8),transparent 60%),
+      radial-gradient(1px 1px at 82% 68%,rgba(255,255,255,.5),transparent 60%),
+      radial-gradient(1.3px 1.3px at 12% 80%,rgba(255,255,255,.65),transparent 60%),
+      radial-gradient(1px 1px at 34% 88%,rgba(255,255,255,.5),transparent 60%),
+      radial-gradient(1px 1px at 57% 83%,rgba(228,238,255,.5),transparent 60%),
+      radial-gradient(1.4px 1.4px at 76% 86%,rgba(255,255,255,.7),transparent 60%),
+      radial-gradient(1px 1px at 92% 78%,rgba(255,255,255,.5),transparent 60%),
+      radial-gradient(1px 1px at 48% 94%,rgba(255,255,255,.45),transparent 60%),
+      radial-gradient(120% 26% at 42% 40%,rgba(126,150,220,.06),transparent 72%),
+      radial-gradient(90% 20% at 62% 62%,rgba(150,120,205,.05),transparent 74%),
+      radial-gradient(64% 50% at 18% 22%,rgba(96,124,224,.14),transparent 70%),
+      radial-gradient(54% 44% at 86% 78%,rgba(150,110,205,.12),transparent 72%),
+      radial-gradient(70% 58% at 60% 2%,rgba(203,167,94,.08),transparent 66%),
+      radial-gradient(130% 100% at 50% 0%,#0A1526 0%,#060B18 48%,#02050A 100%);
+    animation:mapModalIn .36s cubic-bezier(.16,1,.3,1)}
+  .map-wrap.open .map-svg{flex:1 1 auto;min-height:0;height:auto}
+  .map-wrap.open .map-head{padding-top:18px}
+  .map-wrap.open .map-collapse{top:calc(env(safe-area-inset-top) + 14px)}
+  .map-wrap.open .map-reset{top:calc(env(safe-area-inset-top) + 48px)}
+  .map-wrap.open .map-legend{padding-bottom:calc(env(safe-area-inset-bottom) + 16px)}
+  .map-wrap.open .map-info{left:14px;right:14px;bottom:calc(env(safe-area-inset-bottom) + 64px)}
   @keyframes mapReveal{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes mapModalIn{from{opacity:0;transform:scale(1.045)}to{opacity:1;transform:none}}
   .map-head{padding:16px 18px 8px;padding-right:52px}
   .map-title{font-size:var(--fs-title);font-weight:700;letter-spacing:-.005em;display:flex;align-items:center;gap:8px}
   .map-title .mt-ico{line-height:0;display:inline-flex;color:var(--gold)}
@@ -249,6 +293,16 @@
   .map-info-x{position:absolute;top:9px;right:11px;width:26px;height:26px;border:1px solid var(--line-strong);border-radius:50%;color:var(--muted);line-height:0;display:flex;align-items:center;justify-content:center}
   .map-reset{position:absolute;top:47px;right:14px;font-family:var(--font);font-weight:600;font-size:10px;color:var(--muted);border:1px solid var(--line-strong);border-radius:var(--r-xs);padding:5px 9px;background:rgba(10,18,32,.7);z-index:13}
   .map-reset:hover{color:var(--paper)}
+
+  /* ── PWA 설치 힌트 (상황 감지 배너) ── */
+  .pwa-hint{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 14px);transform:translateX(-50%) translateY(150%);z-index:38;width:calc(100% - 28px);max-width:402px;display:none;align-items:center;gap:11px;padding:11px 13px;background:var(--glass);backdrop-filter:blur(20px) saturate(1.3);-webkit-backdrop-filter:blur(20px) saturate(1.3);border:1px solid var(--gold-line);border-radius:var(--r-lg);box-shadow:0 18px 44px -16px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.06);opacity:0;transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .3s}
+  .pwa-hint.show{display:flex;transform:translateX(-50%) translateY(0);opacity:1}
+  .pwa-hint-ico{flex:0 0 auto;width:34px;height:34px;border-radius:10px;background:var(--gold-tint);border:1px solid var(--gold-line);color:var(--gold);display:flex;align-items:center;justify-content:center}
+  .pwa-hint-tx{flex:1;min-width:0;font-size:12.5px;line-height:1.5;color:var(--paper-2)}
+  .pwa-hint-tx b{color:var(--paper-hi);font-weight:700}
+  .pwa-hint-act{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--bg-1);background:var(--btn-cream);border:0;border-radius:var(--r-pill);padding:8px 14px;box-shadow:0 1px 0 rgba(255,255,255,.4) inset;display:none}
+  .pwa-hint-x{flex:0 0 auto;width:26px;height:26px;border-radius:50%;color:var(--muted);background:none;border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;line-height:0}
+  .pwa-hint-x:active{transform:scale(.92)}
 
   /* ── section headers ── */
   .sec-title{display:block;position:relative;margin:44px var(--gut) 0;padding-top:14px;font-size:18px;font-weight:700;letter-spacing:-.015em;border-top:1px solid var(--line);color:var(--paper-hi)}
@@ -355,7 +409,7 @@
   /* ── sheet ── */
   .backdrop{position:fixed;inset:0;background:var(--backdrop);z-index:40;opacity:0;pointer-events:none;transition:opacity .24s,backdrop-filter .32s;backdrop-filter:blur(0);-webkit-backdrop-filter:blur(0)}
   .backdrop.open{opacity:1;pointer-events:auto;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-  .sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,44px);width:100%;max-width:430px;height:88vh;display:flex;flex-direction:column;background:var(--glass);backdrop-filter:blur(24px) saturate(1.25);-webkit-backdrop-filter:blur(24px) saturate(1.25);border:1px solid var(--line-strong);border-bottom:0;border-top:1px solid rgba(255,255,255,.10);border-radius:var(--r-xl) var(--r-xl) 0 0;z-index:50;opacity:0;pointer-events:none;box-shadow:var(--elev-sheet);transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .24s}
+  .sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,44px);width:100%;max-width:430px;height:93vh;height:95dvh;display:flex;flex-direction:column;background:var(--glass);backdrop-filter:blur(24px) saturate(1.25);-webkit-backdrop-filter:blur(24px) saturate(1.25);border:1px solid var(--line-strong);border-bottom:0;border-top:1px solid rgba(255,255,255,.10);border-radius:var(--r-xl) var(--r-xl) 0 0;z-index:50;opacity:0;pointer-events:none;box-shadow:var(--elev-sheet);transition:transform .42s cubic-bezier(.16,1,.3,1),opacity .24s}
   @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.sheet,.map-info,.sw-nav{background:var(--glass-fallback)}}
   .sheet.open{transform:translate(-50%,0);opacity:1;pointer-events:auto}
   .sheet-top{flex:0 0 auto;padding:14px 22px 0;position:relative}
@@ -382,7 +436,7 @@
   /* 옆으로 넘김 트랙 */
   .sw-track{flex:1 1 auto;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none}
   .sw-track::-webkit-scrollbar{display:none}
-  .sw-panel{flex:0 0 100%;scroll-snap-align:start;overflow-y:auto;padding:4px 22px 18px;-webkit-overflow-scrolling:touch}
+  .sw-panel{flex:0 0 100%;scroll-snap-align:start;overflow-y:auto;padding:2px 20px 16px;-webkit-overflow-scrolling:touch}
   .sw-eyebrow{font-family:var(--font);font-weight:700;font-size:10px;letter-spacing:.02em;color:var(--gold);margin-bottom:12px}
   .sw-q{margin:0 0 14px;font-size:var(--fs-lead);font-weight:700;line-height:1.4;letter-spacing:-.01em;text-wrap:balance}
   .sw-a{border-left:3px solid var(--blue);background:var(--blue-tint);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:13px 15px;font-size:14.5px;font-weight:400;line-height:1.62}
@@ -527,6 +581,7 @@
     .cue-arrow{animation:none}
     .hero-arrow{animation:none!important;opacity:.6}
     .cn-info-cue{animation:none!important;opacity:.75;transform:none}
+    .map-wrap.open{animation:none}
     .sheet,.backdrop,.subj-row-body,.subj-row-chev,.cover,.card,.quiz-opt,.map-toggle,.sheet-close,.sheet-star,.sw-arrow,.sw-next,.map-info-open,.hero-search,.search-chip,.search-res,.btn-primary,.btn-ghost,.hero-arrow,.bm-item,.subj-row-head,.chain-node,.team-item,.cn-net-item,.map-collapse,.map-reset,.search-close,.bm-item-x,.map-info-x,.cn-info-btn,.src-pop-back,.src-pop,.src-pop-x{transition:none!important}
     .backdrop.open{backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
     .sheet.open .sheet-chip,.sheet.open .sheet-meta,.sheet.open .sw-dots{animation:none!important}
@@ -664,6 +719,12 @@
   </footer>
 </div>
 
+<div class="pwa-hint" id="pwaHint" role="note">
+  <span class="pwa-hint-ico"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5v11"/><path d="M8 7l4-3.5 4 3.5"/><path d="M5.5 12v7a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-7"/></svg></span>
+  <span class="pwa-hint-tx" id="pwaHintTx"></span>
+  <button class="pwa-hint-act" id="pwaHintAct" type="button">설치</button>
+  <button class="pwa-hint-x" id="pwaHintX" type="button" aria-label="닫기"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-close"/></svg></button>
+</div>
 <div class="backdrop" id="backdrop"></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle">
   <div class="sheet-top">
@@ -857,10 +918,35 @@ function setMap(open){
   mapWrap.classList.toggle('open', open);
   mapToggle.classList.toggle('on', open);
   mapToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  if(open) requestAnimationFrame(()=>mapWrap.scrollIntoView({behavior: reduced?'auto':'smooth', block:'start'}));
+  document.body.style.overflow = open ? 'hidden' : ''; // 전체화면 모달 — 뒤 배경 스크롤 잠금
+  if(open) mapWrap.scrollTop = 0;
 }
 mapToggle.addEventListener('click', ()=>setMap(!mapWrap.classList.contains('open')));
-$('mapCollapse').addEventListener('click', ()=>{ setMap(false); mapToggle.scrollIntoView({behavior: reduced?'auto':'smooth', block:'center'}); });
+$('mapCollapse').addEventListener('click', ()=>setMap(false));
+
+/* ── PWA 설치 힌트 — 상황 감지(iOS 수동추가 / 카톡 인앱→Safari / 안드로이드 설치 프롬프트) ── */
+(function pwaHint(){
+  var el=$('pwaHint'); if(!el) return;
+  try{ if(localStorage.getItem('db_pwa_hint_v1')==='1') return; }catch(e){}
+  var n=navigator, ua=n.userAgent||'';
+  var standalone=(n.standalone===true)||(window.matchMedia&&matchMedia('(display-mode:standalone)').matches);
+  if(standalone) return;
+  var isIOS=/iphone|ipad|ipod/i.test(ua)||(n.platform==='MacIntel'&&n.maxTouchPoints>1);
+  var inApp=/KAKAOTALK|Instagram|FBAN|FBAV|Line\/|NAVER|DaumApps|; wv\)/i.test(ua);
+  var isAndroid=/android/i.test(ua);
+  var tx=$('pwaHintTx'), act=$('pwaHintAct'), deferred=null, shown=false;
+  function show(html,btn){ if(shown) return; shown=true; tx.innerHTML=html; act.style.display=btn?'inline-flex':'none'; el.classList.add('show'); }
+  function dismiss(){ el.classList.remove('show'); try{ localStorage.setItem('db_pwa_hint_v1','1'); }catch(e){} }
+  $('pwaHintX').addEventListener('click', dismiss);
+  act.addEventListener('click', function(){ if(deferred){ deferred.prompt(); deferred=null; dismiss(); } });
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; show('<b>앱처럼 설치</b>해서 홈 화면에서 바로 여세요.', true); });
+  setTimeout(function(){
+    if(shown) return;
+    if(inApp) show('<b>앱처럼 쓰려면</b> 우측 메뉴 → <b>다른 브라우저(Safari/Chrome)로 열기</b> 후 홈 화면에 추가하세요.');
+    else if(isIOS) show('<b>앱처럼 쓰려면</b> 하단 <b>공유</b> → <b>홈 화면에 추가</b>를 눌러보세요.');
+    else if(isAndroid) show('<b>앱처럼 쓰려면</b> 메뉴 → <b>홈 화면에 추가</b>를 눌러보세요.');
+  }, 1600);
+})();
 
 /* ── 북마크 (localStorage에 저장, 이 브라우저에서만 유지) ── */
 const BM_KEY = 'db_bookmarks_v1';
@@ -1515,6 +1601,7 @@ function openTheory(id){
 let curCtx = null, curCard = null;
 function openSheet(ctx, c){
   if(!c) return; // 방어: 카드 없는 손상 레코드(구버전 북마크 등)면 조용히 무시
+  if(mapWrap.classList.contains('open')) setMap(false); // 지도(전체화면) 위로 시트가 겹치지 않게 먼저 닫기
   if(!$('sheet').classList.contains('open')) lastFocus = document.activeElement;
   stopHeroAuto(); // 시트가 열려 있는 동안 히어로 자동 회전 멈춤
   curCtx = ctx; curCard = c;
