@@ -232,7 +232,11 @@
   .hd-ico{line-height:0;flex:0 0 auto}
   .hd-course{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hd-title{position:relative;z-index:1;margin-top:13px;font-size:clamp(18px,5.2vw,22px);font-weight:800;line-height:1.34;letter-spacing:-.015em;color:var(--paper-hi);
-    display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;flex:1 1 auto}
+    text-wrap:balance;word-break:keep-all;
+    display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;flex:1 1 auto}
+  /* 헤드라인 꼬리 — 인용 출처(— 피터 드러커)는 작게, 부연절(— …다)은 한 단계 낮춰 별도 줄로 */
+  .hl-attrib{font-size:.68em;font-weight:600;color:var(--muted);letter-spacing:0}
+  .hl-tail{font-size:.84em;font-weight:700;color:var(--paper-2)}
   .hd-foot{position:relative;z-index:1;margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line)}
   .hd-tags{display:flex;gap:6px;min-width:0;overflow:hidden}
   .hd-tags i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--paper-2);background:color-mix(in srgb,var(--c) 13%,transparent);border:1px solid color-mix(in srgb,var(--c) 28%,transparent);border-radius:var(--r-pill);padding:3px 9px;white-space:nowrap}
@@ -917,6 +921,21 @@ const KEY_TAGS = { econ:['경제','시장'], ba:['AI','데이터'], ob:['HR','�
 function deckLen(card){ const d = card.db_id ? (DATA.decks||{})[card.db_id] : null; return d&&d.slides ? d.slides.length : 0; }
 const hdStage = $('hdStage'), hdDots = $('hdDots');
 function mkSpan(cls, txt){ const e=document.createElement('span'); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
+// 헤드라인 줄나눔 — 카드뉴스엔 이미지가 없어 타이포 정렬이 전부다.
+// 마지막 대시(—) 기준으로 꼬리를 잘라 <br>로 내린다. 짧고 서술어로 안 끝나면 인용 출처(작게),
+// 길면 부연절(한 단계 낮은 위계). <br>이라 -webkit-line-clamp와도 호환.
+function setHeadline(el, text){
+  el.textContent = '';
+  const t = String(text == null ? '' : text).trim();
+  const m = t.match(/^(.+)\s+[—–]\s+(.+)$/);   // greedy → 마지막 대시에서 분리
+  if(!m){ el.textContent = t; return el; }
+  const main = m[1].trim(), tail = m[2].trim();
+  const isAttrib = tail.length <= 16 && !/[다요까죠네](?:[.!?])?$/.test(tail);
+  el.appendChild(document.createTextNode(main));
+  el.appendChild(document.createElement('br'));
+  el.appendChild(mkSpan(isAttrib ? 'hl-attrib' : 'hl-tail', '— ' + tail));
+  return el;
+}
 function buildDeckCard(d, i){
   const col = SUBCOL[d.card.k] || '#CBA75E';
   const card = document.createElement('button'); card.type='button'; card.className='hd-card';
@@ -925,7 +944,7 @@ function buildDeckCard(d, i){
   const mark = mkSpan('hd-mark'); mark.setAttribute('aria-hidden','true'); mark.appendChild(subjIcon(d.card.k,140));
   const top = mkSpan('hd-top'); const ico = mkSpan('hd-ico'); ico.appendChild(subjIcon(d.card.k,18));
   top.append(ico, mkSpan('hd-course', `${d.s.name} · ${d.s.prof} 교수님`));
-  const title = mkSpan('hd-title', d.headline);
+  const title = setHeadline(mkSpan('hd-title'), d.headline);
   const foot = mkSpan('hd-foot');
   const tags = mkSpan('hd-tags'); (KEY_TAGS[d.card.k]||[]).slice(0,2).forEach(t=>tags.appendChild(mkSpan('i', t)));
   const n = deckLen(d.card);
@@ -1701,7 +1720,7 @@ function buildPanels(c){
   return items.map((it, i)=>{
     const p = el('sw-panel');
     cnHead(p, i+1, it.step, it.badge, accent);
-    if(it.title) p.appendChild(el('cn-title', it.title));
+    if(it.title) p.appendChild(setHeadline(el('cn-title'), it.title));
     it.fill(p, items.length);
     if(i===0 && items.length>1){
       const pv=el('sw-preview'); pv.appendChild(el('sw-preview-lab','옆으로 넘기면 이만큼 더 있어요 →'));
