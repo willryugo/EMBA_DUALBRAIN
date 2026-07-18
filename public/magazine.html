@@ -9,7 +9,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="듀얼브레인">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon-v2.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32-v2.png">
 <link rel="manifest" href="/magazine.webmanifest">
 <title>듀얼브레인 — EMBA 17기의 두 번째 뇌</title>
 </head>
@@ -290,6 +291,15 @@
   .map-info-hook{font-size:12.5px;color:var(--muted);line-height:1.5}
   .map-info-open{margin-top:10px;background:var(--btn-cream);color:var(--bg-1);font-weight:700;border-radius:var(--r-pill);padding:8px 16px;font-size:12.5px;box-shadow:0 1px 0 rgba(255,255,255,.4) inset,0 6px 16px -6px rgba(0,0,0,.55);transition:filter .14s,transform .1s}
   .map-info-open:active{transform:translateY(1px);filter:brightness(.98)}
+  .map-info-links{margin-top:12px}
+  .mi-links-lab{font-size:10px;font-weight:700;letter-spacing:.03em;color:var(--muted);margin-bottom:7px}
+  .mi-links{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  .mi-links::-webkit-scrollbar{display:none}
+  .mi-link{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--paper-2);background:rgba(255,255,255,.03);border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:6px 11px;max-width:184px;transition:border-color .14s,transform .1s}
+  .mi-link i{width:6px;height:6px;border-radius:50%;flex:0 0 auto}
+  .mi-link span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mi-link:hover{border-color:var(--gold-line)}
+  .mi-link:active{transform:scale(.96)}
   .map-info-x{position:absolute;top:9px;right:11px;width:26px;height:26px;border:1px solid var(--line-strong);border-radius:50%;color:var(--muted);line-height:0;display:flex;align-items:center;justify-content:center}
   .map-reset{position:absolute;top:47px;right:14px;font-family:var(--font);font-weight:600;font-size:10px;color:var(--muted);border:1px solid var(--line-strong);border-radius:var(--r-xs);padding:5px 9px;background:rgba(10,18,32,.7);z-index:13}
   .map-reset:hover{color:var(--paper)}
@@ -632,16 +642,23 @@
     </div>
     <div class="brandrow">
       <svg class="logo" width="46" height="32" viewBox="0 0 38 26" aria-hidden="true">
-        <defs><linearGradient id="lgGold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="#B8933F"/><stop offset=".5" stop-color="#E6CE88"/><stop offset="1" stop-color="#C29A48"/>
-        </linearGradient>
-        <radialGradient id="lgGoldGlow" cx=".34" cy=".30" r=".85">
-          <stop offset="0" stop-color="#FBEFC4"/><stop offset=".42" stop-color="#E6CE88"/><stop offset="1" stop-color="#B8933F"/>
-        </radialGradient></defs>
-        <circle cx="14" cy="13" r="10" fill="none" stroke="#ECE6DB" stroke-width="2"/>
-        <circle class="db-lit" cx="24" cy="13" r="10" fill="url(#lgGoldGlow)"/>
-        <path d="M19 5.1a10 10 0 0 0 0 15.8 10 10 0 0 0 0-15.8Z" fill="#0C1420"/>
-        <circle cx="19" cy="13" r="1.7" fill="#ECE6DB"/>
+        <defs>
+          <linearGradient id="lgL" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#E4B85E"/><stop offset="1" stop-color="#886726"/>
+          </linearGradient>
+          <radialGradient id="lgR" cx=".4" cy=".3" r=".95">
+            <stop offset="0" stop-color="#FDF2CE"/><stop offset=".48" stop-color="#ECD48E"/><stop offset="1" stop-color="#C0913C"/>
+          </radialGradient>
+          <linearGradient id="lgLens" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFFAEA"/><stop offset="1" stop-color="#F3DB92"/>
+          </linearGradient>
+          <clipPath id="lgClipL"><circle cx="14" cy="13" r="10"/></clipPath>
+        </defs>
+        <circle cx="14" cy="13" r="10" fill="url(#lgL)"/>
+        <circle class="db-lit" cx="24" cy="13" r="10" fill="url(#lgR)"/>
+        <circle cx="24" cy="13" r="10" fill="url(#lgLens)" clip-path="url(#lgClipL)"/>
+        <circle cx="14" cy="13" r="10" fill="none" stroke="#FFF6DA" stroke-opacity=".42" stroke-width="1"/>
+        <circle cx="24" cy="13" r="10" fill="none" stroke="#FFF6DA" stroke-opacity=".42" stroke-width="1"/>
       </svg>
       <span class="wordmark">듀얼브레인</span>
     </div>
@@ -704,6 +721,7 @@
       <div class="map-info-course" id="mapInfoCourse"></div>
       <div class="map-info-concept" id="mapInfoConcept"></div>
       <div class="map-info-hook" id="mapInfoHook"></div>
+      <div class="map-info-links" id="mapInfoLinks"></div>
       <button class="map-info-open" id="mapInfoOpen">카드 열기 →</button>
     </div>
   </section>
@@ -1257,9 +1275,10 @@ const G = DATA.graph;
   const svg = $('mapSvg');
   const W = G.W, H = G.H;
   // 인접
-  const adj = {};
-  G.links.forEach(([a,b])=>{ (adj[a]=adj[a]||new Set()).add(b); (adj[b]=adj[b]||new Set()).add(a); });
   const nById = {}; G.nodes.forEach((n,i)=>{ n._i=i; nById[n.id]=n; });
+  // 인접 — 노드 id로 키 (G.links는 인덱스 쌍이라 id로 변환). 예전엔 인덱스로 키가 걸려 adj[id]가 항상 비어 이웃 인식 실패(선만 뜨고 이웃 제목/하이라이트 X)
+  const adj = {};
+  G.links.forEach(([ai,bi])=>{ const a=G.nodes[ai], b=G.nodes[bi]; if(!a||!b) return; (adj[a.id]=adj[a.id]||new Set()).add(b.id); (adj[b.id]=adj[b.id]||new Set()).add(a.id); });
 
   // 레이어
   const gEdges = document.createElementNS(SVGNS,'g');
@@ -1320,6 +1339,7 @@ const G = DATA.graph;
     });
     $('mapReset').hidden = !(f || view.w < W - 1);
   }
+  function centerOn(id){ const nn=nById[id]; if(!nn) return; setView({x:nn.x-view.w/2, y:nn.y-view.h/2, w:view.w, h:view.h}); }
   function showInfo(id){
     const n = nById[id];
     const mc=$('mapInfoCourse'); mc.textContent=''; mc.appendChild(icon(ICOID[n.k]||'ic-brain',13,NODECOL[n.id]||n.col)); mc.appendChild(document.createTextNode((NAMES[n.k]||'')+' · 연결 '+n.deg));
@@ -1327,6 +1347,23 @@ const G = DATA.graph;
     $('mapInfoConcept').textContent = n.c;
     const th = (DATA.theory||{})[id];
     $('mapInfoHook').textContent = th ? th.hook : '';
+    // 연결된 개념 — 제목을 목록으로, 눌러서 그 개념으로 이동
+    const links=$('mapInfoLinks'); links.textContent='';
+    const neigh = adj[id] ? Array.from(adj[id]) : [];
+    if(neigh.length){
+      neigh.sort((a,b)=>(((nById[b]||{}).deg)||0)-(((nById[a]||{}).deg)||0));
+      const lab=document.createElement('div'); lab.className='mi-links-lab'; lab.textContent='연결된 개념 '+neigh.length+'개 — 눌러서 이동';
+      const row=document.createElement('div'); row.className='mi-links';
+      neigh.forEach(nid=>{ const nn=nById[nid]; if(!nn) return;
+        const bt=document.createElement('button'); bt.className='mi-link'; bt.type='button';
+        const dot=document.createElement('i'); dot.style.background=NODECOL[nid]||nn.col;
+        const sp=document.createElement('span'); sp.textContent=nn.c;
+        bt.appendChild(dot); bt.appendChild(sp);
+        bt.addEventListener('click', ev=>{ ev.stopPropagation(); setActive(nid); centerOn(nid); });
+        row.appendChild(bt);
+      });
+      links.appendChild(lab); links.appendChild(row);
+    }
     $('mapInfo').classList.add('on');
     $('mapInfoOpen').onclick = (ev)=>{ ev.stopPropagation(); openTheory(id); };
   }
