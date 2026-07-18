@@ -210,6 +210,45 @@
   .hero-arrow-r svg{transform:scaleX(-1)}
   @keyframes heroArrowPulse{0%,100%{opacity:.3}50%{opacity:.72}}
 
+  /* ── hero 커버플로우 덱 (TrendCircle식 3D) ── */
+  .hero-deck{position:relative;margin-top:var(--s4);height:clamp(284px,78vw,330px);user-select:none;touch-action:pan-y;cursor:grab}
+  .hero-deck:active{cursor:grabbing}
+  .hd-clip{position:absolute;top:0;bottom:0;left:calc(var(--gut) * -1);right:calc(var(--gut) * -1);perspective:1250px;perspective-origin:50% 44%;overflow:hidden}
+  .hd-stage{position:absolute;inset:0;transform-style:preserve-3d}
+  .hd-card{position:absolute;top:0;left:50%;width:min(60vw,244px);height:100%;margin-left:calc(min(60vw,244px) / -2);
+    display:flex;flex-direction:column;text-align:left;cursor:pointer;
+    border-radius:20px;padding:18px 17px;overflow:hidden;
+    background:linear-gradient(163deg,var(--surface-2) 0%,var(--surface-1) 80%);
+    border:1px solid var(--line-strong);
+    box-shadow:0 24px 48px -22px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.05);
+    transition:transform .52s cubic-bezier(.22,1,.3,1),opacity .5s ease,filter .5s ease,box-shadow .5s ease;
+    will-change:transform,opacity;backface-visibility:hidden;font-family:inherit;color:var(--paper)}
+  .hd-card.is-active{border-color:color-mix(in srgb,var(--c) 42%,var(--line-strong));box-shadow:0 32px 62px -22px rgba(0,0,0,.82),0 0 0 1px color-mix(in srgb,var(--c) 24%,transparent),inset 0 1px 0 rgba(255,255,255,.06)}
+  .hd-card:focus-visible{outline:2px solid var(--c);outline-offset:3px}
+  .hd-glow{position:absolute;left:0;right:0;top:0;height:46%;pointer-events:none;background:radial-gradient(122% 100% at 50% 0%,color-mix(in srgb,var(--c) 32%,transparent) 0%,transparent 68%);opacity:.92}
+  .hd-mark{position:absolute;right:-26px;top:-20px;opacity:.10;pointer-events:none;transform:rotate(-8deg);line-height:0}
+  .hd-mark svg{width:140px;height:140px}
+  .hd-top{position:relative;z-index:1;display:flex;align-items:center;gap:8px}
+  .hd-ico{line-height:0;flex:0 0 auto}
+  .hd-course{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hd-title{position:relative;z-index:1;margin-top:13px;font-size:clamp(18px,5.2vw,22px);font-weight:800;line-height:1.34;letter-spacing:-.015em;color:var(--paper-hi);
+    display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;flex:1 1 auto}
+  .hd-foot{position:relative;z-index:1;margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line)}
+  .hd-tags{display:flex;gap:6px;min-width:0;overflow:hidden}
+  .hd-tags i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--paper-2);background:color-mix(in srgb,var(--c) 13%,transparent);border:1px solid color-mix(in srgb,var(--c) 28%,transparent);border-radius:var(--r-pill);padding:3px 9px;white-space:nowrap}
+  .hd-cue{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--c);letter-spacing:-.01em;white-space:nowrap}
+  .hd-dots{display:flex;justify-content:center;gap:7px;margin-top:var(--s4)}
+  .hd-dot{width:6px;height:6px;border-radius:50%;background:var(--line-strong);transition:width .3s,background .3s;cursor:pointer;border:0;padding:0}
+  .hd-dot.on{width:20px;background:var(--gold);border-radius:3px}
+  .hd-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:60;width:34px;height:62px;background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line-strong);border-radius:var(--r-pill);color:var(--paper-hi);opacity:.9;line-height:0;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .12s,filter .15s,border-color .15s}
+  .hd-arrow:hover,.hd-arrow:focus-visible{opacity:1;border-color:var(--gold-line);filter:drop-shadow(0 3px 8px rgba(0,0,0,.5))}
+  .hd-arrow:active{transform:translateY(-50%) scale(.9)}
+  .hd-arrow-l{left:-10px}
+  .hd-arrow-r{right:-10px}
+  .hd-arrow svg{width:13px;height:36px}
+  .hd-arrow-r svg{transform:scaleX(-1)}
+  @media (prefers-reduced-motion: reduce){.hd-card{transition:opacity .3s ease}}
+
   /* ── 두뇌지도 / 북마크 wrap ── */
   /* 두뇌지도 = 전체화면 은하수 모달 (삽입형 아님) */
   .map-wrap{display:none}
@@ -672,15 +711,14 @@
   </header>
 
   <section class="hero" aria-label="오늘의 질문">
-    <p class="hero-badge" id="heroBadge">오늘의 인사이트</p>
-    <span class="hero-chip"><span id="heroIco" style="line-height:0"></span><span id="heroLbl"></span></span>
-    <div class="hero-swipe" id="heroSwipe">
-      <button class="hero-arrow hero-arrow-l" id="heroPrev" aria-label="이전 인사이트"><svg width="16" height="48" viewBox="0 0 16 48" aria-hidden="true"><use href="#ic-chev-tall"/></svg></button>
-      <button class="hook hook-btn" id="heroHl" aria-label="이 카드 열기"></button>
-      <button class="hero-arrow hero-arrow-r" id="heroNext" aria-label="다음 인사이트"><svg width="16" height="48" viewBox="0 0 16 48" aria-hidden="true"><use href="#ic-chev-tall"/></svg></button>
+    <p class="hero-badge" id="heroBadge">오늘의 인사이트 · 밀어서 넘겨보세요</p>
+    <div class="hero-deck" id="heroDeck">
+      <div class="hd-clip"><div class="hd-stage" id="hdStage"></div></div>
+      <button class="hd-arrow hd-arrow-l" id="heroPrev" aria-label="이전 인사이트"><svg width="16" height="48" viewBox="0 0 16 48" aria-hidden="true"><use href="#ic-chev-tall"/></svg></button>
+      <button class="hd-arrow hd-arrow-r" id="heroNext" aria-label="다음 인사이트"><svg width="16" height="48" viewBox="0 0 16 48" aria-hidden="true"><use href="#ic-chev-tall"/></svg></button>
     </div>
-    <div class="hero-kw" id="heroKw"></div>
-    <p class="hero-tap-cue">탭하여 카드뉴스 보기<span class="cue-arrow">→</span></p>
+    <div class="hd-dots" id="hdDots"></div>
+    <p class="hero-tap-cue">가운데 카드를 탭하면 카드뉴스<span class="cue-arrow">→</span></p>
     <button class="hero-search" id="btnSearch" aria-expanded="false" aria-controls="searchPanel">
       <span class="hs-ico"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--muted)"><use href="#ic-search"/></svg></span>
       <span class="hs-ph">무엇이든 물어보세요 <span class="hs-eg" id="hsEg">— 인사·전략·회계</span></span>
@@ -854,105 +892,91 @@ $('themeToggle').addEventListener('click', ()=>{
 // 어준경(경영경제) 과목을 과목 목록 맨 아래로 (수달님 요청)
 DATA.subjects = [...DATA.subjects.filter(s=>s.key!=='econ'), ...DATA.subjects.filter(s=>s.key==='econ')];
 
-/* ── hero: 매거진 카드 풀 + 아직 매거진 카드로 안 뽑힌 이론카드까지 전부 랜덤 (탭하면 바로 카드뉴스 오픈) ── */
-const heroPool = [];
-const heroMapped = new Set();
-DATA.subjects.forEach(s=>{
-  const lbl = `${s.name} · ${s.prof} 교수님`;
-  s.cards.forEach(c=>{ if(c.db_id) heroMapped.add(c.db_id); heroPool.push({icon:s.icon, lbl, card:{...c, k:s.key}}); });
-});
-// 매거진 카드로 안 뽑힌 이론카드(두뇌지도 전체 126장 중 나머지)도 브라우징 풀에 합류
-Object.entries(DATA.theory||{}).forEach(([id,th])=>{
-  if(heroMapped.has(id)) return;
-  const s = DATA.subjects.find(x=>x.key===th.k); if(!s) return;
-  heroPool.push({icon:s.icon, lbl:`${s.name} · ${s.prof} 교수님`,
-    card:{tag:'심화', title:th.concept, hook:th.hook, body:'', src:'DualBrain 이론카드 · 연결 '+th.deg, db_id:id, k:th.k}});
-});
-// 셔플(Fisher-Yates) — 브라우저 Math.random 사용
-for(let i=heroPool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [heroPool[i],heroPool[j]]=[heroPool[j],heroPool[i]]; }
-// 오늘의 인사이트 — 날짜 시드로 큐레이션 카드 하나를 맨 앞에 고정 (기존 별도 ticker 섹션과 중복이라 히어로에 통합)
-if(DATA.ticker && DATA.ticker.length){
-  const tickItems = DATA.ticker.map(t=>{ const s=DATA.subjects.find(x=>x.key===t.key); return {s, c:s.cards[t.card], line:t.line}; });
-  const today = new Date(); const tIdx = (today.getDate()+today.getMonth())%tickItems.length;
-  const seed = tickItems[tIdx];
-  heroPool.unshift({icon:seed.s.icon, lbl:`${seed.s.name} · ${seed.s.prof} 교수님`, card:{...seed.c, k:seed.s.key}, headline:seed.line, curated:true});
-}
-let hi = 0, suppressHeroClick = false, heroTimer = null;
-// 헤드라인 밑에 보여줄 핵심 키워드 — 과목이 실제로 어떤 비즈니스 기능과 맞닿아있는지
-const KEY_TAGS = {
-  econ:[{t:'경제',c:SUBCOL.econ},{t:'시장',c:SUBCOL.econ}],
-  ba:[{t:'AI',c:SUBCOL.ba},{t:'데이터',c:SUBCOL.ba}],
-  ob:[{t:'HR',c:SUBCOL.ob},{t:'조직',c:SUBCOL.ob}],
-  ethics:[{t:'윤리',c:SUBCOL.ethics},{t:'컴플라이언스',c:SUBCOL.ethics}],
-  ms:[{t:'전략',c:SUBCOL.ms},{t:'최적화',c:SUBCOL.ms}],
-  mkt:[{t:'마케팅',c:SUBCOL.mkt},{t:'브랜드',c:SUBCOL.mkt}],
-  fa:[{t:'재무',c:SUBCOL.fa},{t:'회계',c:SUBCOL.fa}],
-};
-function showHero(i){
-  const h = heroPool[i];
-  $('heroBadge').style.display = h.curated ? '' : 'none';
-  setSubjIcon($('heroIco'), h.card.k, 18);
-  $('heroLbl').textContent = h.lbl;
-  const hl = $('heroHl'); hl.textContent = '';
-  const m = document.createElement('mark'); m.textContent = h.headline || h.card.hook; hl.appendChild(m);
-  const kw = $('heroKw'); kw.textContent = '';
-  (KEY_TAGS[h.card.k] || []).forEach(t=>{
-    const chip = document.createElement('span'); chip.className='hero-kw-chip';
-    const dot = document.createElement('i'); dot.style.background = t.c;
-    chip.append(dot, document.createTextNode(t.t));
-    kw.appendChild(chip);
+/* ── hero 커버플로우 덱: 큐레이션 '오늘의 인사이트'(ticker) + 과목별 대표를 3D 커버플로우로 (탭하면 카드뉴스) ── */
+const DECK = [];
+(function buildDeck(){
+  const seen = new Set();
+  // 1) 큐레이션 인사이트 (ticker) — 각 과목이 골라 놓은 헤드라인
+  (DATA.ticker||[]).forEach(t=>{
+    const s = DATA.subjects.find(x=>x.key===t.key); if(!s) return;
+    const c = s.cards[t.card]; if(!c) return;
+    if(c.db_id) seen.add(c.db_id);
+    DECK.push({ s, card:{...c, k:s.key}, headline:(t.line || c.hook) });
   });
+  // 2) 9장 못 채웠으면 과목별 대표 카드로 보충 (중복 db_id 제외)
+  DATA.subjects.forEach(s=>{
+    if(DECK.length>=9) return;
+    const c = s.cards[0]; if(!c) return; if(c.db_id && seen.has(c.db_id)) return;
+    if(c.db_id) seen.add(c.db_id);
+    DECK.push({ s, card:{...c, k:s.key}, headline:c.hook });
+  });
+  if(!DECK.length){ DATA.subjects.forEach(s=>{ const c=s.cards[0]; if(c) DECK.push({s, card:{...c,k:s.key}, headline:c.hook}); }); }
+})();
+let hi = 0, deckSuppress = false, heroTimer = null;
+const KEY_TAGS = { econ:['경제','시장'], ba:['AI','데이터'], ob:['HR','조직'], ethics:['윤리','컴플라이언스'], ms:['전략','최적화'], mkt:['마케팅','브랜드'], fa:['재무','회계'] };
+function deckLen(card){ const d = card.db_id ? (DATA.decks||{})[card.db_id] : null; return d&&d.slides ? d.slides.length : 0; }
+const hdStage = $('hdStage'), hdDots = $('hdDots');
+function mkSpan(cls, txt){ const e=document.createElement('span'); if(cls)e.className=cls; if(txt!=null)e.textContent=txt; return e; }
+function buildDeckCard(d, i){
+  const col = SUBCOL[d.card.k] || '#CBA75E';
+  const card = document.createElement('button'); card.type='button'; card.className='hd-card';
+  card.style.setProperty('--c', col); card.setAttribute('aria-label', d.headline);
+  const glow = mkSpan('hd-glow'); glow.setAttribute('aria-hidden','true');
+  const mark = mkSpan('hd-mark'); mark.setAttribute('aria-hidden','true'); mark.appendChild(subjIcon(d.card.k,140));
+  const top = mkSpan('hd-top'); const ico = mkSpan('hd-ico'); ico.appendChild(subjIcon(d.card.k,18));
+  top.append(ico, mkSpan('hd-course', `${d.s.name} · ${d.s.prof} 교수님`));
+  const title = mkSpan('hd-title', d.headline);
+  const foot = mkSpan('hd-foot');
+  const tags = mkSpan('hd-tags'); (KEY_TAGS[d.card.k]||[]).slice(0,2).forEach(t=>tags.appendChild(mkSpan('i', t)));
+  const n = deckLen(d.card);
+  foot.append(tags, mkSpan('hd-cue', (n ? ('카드뉴스 '+n+'장') : '카드뉴스') + '  →'));
+  card.append(glow, mark, top, title, foot);
+  card.addEventListener('click', ()=>{
+    if(deckSuppress){ deckSuppress=false; return; }
+    if(i!==hi){ stopHeroAuto(); setDeck(i); return; }           // 옆 카드 탭 → 가운데로
+    openSheet({key:d.card.k, lbl:`${d.s.name} · ${d.s.prof} 교수님`}, d.card);  // 가운데 카드 탭 → 카드뉴스
+  });
+  return card;
 }
-function openHero(){
-  if(suppressHeroClick){ suppressHeroClick=false; return; }
-  const h = heroPool[hi]; openSheet({key:h.card.k, lbl:h.lbl}, h.card);
+const hdCards = DECK.map(buildDeckCard);
+hdCards.forEach(c=>hdStage.appendChild(c));
+const hdDotEls = DECK.map((_,i)=>{ const b=document.createElement('button'); b.type='button'; b.className='hd-dot'; b.setAttribute('aria-label',(i+1)+'번 인사이트'); b.addEventListener('click',()=>{ stopHeroAuto(); setDeck(i); }); hdDots.appendChild(b); return b; });
+function layoutDeck(){
+  const N = DECK.length;
+  hdCards.forEach((el,i)=>{
+    let off = i - hi;
+    if(off >  N/2) off -= N;
+    if(off < -N/2) off += N;
+    const a = Math.abs(off), sgn = off<0 ? -1 : 1;
+    let tx, sc, ry, op, z, fl, pe;
+    if(a===0){ tx=0;       sc=1;   ry=0;       op=1; z=50; fl='none';                        pe='auto'; }
+    else if(a===1){ tx=sgn*52; sc=.82; ry=sgn*-26; op=.92; z=40; fl='brightness(.62)';           pe='auto'; }
+    else if(a===2){ tx=sgn*96; sc=.66; ry=sgn*-30; op=.5;  z=30; fl='brightness(.42) blur(.6px)'; pe='auto'; }
+    else          { tx=sgn*128; sc=.55; ry=sgn*-32; op=0;   z=10; fl='brightness(.3)';            pe='none'; }
+    el.style.transform = `translate3d(${tx}%,0,0) scale(${sc}) rotateY(${ry}deg)`;
+    el.style.opacity = op; el.style.zIndex = z; el.style.filter = fl; el.style.pointerEvents = pe;
+    el.classList.toggle('is-active', a===0);
+  });
+  hdDotEls.forEach((d,i)=>d.classList.toggle('on', i===hi));
 }
-function startHeroAuto(){ stopHeroAuto(); if(!reduced && !document.hidden && !$('sheet').classList.contains('open')) heroTimer = setInterval(()=>heroNav(1), 4000); }
+function setDeck(i){ const N=DECK.length; hi=((i%N)+N)%N; layoutDeck(); }
+function deckNav(dir){ setDeck(hi+dir); }
+function startHeroAuto(){ stopHeroAuto(); if(!reduced && !document.hidden && DECK.length>1 && !$('sheet').classList.contains('open')) heroTimer = setInterval(()=>deckNav(1), 4400); }
 function stopHeroAuto(){ if(heroTimer){ clearInterval(heroTimer); heroTimer=null; } }
-function heroNav(dir){
-  const wrap = $('heroSwipe');
-  // 나가는 프레임은 빠르게, 들어오는 프레임은 부드럽게 (asymmetric expo)
-  wrap.style.transition = reduced ? 'none' : 'transform .14s cubic-bezier(.4,0,1,1), opacity .14s ease';
-  wrap.style.transform = `translateX(${dir*-14}px)`; wrap.style.opacity = '0';
-  setTimeout(()=>{
-    hi = (hi + dir + heroPool.length) % heroPool.length;
-    showHero(hi);
-    wrap.style.transition = 'none';
-    wrap.style.transform = `translateX(${dir*14}px)`; wrap.style.opacity = '0';
-    requestAnimationFrame(()=>{
-      wrap.style.transition = reduced ? 'none' : 'transform .26s cubic-bezier(.16,1,.3,1), opacity .22s ease';
-      wrap.style.transform = 'translateX(0)'; wrap.style.opacity = '1';
-    });
-  }, reduced ? 0 : 140);
-}
-// 백그라운드 탭에서는 자동 회전 정지
 document.addEventListener('visibilitychange', ()=>{ document.hidden ? stopHeroAuto() : startHeroAuto(); });
-$('heroHl').addEventListener('click', openHero);
-$('heroPrev').addEventListener('click', ()=>{ stopHeroAuto(); heroNav(-1); });
-$('heroNext').addEventListener('click', ()=>{ stopHeroAuto(); heroNav(1); });
-// 좌우 스와이프 — 3초마다 자동 회전하다가 사용자가 직접 넘기면 그때부터 수동 탐색
-(function setupHeroSwipe(){
-  const zone = $('heroSwipe');
-  let sx=0, sy=0, dragging=false;
+$('heroPrev').addEventListener('click', ()=>{ stopHeroAuto(); deckNav(-1); });
+$('heroNext').addEventListener('click', ()=>{ stopHeroAuto(); deckNav(1); });
+// 드래그/스와이프 — 좌우로 밀면 넘김 (자동 회전 중단)
+(function setupDeckSwipe(){
+  const zone = $('heroDeck'); let sx=0, sy=0, dragging=false;
   zone.addEventListener('pointerdown', e=>{ sx=e.clientX; sy=e.clientY; dragging=true; });
-  zone.addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    const dx=e.clientX-sx, dy=e.clientY-sy;
-    if(Math.abs(dx)>8 && Math.abs(dx)>Math.abs(dy)){ zone.style.transition='none'; zone.style.transform=`translateX(${dx*.4}px)`; }
-  });
-  const finish = e=>{
-    if(!dragging) return; dragging=false;
-    const dx=(e.clientX||sx)-sx, dy=(e.clientY||sy)-sy;
-    if(Math.abs(dx)>28 && Math.abs(dx)>Math.abs(dy)){
-      suppressHeroClick = true; stopHeroAuto(); heroNav(dx<0 ? 1 : -1);
-    } else {
-      zone.style.transition='transform .18s ease'; zone.style.transform='translateX(0)';
-    }
-  };
+  zone.addEventListener('pointermove', e=>{ if(!dragging) return; const dx=e.clientX-sx, dy=e.clientY-sy; if(Math.abs(dx)>10 && Math.abs(dx)>Math.abs(dy)) deckSuppress=true; });
+  const finish = e=>{ if(!dragging) return; dragging=false; const dx=(e.clientX||sx)-sx, dy=(e.clientY||sy)-sy;
+    if(Math.abs(dx)>34 && Math.abs(dx)>Math.abs(dy)){ deckSuppress=true; stopHeroAuto(); deckNav(dx<0 ? 1 : -1); } };
   zone.addEventListener('pointerup', finish);
   zone.addEventListener('pointercancel', finish);
 })();
-showHero(0); startHeroAuto(); // 맨 앞은 오늘의 큐레이션 픽, 이후 3초마다 자동 회전
+layoutDeck(); startHeroAuto(); // 가운데=첫 카드, 이후 자동 회전
 
 /* ── 지도 토글 (기본 접힘, 아이콘으로 열기) ── */
 const mapToggle = $('mapToggle'), mapWrap = $('mapWrap');
