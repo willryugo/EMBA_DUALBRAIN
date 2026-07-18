@@ -211,11 +211,12 @@
   @keyframes heroArrowPulse{0%,100%{opacity:.3}50%{opacity:.72}}
 
   /* ── hero 커버플로우 덱 (TrendCircle식 3D) ── */
-  .hero-deck{position:relative;margin-top:var(--s4);height:clamp(284px,78vw,330px);user-select:none;touch-action:pan-y;cursor:grab}
+  /* --cw = 카드 한 변. 폭·높이를 같은 값으로 묶어 항상 정방형(1:1) — 헤드라인 아래 빈 여백 제거 */
+  .hero-deck{--cw:min(64vw,252px);position:relative;margin-top:var(--s4);height:var(--cw);user-select:none;touch-action:pan-y;cursor:grab}
   .hero-deck:active{cursor:grabbing}
   .hd-clip{position:absolute;top:0;bottom:0;left:calc(var(--gut) * -1);right:calc(var(--gut) * -1);perspective:1250px;perspective-origin:50% 44%;overflow:hidden}
   .hd-stage{position:absolute;inset:0;transform-style:preserve-3d}
-  .hd-card{position:absolute;top:0;left:50%;width:min(60vw,244px);height:100%;margin-left:calc(min(60vw,244px) / -2);
+  .hd-card{position:absolute;top:0;left:50%;width:var(--cw);height:100%;margin-left:calc(var(--cw) / -2);
     display:flex;flex-direction:column;text-align:left;cursor:pointer;
     border-radius:20px;padding:18px 17px;overflow:hidden;
     background:linear-gradient(163deg,var(--surface-2) 0%,var(--surface-1) 80%);
@@ -233,7 +234,7 @@
   .hd-course{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .hd-title{position:relative;z-index:1;margin-top:13px;font-size:clamp(18px,5.2vw,22px);font-weight:800;line-height:1.34;letter-spacing:-.015em;color:var(--paper-hi);
     text-wrap:balance;word-break:keep-all;
-    display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;flex:1 1 auto}
+    display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;flex:1 1 auto}
   /* 헤드라인 꼬리 — 인용 출처(— 피터 드러커)는 작게, 부연절(— …다)은 한 단계 낮춰 별도 줄로 */
   .hl-attrib{font-size:.68em;font-weight:600;color:var(--muted);letter-spacing:0}
   .hl-tail{font-size:.84em;font-weight:700;color:var(--paper-2)}
