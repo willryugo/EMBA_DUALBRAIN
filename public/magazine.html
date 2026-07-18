@@ -232,13 +232,15 @@
   .hd-top{position:relative;z-index:1;display:flex;align-items:center;gap:8px}
   .hd-ico{line-height:0;flex:0 0 auto}
   .hd-course{font-size:11.5px;font-weight:600;color:var(--muted);letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .hd-title{position:relative;z-index:1;margin-top:13px;font-size:clamp(18px,5.2vw,22px);font-weight:800;line-height:1.34;letter-spacing:-.015em;color:var(--paper-hi);
+  /* margin:auto 0 → 남는 세로 공간을 제목 위아래로 균등 분배(수직 중앙). 짧은 헤드라인에서
+     아래쪽만 텅 비던 죽은 공간이 사라진다. 긴 헤드라인이면 auto가 0으로 접혀 자연히 꽉 참. */
+  .hd-title{position:relative;z-index:1;margin:auto 0;padding-top:8px;font-size:clamp(18px,5.2vw,22px);font-weight:800;line-height:1.34;letter-spacing:-.015em;color:var(--paper-hi);
     text-wrap:balance;word-break:keep-all;
-    display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;flex:1 1 auto}
+    display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;flex:0 1 auto}
   /* 헤드라인 꼬리 — 인용 출처(— 피터 드러커)는 작게, 부연절(— …다)은 한 단계 낮춰 별도 줄로 */
   .hl-attrib{font-size:.68em;font-weight:600;color:var(--muted);letter-spacing:0}
   .hl-tail{font-size:.84em;font-weight:700;color:var(--paper-2)}
-  .hd-foot{position:relative;z-index:1;margin-top:auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line)}
+  .hd-foot{position:relative;z-index:1;flex:0 0 auto;padding-top:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line)}
   .hd-tags{display:flex;gap:6px;min-width:0;overflow:hidden}
   .hd-tags i{font-style:normal;font-size:10.5px;font-weight:600;color:var(--paper-2);background:color-mix(in srgb,var(--c) 13%,transparent);border:1px solid color-mix(in srgb,var(--c) 28%,transparent);border-radius:var(--r-pill);padding:3px 9px;white-space:nowrap}
   .hd-cue{flex:0 0 auto;font-size:11px;font-weight:700;color:var(--c);letter-spacing:-.01em;white-space:nowrap}
