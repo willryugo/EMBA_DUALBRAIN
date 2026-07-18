@@ -31,10 +31,10 @@
     /* ── GLASS ── */
     --glass:rgba(14,24,40,.80); --glass-fallback:#111C2C;
     /* ── HAIRLINES + BEVEL EDGES ── */
-    --line:rgba(152,172,206,.11); --line-strong:rgba(154,176,210,.22);
+    --line:rgba(206,188,150,.11); --line-strong:rgba(208,190,152,.22);
     --edge-light:rgba(255,255,255,.055); --edge-dark:rgba(0,0,0,.28);
-    /* ── TEXT (warm ivory on cool navy) ── */
-    --paper:#F0EAE0; --paper-hi:#FBFAF5; --paper-2:#DCE2EC; --muted:#B6C2D6; --muted-deep:#7686A0;
+    /* ── TEXT (warm ivory + warm taupe-gray secondary) ── */
+    --paper:#F0EAE0; --paper-hi:#FBFAF5; --paper-2:#E4DCCB; --muted:#C4B79E; --muted-deep:#8A7E67;
     --btn-cream:linear-gradient(180deg,#F1EBDD,#DED4BF);
     --grad-deep:#0F1B30;               /* 커버·스탯 카드 하단 딥스톱 */
     --hl-bg:rgba(203,167,94,0);         /* 헤드라인 강조 = 박스 폐기 → 골드 밑줄로 전환(얼룩 제거) */
@@ -48,11 +48,11 @@
     --gold-tint:rgba(203,167,94,.09); --gold-line:rgba(203,167,94,.30);
     --gold-metal:linear-gradient(100deg,#B8933F 0%,#E6CE88 48%,#C29A48 100%);
     --marker:#CBA75E; /* legacy alias → gold */
-    /* ── SECONDARY COOL ACCENT ── */
-    --blue:#7CA6E8; --blue-line:rgba(124,166,232,.32); --blue-tint:rgba(124,166,232,.08);
-    /* ── SUBJECT JEWELS (governed, desaturated) ── */
-    --sub-econ:#D19A52; --sub-ba:#6E9BCE; --sub-ob:#D0805F; --sub-ethics:#A58AC2;
-    --sub-ms:#4F9E86; --sub-mkt:#C177A0; --sub-fa:#77AC7F;
+    /* ── SECONDARY WARM ACCENT (champagne) ── */
+    --blue:#D8B879; --blue-line:rgba(216,184,121,.34); --blue-tint:rgba(216,184,121,.10);
+    /* ── SUBJECT JEWELS (all warm — amber·brass·terracotta·rose-clay·bronze·coral·wheat) ── */
+    --sub-econ:#D6A24E; --sub-ba:#A98E44; --sub-ob:#D0805F; --sub-ethics:#BE8C72;
+    --sub-ms:#B8863C; --sub-mkt:#CE7E66; --sub-fa:#C9B06A;
     /* ── ELEVATION ── */
     --elev-1:inset 0 1px 0 var(--edge-light), inset 0 -1px 0 var(--edge-dark), 0 2px 8px rgba(0,0,0,.34), 0 8px 24px -14px rgba(0,0,0,.55);
     --elev-2:inset 0 1px 0 var(--edge-light), inset 0 -1px 0 var(--edge-dark), 0 2px 8px rgba(0,0,0,.34), 0 16px 44px -16px rgba(0,0,0,.62);
@@ -74,12 +74,12 @@
     --surface-1:#ECE5D6; --surface-2:#FFFFFF; --surface-3:#FFFFFF; --surface-4:#FFFFFF;
     --ink:#F5F1E8; --ink-deep:#E7E0D0; --card:#ECE5D6; --card-hi:#FFFFFF; --sheet:#F5F1E8;
     --glass:rgba(250,247,240,.80); --glass-fallback:#F3EFE6;
-    --line:rgba(40,52,72,.12); --line-strong:rgba(40,52,72,.20);
-    --edge-light:rgba(255,255,255,.85); --edge-dark:rgba(40,52,72,.05);
-    --paper:#25303E; --paper-hi:#101925; --paper-2:#47566A; --muted:#586377; --muted-deep:#8A96A6;
+    --line:rgba(74,60,36,.12); --line-strong:rgba(74,60,36,.20);
+    --edge-light:rgba(255,255,255,.85); --edge-dark:rgba(74,60,36,.05);
+    --paper:#2A281F; --paper-hi:#14130C; --paper-2:#4E4636; --muted:#5E5643; --muted-deep:#928873;
     --gold:#87671C; --gold-hi:#B8933F; --gold-deep:#786018;
     --gold-tint:rgba(135,103,28,.12); --gold-line:rgba(135,103,28,.38);
-    --blue:#2C5FB8; --blue-line:rgba(44,95,184,.34); --blue-tint:rgba(44,95,184,.07);
+    --blue:#9A6E1E; --blue-line:rgba(154,110,30,.34); --blue-tint:rgba(154,110,30,.08);
     --elev-1:inset 0 1px 0 var(--edge-light), 0 1px 2px rgba(30,42,64,.05), 0 10px 26px -18px rgba(30,42,64,.20);
     --elev-2:inset 0 1px 0 var(--edge-light), 0 2px 6px rgba(30,42,64,.06), 0 20px 46px -20px rgba(30,42,64,.26);
     --elev-sheet:inset 0 1px 0 rgba(255,255,255,.85), 0 -18px 50px -18px rgba(30,42,64,.22);
@@ -96,12 +96,12 @@
   }
   /* 그래프 패널(두뇌지도·북마크)은 두 테마 모두 다크 인스트루먼트로 유지 → 내부 토큰만 다크로 재선언 */
   html[data-theme="light"] .map-wrap, html[data-theme="light"] .bm-wrap{
-    --paper:#F0EAE0; --paper-2:#DCE2EC; --muted:#B6C2D6; --muted-deep:#7686A0;
-    --line:rgba(152,172,206,.14); --line-strong:rgba(154,176,210,.24);
-    --glass:rgba(14,24,40,.82); --surface-1:#131E2E; --rec-bg:linear-gradient(180deg,#101A28,#0D1622); --rec-sh:inset 0 1px 0 rgba(255,255,255,.05),inset 0 -1px 0 rgba(0,0,0,.45); --gold:#CBA75E; --gold-line:rgba(203,167,94,.30); --blue:#7CA6E8;
+    --paper:#F0EAE0; --paper-2:#E4DCCB; --muted:#C4B79E; --muted-deep:#8A7E67;
+    --line:rgba(206,188,150,.14); --line-strong:rgba(208,190,152,.24);
+    --glass:rgba(14,24,40,.82); --surface-1:#131E2E; --rec-bg:linear-gradient(180deg,#101A28,#0D1622); --rec-sh:inset 0 1px 0 rgba(255,255,255,.05),inset 0 -1px 0 rgba(0,0,0,.45); --gold:#CBA75E; --gold-line:rgba(203,167,94,.30); --blue:#D8B879;
   }
-  html[data-theme="light"] .tag-team{color:#2C5FB8}
-  html[data-theme="light"] .rich-body .rq{color:#2C57A2}
+  html[data-theme="light"] .tag-team{color:#9A6E1E}
+  html[data-theme="light"] .rich-body .rq{color:#9A6E1E}
   html[data-theme="light"] body::after{opacity:.02}
   html[data-theme="light"] .logo{filter:drop-shadow(0 1px 2px rgba(40,52,72,.18))}
   *{box-sizing:border-box}
@@ -421,7 +421,7 @@
   .tag-exam{background:var(--gold-tint);color:var(--gold);border-color:var(--gold-line);font-weight:700}
   .tag-prof{color:var(--gold);border-color:var(--gold-line)}
   .tag-case{color:var(--blue);border-color:var(--blue-line)}
-  .tag-team{color:#9FD0FF;border-color:var(--blue-line);background:var(--blue-tint)}
+  .tag-team{color:#EBD89E;border-color:var(--blue-line);background:var(--blue-tint)}
 
   /* ── 스무고개 ── */
   .quizbox{margin:0 var(--gut);background:var(--rec-bg);border:0;border-radius:var(--r-lg);padding:20px 18px;box-shadow:var(--rec-sh)}
@@ -450,7 +450,7 @@
   .chain-title{font-size:14.5px;font-weight:700;letter-spacing:-.005em}
   .chain-rail{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:12px 0 6px;scrollbar-width:thin;scrollbar-color:var(--surface-3) transparent}
   .chain-node{flex:0 0 auto;border:1px solid var(--blue-line);background:var(--blue-tint);border-radius:var(--r-sm);padding:8px 11px;font-size:12.5px;font-weight:600;line-height:1.35;display:flex;flex-direction:column;gap:3px;justify-content:center;max-width:160px;text-align:left;color:inherit;font-family:inherit;cursor:pointer;transition:border-color .14s,background .14s,transform .1s}
-  .chain-node:hover{border-color:rgba(124,166,232,.7);background:rgba(124,166,232,.10)}
+  .chain-node:hover{border-color:rgba(216,184,121,.7);background:rgba(216,184,121,.10)}
   .chain-node:active{transform:scale(.97)}
   .chain-node .csub{display:flex;align-items:center;gap:4px;font-size:9.5px;color:var(--muted);font-family:var(--font);font-weight:600;letter-spacing:.02em}
   .chain-link{flex:0 0 auto;width:16px;height:2px;background:var(--gold-deep);align-self:center}
@@ -616,7 +616,7 @@
   .rich-lab{font-family:var(--font);font-weight:700;font-size:10px;letter-spacing:.02em;color:var(--gold);margin-bottom:6px}
   .rich-body{font-size:14px;font-weight:400;line-height:1.72;color:var(--paper-2)}
   .rich-body strong{color:var(--paper-hi);font-weight:700}
-  .rich-body .rq{display:block;margin:8px 0 2px;padding:8px 12px;border-left:2px solid var(--blue);background:var(--blue-tint);border-radius:0 var(--r-xs) var(--r-xs) 0;font-size:13.5px;color:#cfe0ff}
+  .rich-body .rq{display:block;margin:8px 0 2px;padding:8px 12px;border-left:2px solid var(--blue);background:var(--blue-tint);border-radius:0 var(--r-xs) var(--r-xs) 0;font-size:13.5px;color:#E9DFBF}
   .rich-ul{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
   .rich-ul li{position:relative;padding-left:15px;font-size:13.5px;line-height:1.6;color:var(--paper)}
   .rich-ul li::before{content:'';position:absolute;left:2px;top:8px;width:5px;height:5px;background:var(--gold-deep);border-radius:50%}
@@ -841,7 +841,7 @@ const TAGCLS = {'시험포인트':'tag-exam','교수님강조':'tag-prof','사�
 /* ── 아이콘 시스템 (OS 이모지 대신 인라인 SVG 스프라이트를 <use>로 참조) ── */
 const SVGNS = 'http://www.w3.org/2000/svg';
 const ICOID = {econ:'ic-econ',ba:'ic-ba',ob:'ic-ob',ethics:'ic-ethics',ms:'ic-ms',mkt:'ic-mkt',fa:'ic-fa'};
-const SUBCOL = {econ:'#D19A52',ba:'#6E9BCE',ob:'#D0805F',ethics:'#A58AC2',ms:'#4F9E86',mkt:'#C177A0',fa:'#77AC7F'};
+const SUBCOL = {econ:'#D6A24E',ba:'#A98E44',ob:'#D0805F',ethics:'#BE8C72',ms:'#B8863C',mkt:'#CE7E66',fa:'#C9B06A'};
 function icon(id,size,color){
   const s=document.createElementNS(SVGNS,'svg');
   s.setAttribute('width',size); s.setAttribute('height',size); s.setAttribute('viewBox','0 0 24 24');
@@ -1314,7 +1314,7 @@ const G = DATA.graph;
     const a = G.nodes[ai], b = G.nodes[bi];
     const ln = document.createElementNS(SVGNS,'line');
     ln.setAttribute('x1',a.x); ln.setAttribute('y1',a.y); ln.setAttribute('x2',b.x); ln.setAttribute('y2',b.y);
-    ln.setAttribute('stroke','#9fb0d8'); ln.setAttribute('stroke-opacity','0.15');
+    ln.setAttribute('stroke','#C7B486'); ln.setAttribute('stroke-opacity','0.15');
     ln.setAttribute('stroke-width','1'); ln.setAttribute('vector-effect','non-scaling-stroke');
     gEdges.appendChild(ln); return {el:ln, a:a.id, b:b.id};
   });
@@ -1359,7 +1359,7 @@ const G = DATA.graph;
     edgeEls.forEach(e=>{
       const on = f && (e.a===f || e.b===f);
       if(on){ e.el.setAttribute('stroke', NODECOL[f]||nById[f].col); e.el.setAttribute('stroke-opacity','0.85'); e.el.setAttribute('stroke-width','2'); }
-      else { e.el.setAttribute('stroke','#9fb0d8'); e.el.setAttribute('stroke-opacity', f?'0.04':'0.15'); e.el.setAttribute('stroke-width','1'); }
+      else { e.el.setAttribute('stroke','#C7B486'); e.el.setAttribute('stroke-opacity', f?'0.04':'0.15'); e.el.setAttribute('stroke-width','1'); }
     });
     $('mapReset').hidden = !(f || view.w < W - 1);
   }
@@ -1612,11 +1612,11 @@ function buildNetGraph(neighbors, accent, hubLabel){
       const q = bgPts[(i + 3) % bgPts.length];
       const ln=document.createElementNS(SVGNS,'line');
       ln.setAttribute('x1',p.x); ln.setAttribute('y1',p.y); ln.setAttribute('x2',q.x); ln.setAttribute('y2',q.y);
-      ln.setAttribute('stroke','#9fb0d8'); ln.setAttribute('stroke-opacity','.12'); ln.setAttribute('stroke-width','1');
+      ln.setAttribute('stroke','#C7B486'); ln.setAttribute('stroke-opacity','.12'); ln.setAttribute('stroke-width','1');
       bg.appendChild(ln);
     }
     const dot=document.createElementNS(SVGNS,'circle'); dot.setAttribute('cx',p.x); dot.setAttribute('cy',p.y); dot.setAttribute('r', 1.2+rnd()*1.4);
-    dot.setAttribute('fill','#9fb0d8'); dot.setAttribute('fill-opacity','.35');
+    dot.setAttribute('fill','#C7B486'); dot.setAttribute('fill-opacity','.35');
     bg.appendChild(dot);
   });
   svg.appendChild(bg);
