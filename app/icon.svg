@@ -1,7 +1,23 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect width="64" height="64" rx="13" fill="#FBF9F5"/>
-  <g style="mix-blend-mode:multiply">
-    <circle cx="26" cy="32" r="17" fill="#5A6BF5"/>
-    <circle cx="38" cy="32" r="17" fill="#FF4FA3"/>
-  </g>
+  <defs>
+    <radialGradient id="bg" cx=".5" cy=".32" r=".9">
+      <stop offset="0" stop-color="#16243F"/><stop offset=".55" stop-color="#0A1120"/><stop offset="1" stop-color="#04070D"/>
+    </radialGradient>
+    <linearGradient id="l" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#E4B25A"/><stop offset="1" stop-color="#6E4C16"/>
+    </linearGradient>
+    <radialGradient id="r" cx=".38" cy=".3" r=".95">
+      <stop offset="0" stop-color="#F6DE93"/><stop offset=".5" stop-color="#DFB258"/><stop offset="1" stop-color="#A2711E"/>
+    </radialGradient>
+    <linearGradient id="le" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF4D2"/><stop offset="1" stop-color="#ECCB79"/>
+    </linearGradient>
+    <clipPath id="c"><circle cx="26" cy="33" r="17"/></clipPath>
+  </defs>
+  <rect width="64" height="64" rx="13" fill="url(#bg)"/>
+  <circle cx="26" cy="33" r="17" fill="url(#l)"/>
+  <circle cx="38" cy="33" r="17" fill="url(#r)"/>
+  <circle cx="38" cy="33" r="17" fill="url(#le)" clip-path="url(#c)" opacity=".9"/>
+  <circle cx="26" cy="33" r="17" fill="none" stroke="#FFF6DA" stroke-opacity=".28" stroke-width="1"/>
+  <circle cx="38" cy="33" r="17" fill="none" stroke="#FFF6DA" stroke-opacity=".22" stroke-width="1"/>
 </svg>

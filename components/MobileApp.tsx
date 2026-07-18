@@ -37,6 +37,7 @@ import { fetchAiDiagnosis } from "@/lib/aiDiagnosis";
 import { applyTheme, applyFont } from "@/lib/themes";
 import { store } from "@/lib/storage";
 import { rich } from "./rich";
+import { DBMark } from "./DBMark";
 import { OntologyGraph } from "./OntologyGraph";
 import { CaseModal } from "./CaseModal";
 import { CasePreview } from "./MagCard";
@@ -83,24 +84,8 @@ const PAINS: OwnerPainCategory[] = [
 type CssVars = CSSProperties & Record<string, string | number>;
 const css = (o: CssVars): CSSProperties => o as CSSProperties;
 
-function MMark({ size = 24, className = "" }: { size?: number; className?: string }) {
-  const W = 100,
-    H = 60;
-  return (
-    <svg
-      className={"db-mark " + className}
-      viewBox={`0 0 ${W} ${H}`}
-      width={size}
-      height={Math.round((size * H) / W)}
-      aria-hidden="true"
-    >
-      <g style={{ mixBlendMode: "multiply" }}>
-        <circle cx="32" cy="30" r="25" fill="var(--brain-l)" opacity="0.78" />
-        <circle cx="68" cy="30" r="25" fill="var(--brain-r)" opacity="0.78" />
-      </g>
-    </svg>
-  );
-}
+// 모바일 로고 = 데스크톱과 동일한 골드 듀얼디스크(DBMark) — 단일 SoT.
+const MMark = DBMark;
 
 
 // ───────────────────────── Masthead ─────────────────────────
