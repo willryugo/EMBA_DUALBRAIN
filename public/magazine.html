@@ -719,9 +719,33 @@
     .mag{max-width:1120px;box-shadow:none;padding-bottom:var(--s7)}
     body{background:radial-gradient(120% 52% at 50% -6%, var(--page-glow) 0%, transparent 52%), linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 92%)}
 
-    /* 마스트헤드 — 여백을 키워 표지답게 */
-    .mast{padding:var(--s7) var(--gut) var(--s5)}
-    .title-block h1{font-size:44px}
+    /* 마스트헤드 — 표지답게. 예전엔 .title-block h1 을 키웠는데 이 파일엔 없는 선택자라
+       제목이 30px 그대로였다(실제 클래스는 .wordmark). 그리고 액션 버튼이 제목 아래 별도 줄에
+       오른쪽 끝으로 밀려, 넓은 화면에선 가운데가 텅 빈 띠가 됐다 → 제목과 같은 줄로 올린다. */
+    .mast{padding:var(--s7) var(--gut) var(--s5);
+      display:grid;column-gap:var(--s5);align-items:center;
+      grid-template-columns:1fr auto;
+      grid-template-areas:"top top" "brand actions" "sub actions" "dek actions"}
+    .mast-top{grid-area:top}
+    .brandrow{grid-area:brand;gap:var(--s4)}
+    .subtitle{grid-area:sub}
+    .dek{grid-area:dek}
+    .mast-actions{grid-area:actions;align-self:center;margin-top:0}
+    .logo{width:62px;height:43px}
+    .wordmark{font-size:42px;letter-spacing:-.03em}
+    .subtitle{font-size:16px;margin-top:10px}
+    .dek{font-size:13px}
+    .eyebrow{font-size:12px}
+
+    /* 버튼도 화면에 맞게 키운다 — 12px 알약은 1120px 폭에서 먼지처럼 보인다 */
+    .mast-actions{gap:10px}
+    .theme-toggle{margin-right:0}
+    .map-toggle{font-size:13.5px;padding:11px 18px;gap:8px}
+    .theme-toggle{padding:11px}
+    /* '두뇌'는 이 매거진의 대표 기능인데 회색 알약이라 그냥 지나친다 — 금색으로 세운다 */
+    #mapToggle{color:var(--gold);border-color:var(--gold-line);background:var(--gold-tint);font-weight:700}
+    #mapToggle:hover{filter:brightness(1.12);border-color:var(--gold)}
+    #mapToggle .mt-ico{color:var(--gold)}
 
     /* 히어로 커버플로우 — 무대를 넓히고 카드를 키운다 */
     .hero{padding:var(--s6) var(--gut) var(--s3)}
@@ -926,7 +950,7 @@
   <ul class="team-list" id="teamList"></ul>
 
   <footer>
-    <p class="sig">EMBA 17기 학술국 · 2026-07-05</p>
+    <p class="sig">EMBA 17기 학술국 · 2026-07-19</p>
     <p class="fine">17기 내부 공유 전용 · 교수님 교안과 조별과제, 수업 기록을 재구성한 자료라 실제 강의·시험과 다를 수 있어요.<br>
     출처: 교수님 교안 · 조별과제 · 수업 기록 (카드마다 표기)</p>
   </footer>
