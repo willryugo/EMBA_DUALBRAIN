@@ -160,7 +160,19 @@
   .hero-search:active{transform:translateY(1px)}
   .hs-ico{line-height:0;flex:0 0 auto}
   .hs-ph{font-size:13.5px;color:var(--muted)}
-  .hs-eg{color:var(--blue)}
+  /* 예시어가 툭 바뀌면 안 읽힌다 — 페이드로 갈아끼워 '바뀌는 중'이 보이게 */
+  .hs-eg{color:var(--blue);transition:opacity .28s}
+  .hs-eg.out{opacity:0}
+  /* 검색바 점멸 — 그냥 두면 '검색할 수 있다'는 걸 아무도 모른다.
+     테두리·링·돋보기가 같이 숨쉬어 여기를 누르면 된다는 신호를 준다. */
+  .hero-search{animation:hsBreathe 3.4s ease-in-out infinite}
+  .hero-search:hover,.hero-search:focus-visible{animation:none}
+  .hs-ico svg{color:var(--gold)!important;animation:hsIco 3.4s ease-in-out infinite}
+  @keyframes hsBreathe{
+    0%,100%{border-color:var(--line-strong);box-shadow:var(--elev-1)}
+    50%{border-color:var(--gold-line);box-shadow:var(--elev-1),0 0 0 3px rgba(203,167,94,.09)}
+  }
+  @keyframes hsIco{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
   /* 검색 인라인 패널 */
   .search-panel{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s cubic-bezier(.2,.7,.3,1),opacity .22s}
   .search-panel.open{max-height:1600px;opacity:1;margin-top:10px}
@@ -699,6 +711,7 @@
     .logo{animation:none}
     .cue-arrow{animation:none}
     .hero-arrow{animation:none!important;opacity:.6}
+    .hero-search,.hs-ico svg{animation:none!important}
     .cn-info-cue{animation:none!important;opacity:.75;transform:none}
     .map-wrap.open{animation:none}
     .sheet,.backdrop,.subj-row-body,.subj-row-chev,.cover,.card,.quiz-opt,.map-toggle,.sheet-close,.sheet-star,.sw-arrow,.sw-next,.map-info-open,.hero-search,.search-chip,.search-res,.btn-primary,.btn-ghost,.hero-arrow,.bm-item,.subj-row-head,.chain-node,.team-item,.cn-net-item,.map-collapse,.map-reset,.search-close,.bm-item-x,.map-info-x,.cn-info-btn,.src-pop-back,.src-pop,.src-pop-x{transition:none!important}
@@ -953,22 +966,43 @@ DATA.subjects = [...DATA.subjects.filter(s=>s.key!=='econ'), ...DATA.subjects.fi
 /* ── hero 커버플로우 덱: 큐레이션 '오늘의 인사이트'(ticker) + 과목별 대표를 3D 커버플로우로 (탭하면 카드뉴스) ── */
 const DECK = [];
 (function buildDeck(){
-  const seen = new Set();
-  // 1) 큐레이션 인사이트 (ticker) — 각 과목이 골라 놓은 헤드라인
+  /* 예전엔 ticker 7장 + 보충 2장 = 9장이 '고정'이라 몇 번을 새로고침해도 같은 카드만 돌았다.
+     카드뉴스 덱을 가진 카드가 81장이나 있는데 9장만 쓴 셈. 이제 매 방문마다 새로 뽑는다.
+     ⚠️ 셔플은 반드시 Fisher–Yates. arr.sort(()=>rnd-0.5)는 비교 호출 횟수가 엔진마다 달라
+        분포가 치우친다(같은 카드가 유난히 자주 뜬다). */
+  const N = 10, MAX_PER_SUBJ = 2;
+  const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+
+  // 과목이 골라 둔 헤드라인(ticker.line)은 훅이 세다 → 그 카드가 뽑히면 제목으로 쓴다.
+  const curated = {};
   (DATA.ticker||[]).forEach(t=>{
     const s = DATA.subjects.find(x=>x.key===t.key); if(!s) return;
-    const c = s.cards[t.card]; if(!c) return;
-    if(c.db_id) seen.add(c.db_id);
-    DECK.push({ s, card:{...c, k:s.key}, headline:(t.line || c.hook) });
+    const c = s.cards[t.card]; if(!c || !t.line) return;
+    curated[c.db_id || (s.key+'#'+t.card)] = t.line;
   });
-  // 2) 9장 못 채웠으면 과목별 대표 카드로 보충 (중복 db_id 제외)
+
+  // 풀 = 카드뉴스 덱이 실제로 있는 카드 전부. 덱 없는 카드는 히어로에서 열어봤자 얇다.
+  const decks = DATA.decks || {};
+  const pool = [];
   DATA.subjects.forEach(s=>{
-    if(DECK.length>=9) return;
-    const c = s.cards[0]; if(!c) return; if(c.db_id && seen.has(c.db_id)) return;
-    if(c.db_id) seen.add(c.db_id);
-    DECK.push({ s, card:{...c, k:s.key}, headline:c.hook });
+    s.cards.forEach((c,i)=>{
+      const key = c.db_id || (s.key+'#'+i);
+      const d = c.db_id ? decks[c.db_id] : null;
+      if(!d || !d.slides || !d.slides.length) return;
+      pool.push({ s, card:{...c, k:s.key}, headline: curated[key] || c.hook, curated: !!curated[key] });
+    });
   });
-  if(!DECK.length){ DATA.subjects.forEach(s=>{ const c=s.cards[0]; if(c) DECK.push({s, card:{...c,k:s.key}, headline:c.hook}); }); }
+  if(!pool.length){ DATA.subjects.forEach(s=>{ const c=s.cards[0]; if(c) DECK.push({s, card:{...c,k:s.key}, headline:c.hook}); }); return; }
+
+  const per = {};
+  const take = e => { const k=e.s.key; if((per[k]||0)>=MAX_PER_SUBJ) return false; per[k]=(per[k]||0)+1; DECK.push(e); return true; };
+  // 첫 장은 큐레이션 헤드라인 중에서 — 처음 보는 화면의 훅은 세게.
+  const picks = shuffle(pool.filter(e=>e.curated));
+  if(picks.length) take(picks[0]);
+  // 나머지는 전체 풀에서 무작위. 한 과목이 3장 이상 못 잡게 막아 결이 쏠리지 않게.
+  shuffle(pool.slice()).forEach(e=>{ if(DECK.length>=N) return; if(DECK.indexOf(e)>=0) return; take(e); });
+  // 과목 상한 때문에 N장을 못 채웠으면 상한을 풀고 마저 채운다.
+  if(DECK.length<N) shuffle(pool.slice()).forEach(e=>{ if(DECK.length>=N || DECK.indexOf(e)>=0) return; DECK.push(e); });
 })();
 let hi = 0, deckSuppress = false, heroTimer = null;
 const KEY_TAGS = { econ:['경제','시장'], ba:['AI','데이터'], ob:['HR','조직'], ethics:['윤리','컴플라이언스'], ms:['전략','최적화'], mkt:['마케팅','브랜드'], fa:['재무','회계'] };
@@ -2316,7 +2350,12 @@ $('searchInput').addEventListener('input', e=>runSearch(e.target.value));
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && isSearchOpen()) closeSearch(); });
 // hero 검색바 예시 회전
 const HS_EG=['— 인사·전략·회계','— 리더십·가격·AI','— 재고·윤리·채용','— 브랜드·현금흐름·포트폴리오'];
-let hsI=0; if(!reduced) setInterval(()=>{ hsI=(hsI+1)%HS_EG.length; const e=$('hsEg'); if(e) e.textContent=HS_EG[hsI]; }, 3200);
+let hsI=0;
+if(!reduced) setInterval(()=>{                     // 예시어 교체 — 페이드아웃 후 갈아끼우고 페이드인
+  const e=$('hsEg'); if(!e) return;
+  e.classList.add('out');
+  setTimeout(()=>{ hsI=(hsI+1)%HS_EG.length; e.textContent=HS_EG[hsI]; e.classList.remove('out'); }, 280);
+}, 3200);
 </script>
 
 </body>
