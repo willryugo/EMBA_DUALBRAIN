@@ -861,9 +861,13 @@ function icon(id,size,color){
 function subjIcon(key,size){ return icon(ICOID[key]||'ic-brain', size, SUBCOL[key]); }
 function setIcon(host, id, size, color){ if(!host) return; host.textContent=''; host.appendChild(icon(id,size,color)); }
 function setSubjIcon(host, key, size){ if(!host) return; host.textContent=''; host.appendChild(subjIcon(key,size)); }
-// 두뇌지도 노드 id → 정제된 과목색 (그래프·미니그래프·범례 재색; DATA는 손대지 않음)
+// 지도 전용 과목색 — 매거진 본문은 골드 톤(SUBCOL)으로 통일하되, 지도는 '어느 과목이 어디에 뭉쳐
+// 있는가'를 색으로 읽는 정보 시각화 면이라 구분이 우선. 원본 7색의 색상(hue)은 유지하고 어두운
+// 남색 바탕에서 2~4px로도 구별되도록 명도·채도만 끌어올렸다. (원본: 금·청·주·보라·청록·자홍·초록)
+const MAPCOL = {econ:'#E0A63F', ba:'#5B9BD8', ob:'#E4704A', ethics:'#A985D6', ms:'#38B090', mkt:'#DE6BA0', fa:'#86C05E'};
+// 두뇌지도 노드 id → 과목색 (그래프·미니그래프·범례; DATA는 손대지 않음)
 const NODECOL = {};
-if(DATA.graph && DATA.graph.nodes) DATA.graph.nodes.forEach(n=>{ NODECOL[n.id] = SUBCOL[n.k] || n.col; });
+if(DATA.graph && DATA.graph.nodes) DATA.graph.nodes.forEach(n=>{ NODECOL[n.id] = MAPCOL[n.k] || n.col; });
 // 정적 마크업의 <use href>에도 xlink:href 미러 (구형 카카오 인앱 WebView 아이콘 소실 방어)
 document.querySelectorAll('use[href]').forEach(u=>{ try{ u.setAttributeNS('http://www.w3.org/1999/xlink','xlink:href', u.getAttribute('href')); }catch(_){} });
 
@@ -1572,7 +1576,74 @@ const G = DATA.graph;
 
   // 범례
   const leg = $('mapLegend');
-  G.legend.forEach(l=>{ const s=document.createElement('span'); s.className='map-leg'; s.appendChild(icon(ICOID[l.k]||'ic-brain',12,SUBCOL[l.k]||l.col)); s.appendChild(document.createTextNode(l.short)); leg.appendChild(s); });
+  G.legend.forEach(l=>{ const s=document.createElement('span'); s.className='map-leg'; s.appendChild(icon(ICOID[l.k]||'ic-brain',12,MAPCOL[l.k]||l.col)); s.appendChild(document.createTextNode(l.short)); leg.appendChild(s); });
+
+  /* ── 엣지 펄스 ──────────────────────────────────────────────────────────────
+     824개 선이 전부 정지해 있으면 '어디서 어디로 흐르는지'가 안 읽힌다. 그렇다고 다 켜면 난장.
+     이름이 떠 있는 허브에서 → 더 작은 개념 쪽으로, 한 번에 다섯 가닥만 빛이 지나가게 한다.
+     핵심: rAF 루프를 쓰지 않는다. Web Animations로 넘겨 컴포지터가 돌리므로 줌 60fps를 깎지 않는다. */
+  const gPulse = document.createElementNS(SVGNS,'g');
+  gPulse.style.pointerEvents='none';
+  svg.insertBefore(gPulse, gNodes);                 // 선 위, 원·라벨 아래
+
+  const HUB_N = 34, MAX_PULSE = 5;
+  const pulseEdges = [];
+  G.links.forEach(([ai,bi])=>{
+    const a=G.nodes[ai], b=G.nodes[bi]; if(!a||!b || a.deg===b.deg) return;
+    const s = a.deg>b.deg ? a : b, t = a.deg>b.deg ? b : a;   // 큰 원 → 작은 원 방향으로만
+    if(rankOf[s.id] < HUB_N) pulseEdges.push({s,t});
+  });
+
+  function pulseLine(e, w, op, dur, delay){
+    const L = Math.hypot(e.t.x-e.s.x, e.t.y-e.s.y);
+    const dash = Math.max(L*0.20, 30);
+    const ln = document.createElementNS(SVGNS,'line');
+    ln.setAttribute('x1',e.s.x); ln.setAttribute('y1',e.s.y);
+    ln.setAttribute('x2',e.t.x); ln.setAttribute('y2',e.t.y);
+    ln.setAttribute('stroke', NODECOL[e.s.id]||e.s.col);
+    ln.setAttribute('stroke-linecap','round');
+    ln.setAttribute('stroke-width', w/curS);          // 화면 두께 고정 (non-scaling-stroke는 dash 단위가 어긋남)
+    ln.setAttribute('stroke-dasharray', dash+' '+(L+dash));
+    ln.setAttribute('stroke-dashoffset', dash);
+    gPulse.appendChild(ln);
+    const anim = ln.animate([
+      { strokeDashoffset: dash, opacity: 0 },
+      { opacity: op, offset: .16 },
+      { opacity: op, offset: .74 },
+      { strokeDashoffset: -L, opacity: 0 }
+    ], { duration: dur, delay: delay||0, easing: 'cubic-bezier(.36,0,.5,1)', fill:'backwards' });
+    anim.onfinish = ()=>{ ln.remove(); };
+    anim.oncancel = ()=>{ ln.remove(); };
+    return anim;
+  }
+  function spawnPulse(){
+    if(gPulse.childElementCount >= MAX_PULSE*2) return;
+    let pool = pulseEdges;
+    if(active){                                       // 개념을 고른 상태면 그 개념의 연결만 살아 움직이게
+      const sub = pulseEdges.filter(e=>e.s.id===active || e.t.id===active);
+      if(sub.length) pool = sub;
+    } else {                                          // 아니면 '지금 이름이 보이는' 허브에서만 출발 — 제목과 흐름이 이어져 보이도록
+      const budget = labelBudget(baseW/view.w);
+      const named = pulseEdges.filter(e=>rankOf[e.s.id] < budget);
+      if(named.length) pool = named;
+    }
+    if(!pool.length) return;
+    const e = pool[(Math.random()*pool.length)|0];
+    if(!(e.s.x!==e.t.x || e.s.y!==e.t.y)) return;
+    const dur = 1200 + Math.random()*900;
+    pulseLine(e, 6.5, .16, dur, 0);                   // 번짐(글로우) 층
+    pulseLine(e, 2.1, .95, dur, 0);                   // 심(코어) 층
+  }
+  if(!reduced && typeof SVGElement !== 'undefined' && SVGElement.prototype.animate){
+    setInterval(()=>{
+      if(document.hidden || !mapWrap.classList.contains('open')){
+        if(gPulse.firstChild) gPulse.textContent='';  // 닫혀 있으면 아무것도 돌리지 않는다
+        return;
+      }
+      spawnPulse();
+      if(Math.random() < .4) spawnPulse();
+    }, 600);
+  }
 })();
 
 /* ── sheet: 옆으로 넘김 다단계 상세 ── */
