@@ -1352,28 +1352,84 @@ const G = DATA.graph;
   const labelEls = {};
   G.nodes.forEach(n=>{
     const t = document.createElementNS(SVGNS,'text');
-    t.setAttribute('x',n.x); t.setAttribute('y', n.y + n.r + 44);
-    t.setAttribute('text-anchor','middle'); t.setAttribute('fill','rgba(255,255,255,.9)');
-    t.setAttribute('font-size', n.deg>=20?46:40); t.setAttribute('font-weight', n.deg>=20?'700':'500');
-    t.style.pointerEvents='none'; t.style.paintOrder='stroke'; t.setAttribute('stroke','rgba(6,15,31,.9)'); t.setAttribute('stroke-width','4'); t.setAttribute('stroke-linejoin','round');
+    t.setAttribute('x',n.x); t.setAttribute('text-anchor','middle'); t.setAttribute('fill','rgba(255,255,255,.92)');
+    t.setAttribute('font-weight', n.deg>=20?'700':'500');
+    t.style.pointerEvents='none'; t.style.paintOrder='stroke'; t.setAttribute('stroke','rgba(6,15,31,.92)'); t.setAttribute('stroke-linejoin','round');
     t.textContent = n.c.length>15 ? n.c.slice(0,14)+'…' : n.c;
-    t.style.opacity = n.deg>=20 ? '1' : '0'; t.style.transition='opacity .3s';
+    t.style.opacity='0'; t.style.transition='opacity .22s';
     gLabels.appendChild(t); labelEls[n.id]=t;
   });
+  // 히트 레이어 — 보이는 원(r=5~38 사용자단위)은 축소 상태에서 화면상 3~4px라 손가락·커서로 못 집는다.
+  // 투명 원을 위에 깔고 반지름을 '화면 px 기준'으로 보정해(줌아웃일수록 사용자단위 크게) 항상 집을 수 있게.
+  const gHit = document.createElementNS(SVGNS,'g'); svg.appendChild(gHit);
+  const hitEls = {};
+  G.nodes.forEach(n=>{
+    const c = document.createElementNS(SVGNS,'circle');
+    c.setAttribute('cx',n.x); c.setAttribute('cy',n.y); c.setAttribute('fill','transparent');
+    c.dataset.id = n.id; c.style.cursor='pointer';
+    gHit.appendChild(c); hitEls[n.id]=c;
+  });
 
-  // 뷰 (viewBox 팬/줌)
+  // 뷰 (viewBox 팬/줌) — rAF 1프레임 1회만 DOM에 쓴다(휠·핀치·팬이 초당 수십 번 들어와도).
   let view = {x:0,y:0,w:W,h:H};
-  const setView = (v)=>{ view=v; svg.setAttribute('viewBox', `${v.x} ${v.y} ${v.w} ${v.h}`); };
-  setView(view);
+  let pendingView = null, rafId = 0, curS = 1, baseW = W;   // baseW = 전체보기 폭(컨테이너 종횡비에 따라 달라짐)
+  function renderScale(v){ const r=svg.getBoundingClientRect(); return Math.min(r.width/v.w, r.height/v.h) || 1; }
+  // 전체보기 = 그래프 전부가 들어오는 뷰. 세로 화면에선 위아래가 남지만(레터박스), 잘라내면
+  // 가장자리 개념이 사라져 '126개 전체 지도'라는 약속이 깨진다. 좁힘 대신 줌으로 파고들게 둔다.
+  const vAspect = ()=> H/W;
+  function fitView(){ return {x:0, y:0, w:W, h:H}; }
+  // 줌 배율(1=전체보기)에 따라 라벨을 단계적으로 공개 — 멀리선 허브만, 당길수록 잔가지까지.
+  // 연결수(deg)가 8~22에 몰려 있어 '문턱값'으로 끊으면 8→1개처럼 확 튄다. 연결수 순위 상위 N개로 자른다.
+  const rankOf = {};
+  G.nodes.slice().sort((a,b)=>b.deg-a.deg).forEach((n,i)=>{ rankOf[n.id]=i; });
+  function labelBudget(z){ return Math.max(8, Math.min(G.nodes.length, Math.round(8*Math.pow(z,1.9)))); }
+  const LBL_PX = 12.5, HIT_PX = 13;
+  // 줌이 바뀔 때만 호출 — 라벨 글자크기/외곽선/오프셋과 히트 반지름을 '화면 px 고정'으로 역보정한다.
+  // 이게 없으면 라벨이 그래프와 같이 커져서 아무리 확대해도 겹침이 안 풀리고 원을 고를 수 없다.
+  function applyZoomMetrics(){
+    const s = curS, z = baseW/view.w, budget = labelBudget(z);
+    const fs = LBL_PX/s, sw = 3.2/s, hitR = HIT_PX/s;
+    G.nodes.forEach(n=>{
+      const t = labelEls[n.id];
+      t.setAttribute('font-size', fs);
+      t.setAttribute('stroke-width', sw);
+      t.setAttribute('y', n.y + n.r + fs*0.95 + 4/s);
+      hitEls[n.id].setAttribute('r', Math.max(n.r*1.1, hitR));
+      if(!active) t.style.opacity = rankOf[n.id] < budget ? '1' : '0';
+    });
+  }
+  function flushView(){
+    rafId = 0; if(!pendingView) return;
+    view = pendingView; pendingView = null;
+    svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
+    const s = renderScale(view);
+    if(Math.abs(s-curS) > 1e-4){ curS = s; applyZoomMetrics(); }
+    $('mapReset').hidden = !(active || view.w < baseW - 1);
+  }
+  const setView = (v)=>{ pendingView = v; if(!rafId) rafId = requestAnimationFrame(flushView); };
+  function resetFit(){
+    const f = fitView(); baseW = f.w; view = f;
+    svg.setAttribute('viewBox', `${f.x} ${f.y} ${f.w} ${f.h}`);
+    curS = renderScale(f); applyZoomMetrics();
+  }
+  view = fitView(); baseW = view.w;
+  svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
+  // 컨테이너 크기가 실제로 바뀔 때만 다시 맞춘다 — 지도는 닫혀 있을 땐 display:none(크기 0)이고
+  // 전체화면으로 열리며 크기가 급변하므로, resize 이벤트만으론 못 잡는다. 사용자의 줌은 건드리지 않도록 크기 변화 시에만.
+  let lastBox = '';
+  const refit = ()=>{ const r=svg.getBoundingClientRect(); const k=r.width+'x'+r.height;
+    if(!r.width || !r.height || k===lastBox) return; lastBox=k; stopTween(); setActive(null); resetFit(); };
+  if(window.ResizeObserver) new ResizeObserver(refit).observe(svg); else addEventListener('resize', refit);
+  requestAnimationFrame(refit);
 
   // 포커스(옵시디언식)
   let active = null;
   function applyFocus(){
-    const f = active;
+    const f = active, budget = labelBudget(baseW/view.w);
     G.nodes.forEach(n=>{
       const dim = f && f!==n.id && !(adj[f]&&adj[f].has(n.id));
       nodeEls[n.id].style.opacity = dim ? '0.16' : '1';
-      const showLbl = (n.deg>=20) || (f && (f===n.id || (adj[f]&&adj[f].has(n.id))));
+      const showLbl = (rankOf[n.id] < budget) || (f && (f===n.id || (adj[f]&&adj[f].has(n.id))));
       labelEls[n.id].style.opacity = showLbl && !dim ? '1' : '0';
       nodeEls[n.id].setAttribute('stroke', f===n.id ? '#fff' : 'rgba(255,255,255,.25)');
       nodeEls[n.id].setAttribute('stroke-width', f===n.id ? '2.4' : '1');
@@ -1385,7 +1441,27 @@ const G = DATA.graph;
     });
     $('mapReset').hidden = !(f || view.w < W - 1);
   }
-  function centerOn(id){ const nn=nById[id]; if(!nn) return; setView({x:nn.x-view.w/2, y:nn.y-view.h/2, w:view.w, h:view.h}); }
+  // 뷰 트윈 — 이웃 개념으로 이동/리셋할 때 순간이동 대신 감속 곡선으로 미끄러진다(iOS식 관성감).
+  let tween = 0;
+  function stopTween(){ if(tween){ cancelAnimationFrame(tween); tween=0; } }
+  function animateTo(target, ms){
+    stopTween();
+    if(reduced){ setView(target); applyFocus(); return; }
+    const from = {...liveView()}, t0 = performance.now(), dur = ms||460;
+    const step = (now)=>{
+      const p = Math.min(1, (now-t0)/dur), e = 1-Math.pow(1-p, 3); // easeOutCubic
+      setView({ x:from.x+(target.x-from.x)*e, y:from.y+(target.y-from.y)*e,
+                w:from.w+(target.w-from.w)*e, h:from.h+(target.h-from.h)*e });
+      if(p<1) tween = requestAnimationFrame(step); else { tween=0; applyFocus(); }
+    };
+    tween = requestAnimationFrame(step);
+  }
+  function centerOn(id){
+    const nn=nById[id]; if(!nn) return; const v=liveView();
+    // 이웃으로 점프할 때 너무 멀리 떨어져 있으면 살짝 당겨서 연결이 보이게
+    const w = Math.min(v.w, baseW*0.55), h = w*vAspect();
+    animateTo({x:nn.x-w/2, y:nn.y-h/2, w, h});
+  }
   function showInfo(id){
     const n = nById[id];
     const mc=$('mapInfoCourse'); mc.textContent=''; mc.appendChild(icon(ICOID[n.k]||'ic-brain',13,NODECOL[n.id]||n.col)); mc.appendChild(document.createTextNode((NAMES[n.k]||'')+' · 연결 '+n.deg));
@@ -1419,11 +1495,14 @@ const G = DATA.graph;
     applyFocus();
   }
 
-  // 화면좌표 → SVG 사용자좌표 (viewBox + preserveAspectRatio=meet 레터박스까지 정확 반영)
-  const _pt = (svg.createSVGPoint ? svg.createSVGPoint() : null);
+  // 화면좌표 → SVG 사용자좌표. getScreenCTM은 강제 레이아웃을 유발하고 '이미 그려진' viewBox만 반영해서,
+  // rAF로 커밋 대기 중인 뷰(pendingView)와 어긋나 줌이 커서 밑에서 미끄러진다. anchoredView의 정확한 역함수로 직접 계산.
+  const liveView = ()=> pendingView || view;
   function clientToUser(cx, cy){
-    const m = svg.getScreenCTM(); if(!m || !_pt) return null;
-    _pt.x=cx; _pt.y=cy; const u=_pt.matrixTransform(m.inverse()); return {x:u.x, y:u.y};
+    const v = liveView(), r = svg.getBoundingClientRect();
+    const s = Math.min(r.width/v.w, r.height/v.h); if(!s) return null;
+    const offX=(r.width - s*v.w)/2, offY=(r.height - s*v.h)/2;
+    return {x: v.x + (cx-r.left-offX)/s, y: v.y + (cy-r.top-offY)/s};
   }
   // 새 뷰(nw×nh)에서 화면점(cx,cy) 밑에 사용자좌표 u가 오도록 viewBox 원점 계산 — meet 레터박스 보정
   function anchoredView(u, cx, cy, nw, nh){
@@ -1432,21 +1511,22 @@ const G = DATA.graph;
     const offX=(r.width - s*nw)/2, offY=(r.height - s*nh)/2;  // 레터박스 중앙정렬 오프셋
     return {x:u.x-(cx-r.left-offX)/s, y:u.y-(cy-r.top-offY)/s, w:nw, h:nh};
   }
-  const clampW = w => Math.max(W*0.14, Math.min(W, w));
+  const clampW = w => Math.max(baseW*0.14, Math.min(baseW, w));
   // 팬 + 탭
   let press=null, pinch=null, didPan=false;
   svg.addEventListener('pointerdown', e=>{
     if(pinch) return;
-    const r=svg.getBoundingClientRect();
-    press={cx:e.clientX, cy:e.clientY, vx:view.x, vy:view.y, id:e.target.dataset.id||null,
-           s:Math.min(r.width/view.w, r.height/view.h)}; // 균일 스케일 고정(팬 중 줌 불변)
+    stopTween();
+    const r=svg.getBoundingClientRect(), v=liveView();
+    press={cx:e.clientX, cy:e.clientY, vx:v.x, vy:v.y, w:v.w, h:v.h, id:e.target.dataset.id||null,
+           s:Math.min(r.width/v.w, r.height/v.h)}; // 균일 스케일 고정(팬 중 줌 불변)
     didPan=false; try{ svg.setPointerCapture(e.pointerId); }catch(_){}
   });
   svg.addEventListener('pointermove', e=>{
     if(!press || pinch) return;
     const dx=e.clientX-press.cx, dy=e.clientY-press.cy;
     if(!didPan && dx*dx+dy*dy>36) didPan=true;
-    if(didPan) setView({...view, x:press.vx-dx/press.s, y:press.vy-dy/press.s}); // 두 축 동일 스케일
+    if(didPan) setView({w:press.w, h:press.h, x:press.vx-dx/press.s, y:press.vy-dy/press.s}); // 두 축 동일 스케일
   });
   svg.addEventListener('pointerup', e=>{
     if(press && !didPan){
@@ -1457,17 +1537,23 @@ const G = DATA.graph;
     press=null;
   });
   svg.addEventListener('pointercancel', ()=>{ press=null; });
-  // 휠 줌 (데스크톱) — 커서 밑 지점 고정
+  // 휠/트랙패드 줌 (데스크톱) — 커서 밑 지점 고정.
+  // 고정배율 0.85 계단이 아니라 deltaY 크기에 비례한 연속 지수줌 → 트랙패드 두 손가락에서 iOS처럼 매끄럽다.
+  // 픽셀/라인/페이지 단위(deltaMode)를 정규화하고, 한 번에 튀지 않게 배율을 클램프한다.
   svg.addEventListener('wheel', e=>{
-    e.preventDefault();
+    e.preventDefault(); stopTween();
     const u=clientToUser(e.clientX,e.clientY); if(!u) return;
-    const nw=clampW(view.w*(e.deltaY<0 ? 0.85 : 1/0.85));
-    setView(anchoredView(u, e.clientX, e.clientY, nw, nw*(H/W))); applyFocus();
+    const w0 = liveView().w;                              // 커밋 대기 중인 뷰가 있으면 그 기준으로 이어서 줌
+    let d = e.deltaY;
+    if(e.deltaMode===1) d *= 16; else if(e.deltaMode===2) d *= 400;
+    const k = Math.min(1.35, Math.max(0.74, Math.exp(d * (e.ctrlKey ? 0.010 : 0.0022))));
+    const nw = clampW(w0 * k);
+    setView(anchoredView(u, e.clientX, e.clientY, nw, nw*vAspect()));
   }, {passive:false});
   // 핀치 줌 — 두 손가락 중점 밑 지점을 고정한 채 확대/축소 (손가락 따라 자연스럽게)
   svg.addEventListener('touchstart', e=>{
     if(e.touches.length===2){
-      press=null; const[a,b]=e.touches;
+      press=null; stopTween(); const[a,b]=e.touches;
       const mcx=(a.clientX+b.clientX)/2, mcy=(a.clientY+b.clientY)/2;
       pinch={ d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1, vw:view.w, u:clientToUser(mcx,mcy) };
     }
@@ -1478,10 +1564,10 @@ const G = DATA.graph;
     const nd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)||1;
     const mcx=(a.clientX+b.clientX)/2, mcy=(a.clientY+b.clientY)/2;
     const nw=clampW(pinch.vw*(pinch.d/nd));
-    setView(anchoredView(pinch.u, mcx, mcy, nw, nw*(H/W)));
+    setView(anchoredView(pinch.u, mcx, mcy, nw, nw*vAspect()));
   }, {passive:false});
   svg.addEventListener('touchend', e=>{ if(e.touches.length<2){ pinch=null; applyFocus(); } });
-  $('mapReset').addEventListener('click', e=>{ e.stopPropagation(); setView({x:0,y:0,w:W,h:H}); setActive(null); });
+  $('mapReset').addEventListener('click', e=>{ e.stopPropagation(); setActive(null); animateTo(fitView()); });
   $('mapInfoX').addEventListener('click', e=>{ e.stopPropagation(); setActive(null); });
 
   // 범례
