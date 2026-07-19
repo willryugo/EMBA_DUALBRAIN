@@ -212,10 +212,7 @@
 
   /* ── hero 커버플로우 덱 (TrendCircle식 3D) ── */
   /* --cw = 카드 한 변. 폭·높이를 같은 값으로 묶어 항상 정방형(1:1) — 헤드라인 아래 빈 여백 제거 */
-  /* z-index:0 = 쌓임 맥락(stacking context) 생성. 이게 없으면 자식 .hd-arrow의 z-index가 루트 기준으로 계산돼
-     시트(50)·백드롭(40)보다 위로 떠오른다 — 2026-07-19 버그: 카드 시트를 열어도 좌우 화살표가 그 위에 살아남아
-     눌렸고, 뒤의 히어로 덱이 조용히 넘어갔음. */
-  .hero-deck{--cw:min(64vw,252px);position:relative;z-index:0;margin-top:var(--s4);height:var(--cw);user-select:none;touch-action:pan-y;cursor:grab}
+  .hero-deck{--cw:min(64vw,252px);position:relative;margin-top:var(--s4);height:var(--cw);user-select:none;touch-action:pan-y;cursor:grab}
   .hero-deck:active{cursor:grabbing}
   .hd-clip{position:absolute;top:0;bottom:0;left:calc(var(--gut) * -1);right:calc(var(--gut) * -1);perspective:1250px;perspective-origin:50% 44%;overflow:hidden}
   .hd-stage{position:absolute;inset:0;transform-style:preserve-3d}
@@ -250,17 +247,16 @@
   .hd-dots{display:flex;justify-content:center;gap:7px;margin-top:var(--s4)}
   .hd-dot{width:6px;height:6px;border-radius:50%;background:var(--line-strong);transition:width .3s,background .3s;cursor:pointer;border:0;padding:0}
   .hd-dot.on{width:20px;background:var(--gold);border-radius:3px}
-  /* z-index는 덱 클립(.hd-clip) 위에만 있으면 되므로 3이면 충분. 60은 모달 레이어와 다투던 값. */
-  .hd-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:34px;height:62px;background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line-strong);border-radius:var(--r-pill);color:var(--paper-hi);opacity:.9;line-height:0;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .12s,filter .15s,border-color .15s}
+  /* z-index는 .hd-clip(오버플로 클립) 위에만 올라오면 된다. 예전 값 60은 .sheet(50)까지 뚫고 올라와
+     카드뉴스를 열면 작동도 안 하는 화살표가 시트 좌우에 떠 있었다. hero-deck이 stacking context를
+     안 만들어서(z-index 없는 position:relative) 루트에서 시트와 직접 겨룬 것. */
+  .hd-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:34px;height:62px;background:var(--glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--line-strong);border-radius:var(--r-pill);color:var(--paper-hi);opacity:.9;line-height:0;display:flex;align-items:center;justify-content:center;transition:opacity .15s,transform .12s,filter .15s,border-color .15s}
   .hd-arrow:hover,.hd-arrow:focus-visible{opacity:1;border-color:var(--gold-line);filter:drop-shadow(0 3px 8px rgba(0,0,0,.5))}
   .hd-arrow:active{transform:translateY(-50%) scale(.9)}
   .hd-arrow-l{left:-10px}
   .hd-arrow-r{right:-10px}
   .hd-arrow svg{width:13px;height:36px}
   .hd-arrow-r svg{transform:scaleX(-1)}
-  /* 시트가 열려 있으면 히어로 화살표를 아예 숨긴다 — 쌓임 맥락으로 가려지긴 하지만
-     visibility:hidden 이어야 Tab 포커스로도 안 잡힌다(모달 뒤 요소에 포커스 새는 것 방지). */
-  body.sheet-open .hd-arrow{opacity:0;visibility:hidden;pointer-events:none}
   @media (prefers-reduced-motion: reduce){.hd-card{transition:opacity .3s ease}}
 
   /* ── 두뇌지도 / 북마크 wrap ── */
@@ -1935,7 +1931,6 @@ function openSheet(ctx, c){
   swIdx=0; track.scrollLeft=0; updateNav();
   $('backdrop').classList.add('open');
   $('sheet').classList.add('open');
-  document.body.classList.add('sheet-open'); // 히어로 좌우 화살표 숨김(포커스까지 차단)
   $('sheetClose').focus();
 }
 $('sheetStar').addEventListener('click', ()=>{
@@ -1947,7 +1942,6 @@ function closeSheet(){
   closeSrcPop(true);
   $('backdrop').classList.remove('open');
   $('sheet').classList.remove('open');
-  document.body.classList.remove('sheet-open');
   startHeroAuto(); // 시트 닫히면 자동 회전 재개
   if(lastFocus) lastFocus.focus();
 }
