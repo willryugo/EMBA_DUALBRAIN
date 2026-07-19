@@ -31,7 +31,13 @@ function WelcomeForm() {
         } catch {
           /* localStorage 차단 환경 무시 */
         }
-        router.replace(redirectTo);
+        // /magazine 은 Next 라우트가 아니라 public/magazine.html 로 가는 rewrite다.
+        // router.replace 로 가면 Next 가 RSC 페이로드를 찾다가 실패해 흰 화면이 된다 → 전체 이동으로.
+        if (/^\/magazine(\.html)?(\?|#|$)/.test(redirectTo)) {
+          window.location.replace(redirectTo);
+        } else {
+          router.replace(redirectTo);
+        }
       } else {
         const data = await res.json().catch(() => ({}));
         setError(data?.error || "비밀번호가 맞지 않습니다.");
