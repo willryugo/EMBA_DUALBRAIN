@@ -23,6 +23,9 @@ export async function middleware(req: NextRequest) {
 //    /magazine 과 rewrite 대상인 /magazine.html 둘 다 막아야 우회가 안 된다.
 export const config = {
   matcher: [
-    "/((?!welcome|api/auth|_next/static|_next/image|favicon.ico|manifest.webmanifest|sw.js|icon.png|icon.svg|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$).*)",
+    // ※ magazine.webmanifest 도 제외 — 매거진을 게이트에 넣으면서 같이 막혀 307이 났다.
+    //    매니페스트가 안 열리면 '홈 화면에 추가'가 앱 이름·아이콘·standalone 을 못 읽어
+    //    그냥 북마크로 떨어진다. 매니페스트엔 비밀이 없으니 열어 둔다.
+    "/((?!welcome|api/auth|_next/static|_next/image|favicon.ico|manifest.webmanifest|magazine.webmanifest|sw.js|icon.png|icon.svg|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$).*)",
   ],
 };
