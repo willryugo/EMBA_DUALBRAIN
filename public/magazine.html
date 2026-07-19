@@ -99,7 +99,7 @@
     --card-sh:inset 0 1px 0 rgba(255,255,255,.9), 0 1px 3px rgba(30,42,64,.06), 0 16px 40px -20px rgba(30,42,64,.22);
   }
   /* 그래프 패널(두뇌지도·북마크)은 두 테마 모두 다크 인스트루먼트로 유지 → 내부 토큰만 다크로 재선언 */
-  html[data-theme="light"] .map-wrap, html[data-theme="light"] .bm-wrap{
+  html[data-theme="light"] .map-wrap, html[data-theme="light"] .src-pop{
     --paper:#F0EAE0; --paper-2:#E4DCCB; --muted:#C4B79E; --muted-deep:#8A7E67;
     --line:rgba(206,188,150,.14); --line-strong:rgba(208,190,152,.24);
     --glass:rgba(14,24,40,.82); --surface-1:#131E2E; --rec-bg:linear-gradient(180deg,#101A28,#0D1622); --rec-sh:inset 0 1px 0 rgba(255,255,255,.05),inset 0 -1px 0 rgba(0,0,0,.45); --gold:#CBA75E; --gold-line:rgba(203,167,94,.30); --blue:#D8B879;
@@ -337,9 +337,7 @@
   .map-hint{margin:5px 0 0;font-size:11.5px;color:var(--muted);line-height:1.5}
   .map-collapse{position:absolute;top:14px;right:14px;z-index:13;font-family:var(--font);font-weight:600;font-size:10px;color:var(--muted);border:1px solid var(--line-strong);border-radius:var(--r-xs);padding:6px 10px;background:rgba(10,18,32,.7);display:inline-flex;align-items:center;gap:5px}
   .map-collapse .mt-ico{line-height:0}
-  .bm-wrap{display:none;margin:var(--s4) var(--gut) 0;background:radial-gradient(120% 90% at 50% 12%,#0E2038,#070F1C);border:1px solid var(--line-strong);border-radius:var(--r-lg);overflow:hidden;position:relative;box-shadow:var(--elev-1)}
-  .bm-wrap.open{display:block;animation:mapReveal .3s ease}
-  .bm-list{display:flex;flex-direction:column;gap:9px;padding:12px 16px 16px}
+  .bm-list{display:flex;flex-direction:column;gap:9px}   /* 팝업 자체 패딩을 쓰므로 여백 없음 */
   .bm-item{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:rgba(255,255,255,.02);border:1px solid var(--line);border-radius:var(--r-md);padding:11px 13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03);transition:border-color .15s,transform .1s}
   .bm-item:hover{border-color:var(--blue-line)}
   .bm-item:active{transform:scale(.99)}
@@ -349,7 +347,7 @@
   .bm-item-s{font-size:11px;color:var(--muted);margin-top:2px}
   .bm-item-x{flex:0 0 auto;width:26px;height:26px;border-radius:50%;color:var(--muted);line-height:0;display:flex;align-items:center;justify-content:center}
   .bm-item-x:hover{color:var(--paper);background:rgba(255,255,255,.08)}
-  .bm-empty{display:none;margin:0;padding:16px 18px 20px;font-size:12.5px;color:var(--muted);line-height:1.6}
+  .bm-empty{margin:0;padding:6px 2px 4px;font-size:12.5px;color:var(--muted);line-height:1.65}
   .map-collapse:hover{color:var(--paper)}
   .map-collapse:active,.map-reset:active,.search-close:active,.bm-item-x:active,.map-info-x:active{transform:scale(.94)}
   .map-svg{display:block;width:100%;height:360px;touch-action:none;cursor:grab;background:transparent}
@@ -879,7 +877,7 @@
     <p class="dek" id="dek">7과목에서 건진 것만.</p>
     <div class="mast-actions">
       <button class="map-toggle theme-toggle" id="themeToggle" aria-label="라이트·다크 모드 전환"><span class="mt-ico"></span></button>
-      <button class="map-toggle" id="bmToggle" aria-expanded="false" aria-controls="bmWrap"><span class="mt-ico"></span>북마크</button>
+      <button class="map-toggle" id="bmToggle" aria-haspopup="dialog"><span class="mt-ico"></span>북마크</button>
       <button class="map-toggle" id="mapToggle" aria-expanded="false" aria-controls="mapWrap"><span class="mt-ico"></span>두뇌</button>
     </div>
   </header>
@@ -909,15 +907,6 @@
     </div>
   </section>
 
-  <section class="bm-wrap" id="bmWrap" aria-label="북마크">
-    <button class="map-collapse" id="bmCollapse">접기 <span class="mt-ico"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-close"/></svg></span></button>
-    <div class="map-head">
-      <div class="map-title"><span class="mt-ico" style="color:var(--gold)"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-bookmark"/></svg></span>저장한 카드</div>
-      <p class="map-hint">북마크를 눌러 저장한 카드만 모아봐요. 이 브라우저에만 저장돼요.</p>
-    </div>
-    <div class="bm-list" id="bmList"></div>
-    <p class="bm-empty" id="bmEmpty">아직 저장한 카드가 없어요 — 카드 우측 상단의 북마크 아이콘을 눌러보세요.</p>
-  </section>
 
   <section class="map-wrap" id="mapWrap" aria-label="두 번째 뇌의 지도">
     <button class="map-collapse" id="mapCollapse">접기 <span class="mt-ico"><svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-close"/></svg></span></button>
@@ -1329,19 +1318,17 @@ function bmToggleCard(ctx, c){
   renderBookmarks();
   return list.some(b=>b.id===id);
 }
-const bmToggle = $('bmToggle'), bmWrap = $('bmWrap');
-function setBm(open){
-  bmWrap.classList.toggle('open', open);
-  bmToggle.classList.toggle('on', open);
-  bmToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-  if(open){ renderBookmarks(); requestAnimationFrame(()=>bmWrap.scrollIntoView({behavior: reduced?'auto':'smooth', block:'start'})); }
-}
-bmToggle.addEventListener('click', ()=>setBm(!bmWrap.classList.contains('open')));
-$('bmCollapse').addEventListener('click', ()=>{ setBm(false); bmToggle.scrollIntoView({behavior: reduced?'auto':'smooth', block:'center'}); });
-function renderBookmarks(){
+/* 북마크는 본문 중간에 펼쳐지는 패널이었다. 저장할 때마다 페이지가 밀려 읽던 자리를 잃는다.
+   '보관함'은 흐름을 끊지 않고 잠깐 열었다 닫는 게 맞다 → 출처·과제방과 같은 팝업으로 옮긴다. */
+const bmToggle = $('bmToggle');
+function bmBody(host){
   const list = bmLoad();
-  const box = $('bmList'); box.textContent = '';
-  $('bmEmpty').style.display = list.length ? 'none' : 'block';
+  host.textContent = '';
+  if(!list.length){
+    host.appendChild(el('bm-empty','아직 저장한 카드가 없어요 — 카드 우측 상단의 북마크 아이콘을 눌러보세요.'));
+    return;
+  }
+  const box = el('bm-list');
   list.forEach(b=>{
     const row = document.createElement('div'); row.style.display='flex'; row.style.gap='7px'; row.style.alignItems='center';
     const btn = document.createElement('button'); btn.type='button'; btn.className='bm-item';
@@ -1349,14 +1336,27 @@ function renderBookmarks(){
     const txt = document.createElement('span'); txt.className='bm-item-txt';
     txt.appendChild(el('bm-item-t', b.title)); txt.appendChild(el('bm-item-s', b.hook||b.lbl));
     btn.append(ico, txt);
-    btn.addEventListener('click', ()=>openSheet({key:b.key || (b.card&&b.card.k), lbl:b.lbl}, b.card));
+    // 팝업을 먼저 닫고 카드를 연다 — 둘이 겹쳐 뜨면 뒤엉킨다
+    btn.addEventListener('click', ()=>{ closeSrcPop(true); openSheet({key:b.key || (b.card&&b.card.k), lbl:b.lbl}, b.card); });
     const x = document.createElement('button'); x.type='button'; x.className='bm-item-x'; x.setAttribute('aria-label','북마크 해제'); x.textContent='✕';
-    x.addEventListener('click', (e)=>{ e.stopPropagation(); bmSave(bmLoad().filter(o=>o.id!==b.id)); renderBookmarks(); });
+    x.addEventListener('click', (e)=>{ e.stopPropagation(); bmSave(bmLoad().filter(o=>o.id!==b.id)); bmBody(host); });
     row.append(btn, x);
     box.appendChild(row);
   });
+  host.appendChild(box);
 }
-renderBookmarks();
+function openBookmarks(){
+  const n = bmLoad().length;
+  openPop('ic-bookmark', '저장한 카드',
+    n ? `${n}장 저장돼 있어요 · 이 브라우저에만 남습니다` : '북마크를 눌러 저장한 카드만 모아봐요',
+    body => bmBody(body));
+}
+bmToggle.addEventListener('click', openBookmarks);
+// 시트에서 별을 눌렀을 때 — 팝업이 열려 있으면 그 안을 갱신한다(닫혀 있으면 할 일 없음)
+function renderBookmarks(){
+  const back = $('srcPopBack');
+  if(back && !back.hidden && $('srcPopHT').textContent === '저장한 카드') bmBody($('srcPopBody'));
+}
 
 
 /* ── covers (뭐부터 볼까 — 과목마다 카드가 계속 바뀌고, 누르면 바로 그 카드가 열림) ── */
