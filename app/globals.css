@@ -978,25 +978,67 @@ select.twk-field{padding-right:22px;background-image:url("data:image/svg+xml;utf
 /* ═══════════════════════════════════════════════════════════
    Welcome page (/welcome) · 단일 비밀번호 진입
    ═══════════════════════════════════════════════════════════ */
-.welcome-shell{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:32px 20px;overflow-x:hidden;background:var(--bg);background-image:var(--bg-image,none);background-attachment:fixed}
-.welcome-card{width:100%;max-width:460px;min-width:0;box-sizing:border-box;background:var(--paper);border:1.5px solid var(--ink);padding:44px 38px 34px;box-shadow:14px 14px 0 rgba(22,21,15,.12);position:relative}
-@media(max-width:480px){.welcome-shell{padding:24px 14px}.welcome-card{max-width:100%;padding:30px 22px 24px;box-shadow:6px 6px 0 rgba(22,21,15,.12)}.welcome-title{font-size:clamp(24px,6.6vw,34px)}}
-.welcome-mark{display:flex;justify-content:center;margin-bottom:14px;opacity:.9}
-.welcome-vol{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
-.welcome-vol b{font-family:var(--mono);font-weight:600;color:var(--ink)}
-.welcome-vol .dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
-.welcome-title{font-family:var(--serif);font-weight:900;font-size:clamp(30px,5.4vw,42px);line-height:1.02;letter-spacing:-.022em;color:var(--ink);text-align:center;margin:0 0 14px;word-break:keep-all;text-wrap:balance}
-.welcome-title .ital{font-style:italic;color:var(--ink-soft);font-weight:700}
-.welcome-deck{font-family:var(--serif);font-size:14px;color:var(--ink-soft);line-height:1.55;text-align:center;margin-bottom:24px;font-style:italic}
+/* ── 게이트(/welcome) — 매거진과 같은 톤 ────────────────────────────────────
+   원래는 앱의 밝은 종이 테마를 그대로 썼다. 그런데 이 문을 열면 바로 다크 골드 매거진이
+   나오니, 흰 화면 → 검은 화면으로 뚝 끊긴다. 첫인상이 두 번 갈리면 안 된다.
+   토큰을 여기서 다시 선언해 매거진 톤(Nocturne + 샴페인골드)으로 맞춘다. */
+.welcome-shell{
+  --w-bg-0:#05090F; --w-bg-1:#0A1120; --w-gold:#CBA75E; --w-gold-hi:#E4B25A;
+  --w-line:rgba(206,188,150,.16); --w-line-strong:rgba(208,190,152,.28);
+  --w-paper:#F0EAE0; --w-paper-hi:#FBFAF5; --w-muted:#C4B79E; --w-muted-deep:#8A7E67;
+  min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;
+  padding:32px 20px;overflow-x:hidden;
+  background:radial-gradient(130% 68% at 50% -8%, rgba(203,167,94,.10) 0%, transparent 46%),
+             linear-gradient(180deg,var(--w-bg-1) 0%,var(--w-bg-0) 92%);
+  background-attachment:fixed;
+}
+.welcome-card{
+  width:100%;max-width:440px;min-width:0;box-sizing:border-box;
+  background:linear-gradient(163deg,#121C2C 0%,#0B1420 82%);
+  border:1px solid var(--w-line-strong);border-radius:20px;
+  padding:44px 38px 30px;position:relative;
+  box-shadow:0 30px 70px -24px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.06);
+}
+@media(max-width:480px){
+  .welcome-shell{padding:24px 16px}
+  .welcome-card{max-width:100%;padding:34px 24px 24px;border-radius:18px}
+}
+.welcome-mark{display:flex;justify-content:center;margin-bottom:18px;
+  filter:drop-shadow(0 0 16px rgba(228,178,90,.28))}
+.welcome-vol{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--w-muted-deep);margin-bottom:20px;display:flex;align-items:center;justify-content:center;
+  gap:11px;flex-wrap:wrap}
+.welcome-vol b{font-family:var(--mono);font-weight:700;color:var(--w-gold)}
+.welcome-vol .dot{width:4px;height:4px;border-radius:50%;background:var(--w-gold)}
+.welcome-title{font-weight:800;font-size:clamp(27px,5.2vw,34px);line-height:1.22;letter-spacing:-.028em;
+  color:var(--w-paper-hi);text-align:center;margin:0 0 14px;word-break:keep-all;text-wrap:balance;
+  text-shadow:0 0 26px rgba(230,206,136,.10)}
+.welcome-title .ital{font-style:normal;
+  background:linear-gradient(100deg,var(--w-gold-hi),#F3DDA8 52%,var(--w-gold));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--w-gold)}
+.welcome-deck{font-size:13px;color:var(--w-muted);line-height:1.62;text-align:center;
+  margin-bottom:26px;word-break:keep-all}
 .welcome-form{display:flex;flex-direction:column;gap:10px}
-.welcome-form input{width:100%;padding:14px 16px;font-size:16px;font-family:var(--sans);font-weight:500;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);outline:none;text-align:center;letter-spacing:.04em}
-.welcome-form input:focus{background:color-mix(in srgb, var(--accent) 4%, var(--paper))}
-.welcome-form input::placeholder{color:var(--ink-faint);font-weight:400;letter-spacing:0}
-.welcome-form button{padding:14px 20px;font-family:var(--sans);font-size:14px;font-weight:700;background:var(--ink);color:var(--paper);border:1.5px solid var(--ink);letter-spacing:.02em;transition:.13s;cursor:pointer}
-.welcome-form button:hover:not(:disabled){background:var(--accent);border-color:var(--accent)}
-.welcome-form button:disabled{opacity:.5;cursor:not-allowed}
-.welcome-error{margin-top:14px;padding:10px 14px;font-size:13px;font-weight:600;color:#B23A48;background:#FDECEE;border:1px solid #F1C0C5;border-radius:2px;text-align:center}
-.welcome-footer{margin-top:28px;padding-top:18px;border-top:1px solid var(--line-2);font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);text-align:center}
+.welcome-form input{width:100%;padding:15px 16px;font-size:16px;font-weight:600;
+  border:1px solid var(--w-line-strong);border-radius:12px;
+  background:rgba(255,255,255,.04);color:var(--w-paper-hi);outline:none;text-align:center;letter-spacing:.16em;
+  transition:border-color .16s,background .16s,box-shadow .16s}
+.welcome-form input:focus{border-color:rgba(203,167,94,.55);background:rgba(255,255,255,.06);
+  box-shadow:0 0 0 3px rgba(203,167,94,.12)}
+.welcome-form input::placeholder{color:var(--w-muted-deep);font-weight:500;letter-spacing:.02em}
+.welcome-form button{padding:15px 20px;font-size:14.5px;font-weight:700;border-radius:12px;
+  background:linear-gradient(180deg,#F2E4C0,#D8BE86);color:#14100A;border:0;letter-spacing:.01em;
+  cursor:pointer;transition:filter .14s,transform .1s;
+  box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 10px 24px -10px rgba(203,167,94,.55)}
+.welcome-form button:hover:not(:disabled){filter:brightness(1.05)}
+.welcome-form button:active:not(:disabled){transform:translateY(1px)}
+.welcome-form button:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
+.welcome-error{margin-top:14px;padding:11px 14px;font-size:13px;font-weight:600;
+  color:#F0B3B3;background:rgba(178,58,72,.16);border:1px solid rgba(240,150,150,.28);
+  border-radius:10px;text-align:center}
+.welcome-footer{margin-top:26px;padding-top:18px;border-top:1px solid var(--w-line);
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--w-muted-deep);text-align:center}
 
 /* ═══════════════════════════════════════════════════════════
    Industry Modal (첫 방문 1회)

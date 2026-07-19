@@ -6,7 +6,9 @@ import { DBMark } from "@/components/DBMark";
 function WelcomeForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/";
+  // 기본 목적지를 "/" 로 두면 로그인 후 루트로 갔다가 거기서 다시 /magazine 으로 넘어간다.
+  // 그 한 박자 사이에 Next 레이아웃이 잠깐 마운트돼 깜빡임이 생겼다 → 바로 매거진으로.
+  const redirectTo = searchParams.get("redirect") || "/magazine";
 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

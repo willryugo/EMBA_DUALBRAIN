@@ -168,15 +168,23 @@
   .hs-eg{color:var(--blue);transition:opacity .28s}
   .hs-eg.out{opacity:0}
   /* 검색바 점멸 — 그냥 두면 '검색할 수 있다'는 걸 아무도 모른다.
-     테두리·링·돋보기가 같이 숨쉬어 여기를 누르면 된다는 신호를 준다. */
-  .hero-search{animation:hsBreathe 3.4s ease-in-out infinite}
-  .hero-search:hover,.hero-search:focus-visible{animation:none}
-  .hs-ico svg{color:var(--gold)!important;animation:hsIco 3.4s ease-in-out infinite}
+     1차로 넣은 건 링 불투명도 9%라 실제로는 안 보였다(실기기에서 인지 못 함).
+     테두리를 확실히 금색으로 물들이고, 링을 키우고, 빛줄기를 한 번씩 훑고 지나가게 한다. */
+  .hero-search{position:relative;overflow:hidden;animation:hsBreathe 2.8s ease-in-out infinite}
+  .hero-search:hover,.hero-search:focus-visible{animation:none;border-color:var(--gold-line)}
+  .hero-search:hover::after,.hero-search:focus-visible::after{animation:none;opacity:0}
+  /* 빛줄기 — 4.4초마다 한 번 왼→오른쪽으로 지나간다. 정지 화면에서도 '살아있음'이 읽힌다. */
+  .hero-search::after{content:'';position:absolute;top:0;bottom:0;left:-40%;width:38%;pointer-events:none;
+    background:linear-gradient(100deg,transparent,rgba(240,222,170,.16) 44%,rgba(240,222,170,.26) 52%,transparent);
+    transform:skewX(-16deg);animation:hsSweep 4.4s ease-in-out infinite}
+  .hs-ico svg{color:var(--gold)!important;animation:hsIco 2.8s ease-in-out infinite}
+  .hs-ph{position:relative;z-index:1}
   @keyframes hsBreathe{
     0%,100%{border-color:var(--line-strong);box-shadow:var(--elev-1)}
-    50%{border-color:var(--gold-line);box-shadow:var(--elev-1),0 0 0 3px rgba(203,167,94,.09)}
+    50%{border-color:rgba(203,167,94,.62);box-shadow:var(--elev-1),0 0 0 4px rgba(203,167,94,.16),0 0 18px -4px rgba(203,167,94,.30)}
   }
-  @keyframes hsIco{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+  @keyframes hsIco{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.14)}}
+  @keyframes hsSweep{0%,62%{left:-40%}100%{left:112%}}
   /* 검색 인라인 패널 */
   .search-panel{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s cubic-bezier(.2,.7,.3,1),opacity .22s}
   .search-panel.open{max-height:1600px;opacity:1;margin-top:10px}
@@ -810,6 +818,7 @@
     .cue-arrow{animation:none}
     .hero-arrow{animation:none!important;opacity:.6}
     .hero-search,.hs-ico svg{animation:none!important}
+    .hero-search::after{display:none}
     .cn-info-cue{animation:none!important;opacity:.75;transform:none}
     .map-wrap.open{animation:none}
     .sheet,.backdrop,.subj-row-body,.subj-row-chev,.cover,.card,.quiz-opt,.map-toggle,.sheet-close,.sheet-star,.sw-arrow,.sw-next,.map-info-open,.hero-search,.search-chip,.search-res,.btn-primary,.btn-ghost,.hero-arrow,.bm-item,.subj-row-head,.chain-node,.team-item,.cn-net-item,.map-collapse,.map-reset,.search-close,.bm-item-x,.map-info-x,.cn-info-btn,.src-pop-back,.src-pop,.src-pop-x{transition:none!important}
