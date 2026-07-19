@@ -966,43 +966,97 @@ DATA.subjects = [...DATA.subjects.filter(s=>s.key!=='econ'), ...DATA.subjects.fi
 /* ── hero 커버플로우 덱: 큐레이션 '오늘의 인사이트'(ticker) + 과목별 대표를 3D 커버플로우로 (탭하면 카드뉴스) ── */
 const DECK = [];
 (function buildDeck(){
-  /* 예전엔 ticker 7장 + 보충 2장 = 9장이 '고정'이라 몇 번을 새로고침해도 같은 카드만 돌았다.
-     카드뉴스 덱을 가진 카드가 81장이나 있는데 9장만 쓴 셈. 이제 매 방문마다 새로 뽑는다.
-     ⚠️ 셔플은 반드시 Fisher–Yates. arr.sort(()=>rnd-0.5)는 비교 호출 횟수가 엔진마다 달라
-        분포가 치우친다(같은 카드가 유난히 자주 뜬다). */
-  const N = 10, MAX_PER_SUBJ = 2;
+  /* 히어로 덱 편성.
+     ① 예전엔 ticker 7장 + 보충 2장 = 9장 '고정'이라 새로고침해도 같은 카드만 돌았다.
+     ② 그다음엔 무작위로 바꿨지만 풀이 DATA.subjects(81장)뿐이라, 과목 목록에 없는
+        이론카드 61장은 히어로에 아예 못 나왔다. 이제 이론카드 126 + 조별과제 40 = 166장 전부가 풀.
+     ③ 완전 무작위면 훅이 약한 카드가 첫 화면에 걸린다. 그래서 '훅 강한 것'과 '아직 안 본 것'을
+        정해진 비율로 섞는다(4 : 6). 본 카드는 localStorage에 남겨 다음 방문엔 새 걸 우선한다.
+     ⚠️ 셔플은 반드시 Fisher–Yates. arr.sort(()=>rnd-.5)는 비교 호출 횟수가 엔진마다 달라
+        분포가 치우친다(특정 카드가 유난히 자주 뜬다). */
+  const N = 10, N_HOOK = 4, MAX_PER_SUBJ = 2, SEEN_KEY = 'db_mag_seen_v1', LAST_KEY = 'db_mag_last_v1';
   const shuffle = a => { for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+  const decks = DATA.decks || {}, theory = DATA.theory || {};
+  const SUBJ = {}; DATA.subjects.forEach(s=>{ SUBJ[s.key] = s; });
 
-  // 과목이 골라 둔 헤드라인(ticker.line)은 훅이 세다 → 그 카드가 뽑히면 제목으로 쓴다.
+  // 과목이 골라 둔 헤드라인(ticker.line) — 편집자가 고른 문장이라 훅이 가장 세다.
   const curated = {};
   (DATA.ticker||[]).forEach(t=>{
-    const s = DATA.subjects.find(x=>x.key===t.key); if(!s) return;
-    const c = s.cards[t.card]; if(!c || !t.line) return;
-    curated[c.db_id || (s.key+'#'+t.card)] = t.line;
+    const s = SUBJ[t.key]; if(!s) return; const c = s.cards[t.card];
+    if(c && c.db_id && t.line) curated[c.db_id] = t.line;
   });
+  // 이론카드 id → 과목 목록의 매거진 카드(있으면 body·출처가 더 두껍다)
+  const byDbId = {};
+  DATA.subjects.forEach(s=>s.cards.forEach(c=>{ if(c.db_id) byDbId[c.db_id] = {...c, k:s.key}; }));
 
-  // 풀 = 카드뉴스 덱이 실제로 있는 카드 전부. 덱 없는 카드는 히어로에서 열어봤자 얇다.
-  const decks = DATA.decks || {};
+  // 훅 점수 — 헤드라인이 실제로 사람을 멈춰 세우는 신호만 센다.
+  const hookScore = (headline, deg, slides, isCurated) => {
+    const h = headline || '';
+    return (isCurated ? 3 : 0)
+         + (/\d/.test(h) ? 2 : 0)            // 숫자가 든 제목("50억", "80%")은 눈이 멈춘다
+         + (/[?？]\s*$/.test(h) ? 2 : 0)      // 질문형은 답이 궁금해진다
+         + (slides >= 6 ? 1 : 0)             // 슬라이드가 두꺼운 카드
+         + Math.min(deg, 30) / 20;           // 두뇌지도 연결이 많을수록 허브 개념
+  };
+
   const pool = [];
-  DATA.subjects.forEach(s=>{
-    s.cards.forEach((c,i)=>{
-      const key = c.db_id || (s.key+'#'+i);
-      const d = c.db_id ? decks[c.db_id] : null;
-      if(!d || !d.slides || !d.slides.length) return;
-      pool.push({ s, card:{...c, k:s.key}, headline: curated[key] || c.hook, curated: !!curated[key] });
-    });
+  // 1) 이론카드 126장 — 덱이 있는 것 전부
+  Object.keys(theory).forEach(id=>{
+    const th = theory[id], d = decks[id];
+    if(!th || !d || !d.slides || !d.slides.length) return;
+    const s = SUBJ[th.k]; if(!s) return;
+    const headline = curated[id] || th.hook || th.concept;
+    const card = byDbId[id] || {tag:'심화', title:th.concept, hook:th.hook, body:'',
+                                src:'DualBrain 이론카드 · 연결 '+th.deg, db_id:id, k:th.k};
+    pool.push({ id:'t:'+id, s, card, headline, footN:d.slides.length,
+                score:hookScore(headline, th.deg||0, d.slides.length, !!curated[id]) });
   });
-  if(!pool.length){ DATA.subjects.forEach(s=>{ const c=s.cards[0]; if(c) DECK.push({s, card:{...c,k:s.key}, headline:c.hook}); }); return; }
+  // 2) 조별과제 40건 — 히어로에도 올려 각 조가 자기 과제를 첫 화면에서 만날 수 있게
+  const CK = {'Business Analytics':'ba','Business Ethics':'ethics','Management Science':'ms',
+              'Managing People & Organizations':'ob','Marketing Management':'mkt',
+              'Financial Accounting':'fa','Economics':'econ'};
+  (DATA.cases||[]).forEach(c=>{
+    const k = CK[c.course] || 'ob', s = SUBJ[k]; if(!s) return;
+    const headline = c.subtitle || c.title;
+    pool.push({ id:'c:'+c.id, s:{key:k, name:s.name, prof:(c.g+' 조별과제')}, isCase:true, caseData:c,
+                card:{tag:'조별', title:c.title, hook:c.subtitle, k}, headline, footN:0,
+                score:hookScore(headline, 0, 0, false) + 1.2 });   // 동기들이 직접 만든 것 = 신선도 가산
+  });
+  if(!pool.length) return;
 
-  const per = {};
-  const take = e => { const k=e.s.key; if((per[k]||0)>=MAX_PER_SUBJ) return false; per[k]=(per[k]||0)+1; DECK.push(e); return true; };
-  // 첫 장은 큐레이션 헤드라인 중에서 — 처음 보는 화면의 훅은 세게.
-  const picks = shuffle(pool.filter(e=>e.curated));
-  if(picks.length) take(picks[0]);
-  // 나머지는 전체 풀에서 무작위. 한 과목이 3장 이상 못 잡게 막아 결이 쏠리지 않게.
-  shuffle(pool.slice()).forEach(e=>{ if(DECK.length>=N) return; if(DECK.indexOf(e)>=0) return; take(e); });
-  // 과목 상한 때문에 N장을 못 채웠으면 상한을 풀고 마저 채운다.
-  if(DECK.length<N) shuffle(pool.slice()).forEach(e=>{ if(DECK.length>=N || DECK.indexOf(e)>=0) return; DECK.push(e); });
+  // 이미 노출된 카드 기억 — '새로운 것'을 진짜 새것으로 만들기 위해
+  let seen = new Set();
+  try{ seen = new Set(JSON.parse(localStorage.getItem(SEEN_KEY)||'[]')); }catch(_){}
+  if(seen.size >= pool.length - N) seen = new Set();   // 한 바퀴 다 봤으면 리셋
+
+  const per = {}, used = new Set();
+  const take = e => {
+    if(used.has(e.id)) return false;
+    const k = e.s.key; if((per[k]||0) >= MAX_PER_SUBJ) return false;
+    per[k] = (per[k]||0) + 1; used.add(e.id); DECK.push(e); return true;
+  };
+  // ⓐ 훅 강한 층에서 4장 — 상위 25%(최소 30장) 안에서 무작위라 매번 다르되 질은 보장된다.
+  //    단 직전 방문에 나온 카드는 뒤로 미룬다. 안 그러면 강훅 층이 좁아 연속 방문에 같은 첫 장이 뜬다.
+  let last = new Set();
+  try{ last = new Set(JSON.parse(localStorage.getItem(LAST_KEY)||'[]')); }catch(_){}
+  const strong = pool.slice().sort((a,b)=>b.score-a.score)
+                     .slice(0, Math.max(30, Math.round(pool.length*0.25)));
+  const strongMix = shuffle(strong.filter(e=>!last.has(e.id))).concat(shuffle(strong.filter(e=>last.has(e.id))));
+  strongMix.forEach(e=>{ if(DECK.length<N_HOOK) take(e); });
+  // ⓑ 나머지 6장은 아직 안 본 카드 우선
+  shuffle(pool.filter(e=>!seen.has(e.id))).forEach(e=>{ if(DECK.length<N) take(e); });
+  // ⓒ 그래도 모자라면(과목 상한 등) 전체 풀에서, 마지막엔 상한도 풀고 채운다
+  shuffle(pool.slice()).forEach(e=>{ if(DECK.length<N) take(e); });
+  if(DECK.length<N) shuffle(pool.slice()).forEach(e=>{ if(DECK.length<N && !used.has(e.id)){ used.add(e.id); DECK.push(e); } });
+
+  // 첫 장은 뽑힌 것 중 훅이 가장 센 카드로 — 첫인상에서 승부
+  let bi = 0; DECK.forEach((e,i)=>{ if(e.score > DECK[bi].score) bi = i; });
+  if(bi) DECK.unshift(DECK.splice(bi,1)[0]);
+
+  try{
+    localStorage.setItem(SEEN_KEY, JSON.stringify([...seen, ...DECK.map(e=>e.id)].slice(-pool.length)));
+    localStorage.setItem(LAST_KEY, JSON.stringify(DECK.map(e=>e.id)));   // 다음 방문에 그대로 반복되지 않게
+  }catch(_){}
 })();
 let hi = 0, deckSuppress = false, heroTimer = null;
 const KEY_TAGS = { econ:['경제','시장'], ba:['AI','데이터'], ob:['HR','조직'], ethics:['윤리','컴플라이언스'], ms:['전략','최적화'], mkt:['마케팅','브랜드'], fa:['재무','회계'] };
@@ -1031,17 +1085,20 @@ function buildDeckCard(d, i){
   const glow = mkSpan('hd-glow'); glow.setAttribute('aria-hidden','true');
   const mark = mkSpan('hd-mark'); mark.setAttribute('aria-hidden','true'); mark.appendChild(subjIcon(d.card.k,140));
   const top = mkSpan('hd-top'); const ico = mkSpan('hd-ico'); ico.appendChild(subjIcon(d.card.k,18));
-  top.append(ico, mkSpan('hd-course', `${d.s.name} · ${d.s.prof} 교수님`));
+  // 조별과제는 d.s.prof 자리에 '5조 조별과제'가 들어 있다 — '교수님'을 붙이면 안 된다
+  top.append(ico, mkSpan('hd-course', d.isCase ? `${d.s.name} · ${d.s.prof}` : `${d.s.name} · ${d.s.prof} 교수님`));
   const title = setHeadline(mkSpan('hd-title'), d.headline);
   const foot = mkSpan('hd-foot');
   const tags = mkSpan('hd-tags'); (KEY_TAGS[d.card.k]||[]).slice(0,2).forEach(t=>tags.appendChild(mkSpan('i', t)));
-  const n = deckLen(d.card);
-  foot.append(tags, mkSpan('hd-cue', (n ? ('카드뉴스 '+n+'장') : '카드뉴스') + '  →'));
+  const n = d.isCase ? 0 : deckLen(d.card);
+  foot.append(tags, mkSpan('hd-cue', (d.isCase ? '조별과제 펼치기' : (n ? ('카드뉴스 '+n+'장') : '카드뉴스')) + '  →'));
   card.append(glow, mark, top, title, foot);
   card.addEventListener('click', ()=>{
     if(deckSuppress){ deckSuppress=false; return; }
     if(i!==hi){ stopHeroAuto(); setDeck(i); return; }           // 옆 카드 탭 → 가운데로
-    openSheet({key:d.card.k, lbl:`${d.s.name} · ${d.s.prof} 교수님`}, d.card);  // 가운데 카드 탭 → 카드뉴스
+    // 조별과제는 케이스 전용 시트로 (openCase는 함수 선언이라 이 시점엔 이미 정의돼 있다)
+    if(d.isCase) openCase(d.caseData);
+    else openSheet({key:d.card.k, lbl:`${d.s.name} · ${d.s.prof} 교수님`}, d.card);
   });
   return card;
 }
