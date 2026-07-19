@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#05090F">
 <meta name="description" content="연세 EMBA 17기의 3분 매거진 — 강의·조별과제를 카드로 잇는 두 번째 뇌">
+<!-- 17기 내부 공유 전용. 페이지에 조별과제 드라이브 링크와 동기들 실명이 실려 있어
+     검색엔진이 수집·색인하면 카톡으로 받은 사람 말고도 닿는다. 크롤러 차단 + 링크 추적 차단. -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow, noarchive">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -2223,7 +2227,7 @@ function fileRows(host, files){
 function roomOpenBtn(host, room, g){
   if(room.url){
     const a=document.createElement('a'); a.className='rm-open'; a.href=room.url;
-    a.target='_blank'; a.rel='noopener noreferrer';
+    a.target='_blank'; a.rel='noopener noreferrer nofollow';   // nofollow — 크롤러가 과제 폴더까지 따라가지 않게
     a.appendChild(document.createTextNode(g+' 과제방 열기'));
     a.appendChild(icon('ic-chev',14));
     host.appendChild(a);
