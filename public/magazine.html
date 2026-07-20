@@ -749,6 +749,9 @@
   .cn-net-subj svg{flex:0 0 auto}
   .cn-net-concept{font-size:13px;line-height:1.4;color:var(--paper);word-break:keep-all}
   .cn-net-num{align-self:flex-start;margin-top:1px}
+  .cn-map-jump{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;
+    color:var(--gold);border-color:var(--gold-line);background:var(--gold-tint);font-weight:700}
+  .cn-map-jump svg{flex:0 0 auto}
 
   /* ───────────────── 데스크톱·태블릿 (≥820px) ─────────────────
      매거진은 430px 모바일 컬럼으로 설계됐다. PC로 열면 화면 한가운데 좁은 띠만 남는다.
@@ -36268,6 +36271,16 @@ const G = DATA.graph;
     applyFocus();
   }
 
+  /* 카드뉴스에서 '이 개념을 지도에서 보기'로 넘어오는 문. 지도는 IIFE 안이라
+     밖에서 부를 방법이 없었다 — 딱 이 하나만 내보낸다.
+     지도를 연 다음 프레임에 초점을 잡는다(열자마자 잡으면 크기가 0이라 어긋난다). */
+  window.focusMapNode = function(id){
+    if(!nById[id]) return false;
+    setMap(true);
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ setActive(id); centerOn(id); }); });
+    return true;
+  };
+
   // 화면좌표 → SVG 사용자좌표. getScreenCTM은 강제 레이아웃을 유발하고 '이미 그려진' viewBox만 반영해서,
   // rAF로 커밋 대기 중인 뷰(pendingView)와 어긋나 줌이 커서 밑에서 미끄러진다. anchoredView의 정확한 역함수로 직접 계산.
   const liveView = ()=> pendingView || view;
@@ -36702,9 +36715,25 @@ function buildNetGraph(neighbors, accent, hubLabel){
   const frag=document.createDocumentFragment(); frag.append(netWrap, legend, list);
   return frag;
 }
-function fillConnect(p, th, accent){
+/* 두뇌지도 바로가기 — 지도를 '열기만' 하면 166개 점 앞에서 뭘 볼지 몰라 막막하다.
+   지금 보던 개념 자리로 데려가 거기서부터 퍼져 나가게 한다. */
+function mapJumpBtn(id, label){
+  if(!id || !(DATA.graph && DATA.graph.nodes || []).some(n=>n.id===id)) return null;
+  const b=mkBtn('btn-ghost cn-map-jump', '');
+  b.appendChild(icon('ic-brain',15));
+  b.appendChild(document.createTextNode(label || '이 개념을 두뇌지도에서 보기 →'));
+  b.addEventListener('click', ()=>{
+    closeSheet();
+    // 시트 닫힘 전환(.42s)이 끝난 뒤 열어야 지도가 그 위로 겹쳐 뜨지 않는다
+    setTimeout(()=>{ if(!window.focusMapNode || !window.focusMapNode(id)) setMap(true); }, 260);
+  });
+  return b;
+}
+function fillConnect(p, th, accent, id){
   const hint=el('rich-src'); hint.style.margin='0 0 14px'; hint.textContent='빛이 흐르는 쪽이 이어지는 개념이에요 — 아래 목록에서 번호를 눌러 바로 가보세요'; p.appendChild(hint);
   p.appendChild(buildNetGraph(th.neighbors, accent, th.concept));
+  const jump = mapJumpBtn(id);
+  if(jump) p.appendChild(jump);
 }
 function fillRelated(p, c, accent){
   const hint=el('rich-src'); hint.style.margin='0 0 14px'; hint.textContent='같은 과목에서 바로 이어 파볼 핵심 개념 (원에 마우스를 올리면 제목이 보여요)'; p.appendChild(hint);
@@ -36735,7 +36764,7 @@ function buildPanels(c){
     if(th.case_title||th.case_body) items.push({step:'실제 사례', badge:'CASE', title:th.case_title||'사례', fill:(p)=>fillCaseProse(p,th)});
     if(th.decision||(th.checklist&&th.checklist.length)||th.quote) items.push({step:'30초 결론', badge:'TAKEAWAY', title:'오늘 당장', fill:(p)=>fillDecisionProse(p,th)});
   }
-  if(th && th.neighbors && th.neighbors.length) items.push({step:'이어지는 개념', badge:'CONNECT', title:'이어지는 개념', fill:(p)=>fillConnect(p,th,accent)});
+  if(th && th.neighbors && th.neighbors.length) items.push({step:'이어지는 개념', badge:'CONNECT', title:'이어지는 개념', fill:(p)=>fillConnect(p,th,accent,c.db_id)});
   else if(!th && c.related && c.related.length) items.push({step:'이어지는 개념', badge:'CONNECT', title:'이 주제와 이어지는 개념', fill:(p)=>fillRelated(p,c,accent)});
   toc = items.map((it, i)=>({step:it.step, title:it.title, idx:i}));
 
@@ -36848,6 +36877,10 @@ function buildCasePanels(c){
       const s=document.createElement('span'); s.textContent=th.concept;
       b.append(dot,s); b.addEventListener('click',()=>openTheory(id)); row.appendChild(b); });
     p.appendChild(row);
+    // 조별과제도 지도의 한 점이다 — 같은 문을 달아 준다.
+    // 지도 노드 id 는 'case:' 접두사가 붙는다(sync_graph_cases.py) — 케이스 id 그대로 주면 못 찾는다.
+    const jump = mapJumpBtn('case:'+c.id, '이 과제를 두뇌지도에서 보기 →');
+    if(jump) p.appendChild(jump);
   }});
   toc = items.map((it,i)=>({step:it.step, title:it.title, idx:i}));
   return items.map((it,i)=>{
