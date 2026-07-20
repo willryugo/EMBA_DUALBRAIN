@@ -754,6 +754,8 @@
   .cn-net-num{align-self:flex-start;margin-top:1px}
   .cn-map-jump{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;
     color:var(--gold);border-color:var(--gold-line);background:var(--gold-tint);font-weight:700}
+  /* 목록보다 먼저 오는 주된 행동 — 위 여백을 없애고 조금 더 크게 */
+  .cn-map-jump-lead{margin:0 0 16px;padding-top:13px;padding-bottom:13px;font-size:14px}
   .cn-map-jump svg{flex:0 0 auto}
 
   /* ───────────────── 데스크톱·태블릿 (≥820px) ─────────────────
@@ -36757,16 +36759,49 @@ function mapJumpBtn(id, label){
   });
   return b;
 }
-function fillConnect(p, th, accent, id){
-  const hint=el('rich-src'); hint.style.margin='0 0 14px'; hint.textContent='빛이 흐르는 쪽이 이어지는 개념이에요 — 아래 목록에서 번호를 눌러 바로 가보세요'; p.appendChild(hint);
-  p.appendChild(buildNetGraph(th.neighbors, accent, th.concept));
-  const jump = mapJumpBtn(id);
-  if(jump) p.appendChild(jump);
+/* 이어지는 개념 — 이 자리에 작은 2D 관계도를 그렸었다. 번호만 붙은 원이라 뭔지 알 수 없어
+   이름표를 얹었지만, 결국 '진짜 지도'의 어설픈 축소판일 뿐이었다. 두뇌지도가 이미 그 일을
+   훨씬 잘한다 → 여기서는 '지도로 가는 문 + 읽고 고를 수 있는 제목'만 둔다. */
+const CONNECT_TOP = 5;
+function connectList(p, neighbors, id, hubIsCase){
+  const list = (neighbors||[]).slice(0, CONNECT_TOP);
+  const hint=el('rich-src'); hint.style.margin='0 0 14px';
+  hint.textContent = (neighbors||[]).length > CONNECT_TOP
+    ? `이어지는 개념 ${neighbors.length}개 중 연관 높은 ${CONNECT_TOP}개 — 누르면 두뇌지도의 그 자리로`
+    : '이어지는 개념 — 누르면 두뇌지도의 그 자리로';
+  p.appendChild(hint);
+
+  const jump = mapJumpBtn(id, hubIsCase ? '이 과제를 두뇌지도에서 보기 →' : '이 개념을 두뇌지도에서 보기 →');
+  if(jump){ jump.classList.add('cn-map-jump-lead'); p.appendChild(jump); }
+
+  const ol=document.createElement('ol'); ol.className='cn-net-list';
+  list.forEach((n,i)=>{
+    const li=document.createElement('li');
+    const btn=document.createElement('button'); btn.type='button'; btn.className='cn-net-item';
+    const badge=el('cn-net-num'); badge.style.background = NODECOL[n.id] || n.col; badge.textContent = (i+1);
+    const txt=el('cn-net-item-txt');
+    const sub=DATA.subjects.find(s=>s.key===n.k);
+    if(sub){
+      const sl=el('cn-net-subj'); sl.style.color = MAPCOL[n.k] || n.col;
+      sl.appendChild(subjIcon(n.k,12));
+      sl.appendChild(document.createTextNode(sub.name));
+      txt.appendChild(sl);
+    }
+    txt.appendChild(el('cn-net-concept', n.c));
+    btn.append(badge, txt);
+    // 지도의 그 자리로 — 카드로 바로 들어가지 않는다. 지도에서 주변을 보고 고르는 게 이 화면의 일.
+    btn.addEventListener('click', ()=>{
+      closeSrcPop(true);
+      mapReturn = {id, ctx: curCtx, card: curCard, idx: swIdx};   // 돌아올 자리
+      closeSheet();
+      setTimeout(()=>{ if(!window.focusMapNode || !window.focusMapNode(n.id)) setMap(true); }, 260);
+    });
+    li.appendChild(btn); ol.appendChild(li);
+  });
+  p.appendChild(ol);
 }
-function fillRelated(p, c, accent){
-  const hint=el('rich-src'); hint.style.margin='0 0 14px'; hint.textContent='같은 과목에서 바로 이어 파볼 핵심 개념 (원에 마우스를 올리면 제목이 보여요)'; p.appendChild(hint);
-  p.appendChild(buildNetGraph(c.related||[], accent, c.title));
-}
+function fillConnect(p, th, accent, id){ connectList(p, th.neighbors, id, false); }
+function fillRelated(p, c, accent){ connectList(p, c.related||[], null, false); }
 // 산문 폴백 (덱 없을 때)
 function fillConceptProse(p, th){
   if(th.problem){ const sc=el('sw-scene'); sc.appendChild(el('sw-scene-lab','💭 이런 상황, 익숙하죠?')); const b=richParagraph(th.problem); b.classList.add('sw-scene-b'); sc.appendChild(b); p.appendChild(sc); }
@@ -36924,18 +36959,12 @@ function buildCasePanels(c){
     }});
   }
   if((c.cardLinks||[]).length) items.push({step:'이어지는 개념', badge:'CONNECT', title:'이 과제가 닿는 이론', fill:p=>{
-    const hint=el('rich-src'); hint.style.margin='0 0 12px'; hint.textContent='두뇌지도의 이론카드로 이어집니다 — 눌러서 열기'; p.appendChild(hint);
-    const row=el('cn-net-list');
-    c.cardLinks.forEach(id=>{ const th=(DATA.theory||{})[id]; if(!th) return;
-      const b=document.createElement('button'); b.type='button'; b.className='cn-net-item';
-      const dot=document.createElement('i'); dot.style.background=SUBCOL[th.k]||acc;
-      const s=document.createElement('span'); s.textContent=th.concept;
-      b.append(dot,s); b.addEventListener('click',()=>openTheory(id,{trail:true})); row.appendChild(b); });
-    p.appendChild(row);
-    // 조별과제도 지도의 한 점이다 — 같은 문을 달아 준다.
-    // 지도 노드 id 는 'case:' 접두사가 붙는다(sync_graph_cases.py) — 케이스 id 그대로 주면 못 찾는다.
-    const jump = mapJumpBtn('case:'+c.id, '이 과제를 두뇌지도에서 보기 →');
-    if(jump) p.appendChild(jump);
+    // 이론카드 쪽과 같은 모양으로 — 지도로 가는 문 + 읽고 고를 수 있는 제목 목록.
+    // 지도 노드 id 는 'case:' 접두사가 붙는다(sync_graph_cases.py).
+    const neighbors = c.cardLinks
+      .map(id=>{ const th=(DATA.theory||{})[id]; return th ? {id, c: th.concept, k: th.k, col: SUBCOL[th.k]||acc} : null; })
+      .filter(Boolean);
+    connectList(p, neighbors, 'case:'+c.id, true);
   }});
   toc = items.map((it,i)=>({step:it.step, title:it.title, idx:i}));
   return items.map((it,i)=>{
@@ -37284,7 +37313,7 @@ if(!reduced) setInterval(()=>{                     // 예시어 교체 — 페�
    · 도장은 내용 해시라 내용이 그대로면 값도 그대로 → 헛 새로고침이 없다.
    · 갱신은 쿼리를 바꿔 이동한다. 같은 URL 로 reload 하면 그 캐시를 또 집어 온다. */
 (function autoUpdate(){
-  const BUILD = '3e3d444b7b11';
+  const BUILD = 'aaf91e354892';
   if(!/^[0-9a-f]{12}$/.test(BUILD)) return;          // 빌드 도장이 안 찍혔으면 아무것도 안 한다
   const KEY = 'db_mag_reloaded_for';
   let busy = false;
