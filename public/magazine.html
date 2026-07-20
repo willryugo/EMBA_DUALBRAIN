@@ -163,7 +163,9 @@
   .hero-search:hover{border-color:var(--blue-line);filter:brightness(1.05)}
   .hero-search:active{transform:translateY(1px)}
   .hs-ico{line-height:0;flex:0 0 auto}
-  .hs-ph{font-size:13.5px;color:var(--muted)}
+  /* 좁은 폰에서 예시어가 길어지면 글자가 중간에서 뚝 잘렸다(부모가 overflow:hidden).
+     줄바꿈 없이 말줄임으로 흘리고, flex 안에서 줄어들 수 있게 min-width를 푼다. */
+  .hs-ph{font-size:13.5px;color:var(--muted);min-width:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   /* 예시어가 툭 바뀌면 안 읽힌다 — 페이드로 갈아끼워 '바뀌는 중'이 보이게 */
   .hs-eg{color:var(--blue);transition:opacity .28s}
   .hs-eg.out{opacity:0}
@@ -189,11 +191,19 @@
   .search-panel{max-height:0;opacity:0;overflow:hidden;transition:max-height .3s cubic-bezier(.2,.7,.3,1),opacity .22s}
   .search-panel.open{max-height:1600px;opacity:1;margin-top:10px}
   .search-head{flex:0 0 auto;display:flex;align-items:center;gap:9px;padding-bottom:10px}
-  .search-inwrap{flex:1;display:flex;align-items:center;gap:9px;background:var(--surface-1);border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:11px 14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
+  /* min-width:0 이 없으면 입력창이 제 콘텐츠 폭 아래로 못 줄어들어 옆의 '취소'를 화면 밖으로
+     밀어낸다 — 부모가 overflow:hidden 이라 취소가 통째로 사라졌다(실기기에서 발견). */
+  .search-inwrap{flex:1;min-width:0;display:flex;align-items:center;gap:9px;background:var(--surface-1);border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:11px 14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
   .search-mag{line-height:0;flex:0 0 auto}
-  .search-input{flex:1;background:none;border:0;outline:none;color:var(--paper);font-family:inherit;font-size:15px;min-width:0}
+  .search-input{flex:1;background:none;border:0;outline:none;color:var(--paper);font-family:inherit;font-size:15px;min-width:0;text-overflow:ellipsis}
+  /* iOS Safari 가 type=search 에 붙이는 기본 clear 버튼 — 우리 '취소'와 겹쳐 보이므로 끈다 */
+  .search-input::-webkit-search-cancel-button,.search-input::-webkit-search-decoration{-webkit-appearance:none;appearance:none}
   .search-input::placeholder{color:var(--muted)}
-  .search-close{flex:0 0 auto;font-size:14px;font-weight:700;color:var(--blue);padding:6px 4px}
+  .search-close{flex:0 0 auto;font-size:14px;font-weight:700;color:var(--blue);padding:6px 4px;white-space:nowrap}
+  /* 글자만 지우고 다시 검색하는 길 — '취소'는 패널을 통째로 닫아버려 되돌아오기가 번거롭다 */
+  .search-clear{flex:0 0 auto;line-height:0;padding:4px;margin:-4px -4px -4px 0;color:var(--muted);border-radius:50%}
+  .search-clear:hover{color:var(--paper)}
+  .search-clear:active{transform:scale(.9)}
   .search-body{max-height:56vh;overflow-y:auto;padding-bottom:4px}
   .search-hint{font-size:12.5px;color:var(--muted);margin-bottom:12px}
   .search-chips{display:flex;flex-wrap:wrap;gap:9px}
@@ -900,6 +910,9 @@
         <div class="search-inwrap">
           <span class="search-mag"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--muted)"><use href="#ic-search"/></svg></span>
           <input class="search-input" id="searchInput" type="search" autocomplete="off" placeholder="무엇이든 물어보세요 — 인사·전략·회계·AI…" aria-label="검색어" />
+          <button class="search-clear" id="searchClear" type="button" aria-label="입력 지우기" hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><use href="#ic-close"/></svg>
+          </button>
         </div>
         <button class="search-close" id="searchClose">취소</button>
       </div>
@@ -2511,7 +2524,7 @@ function renderExamples(){
   const body=$('searchBody'); body.textContent='';
   body.appendChild(el('search-hint','이런 걸 검색해보세요 — 개념·상황·키워드 아무거나'));
   const wrap=el('search-chips');
-  EXAMPLES.forEach(x=>{ const b=document.createElement('button'); b.className='search-chip'; b.textContent=x; b.addEventListener('click',()=>{ $('searchInput').value=x; runSearch(x); }); wrap.appendChild(b); });
+  EXAMPLES.forEach(x=>{ const b=document.createElement('button'); b.className='search-chip'; b.textContent=x; b.addEventListener('click',()=>{ $('searchInput').value=x; runSearch(x); syncSearchClear(); }); wrap.appendChild(b); });
   body.appendChild(wrap);
 }
 function runSearch(q){
@@ -2535,14 +2548,18 @@ function runSearch(q){
 function isSearchOpen(){ return $('searchPanel').classList.contains('open'); }
 function openSearch(){
   if(isSearchOpen()) return;
-  buildSearchIndex(); $('searchInput').value=''; renderExamples();
+  buildSearchIndex(); $('searchInput').value=''; renderExamples(); syncSearchClear();
   $('searchPanel').classList.add('open'); $('btnSearch').setAttribute('aria-expanded','true');
   setTimeout(()=>{ $('searchInput').focus(); $('searchPanel').scrollIntoView({block:'nearest', behavior: reduced?'auto':'smooth'}); }, 80);
 }
 function closeSearch(){ $('searchPanel').classList.remove('open'); $('btnSearch').setAttribute('aria-expanded','false'); $('searchInput').blur(); }
 $('btnSearch').addEventListener('click', ()=>{ isSearchOpen() ? closeSearch() : openSearch(); });
 $('searchClose').addEventListener('click', closeSearch);
-$('searchInput').addEventListener('input', e=>runSearch(e.target.value));
+function syncSearchClear(){ $('searchClear').hidden = !$('searchInput').value; }
+$('searchInput').addEventListener('input', e=>{ runSearch(e.target.value); syncSearchClear(); });
+$('searchClear').addEventListener('click', ()=>{
+  const inp=$('searchInput'); inp.value=''; renderExamples(); syncSearchClear(); inp.focus();
+});
 document.addEventListener('keydown', e=>{ if(e.key==='Escape' && isSearchOpen()) closeSearch(); });
 // hero 검색바 예시 회전
 const HS_EG=['— 인사·전략·회계','— 리더십·가격·AI','— 재고·윤리·채용','— 브랜드·현금흐름·포트폴리오'];
