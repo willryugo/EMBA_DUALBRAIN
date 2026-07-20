@@ -36776,6 +36776,19 @@ function fillApplyProse(p, th){ const para=richParagraph(th.application); if(par
 function fillCaseProse(p, th){ const box=el('rich-case'); if(th.case_body){ const b=richParagraph(th.case_body); b.className='rich-body rich-case-b'; box.appendChild(b);} p.appendChild(box); if(th.sources&&th.sources.length){ const s=el('rich-src'); s.style.marginTop='12px'; s.textContent='근거 · '+th.sources.join(' / '); p.appendChild(s);} }
 function fillDecisionProse(p, th){ if(th.decision){ const d=el('cn-action'); d.textContent=th.decision; p.appendChild(d);} if(th.checklist&&th.checklist.length){ const ul=document.createElement('ul'); ul.className='rich-check'; th.checklist.forEach(it=>{ const li=document.createElement('li'); const s=document.createElement('span'); s.textContent=it; li.appendChild(s); ul.appendChild(li);}); p.appendChild(ul);} if(th.quote){ const q=el('cn-quote'); q.style.marginTop='14px'; q.textContent=th.quote; p.appendChild(q);} }
 
+/* 한 장을 채우다 실패해도 카드 전체가 비지 않게. 실패한 장만 사유를 적고 넘어간다 —
+   빈 화면은 '고장'으로 보이지만, 한 장이 비고 나머지가 멀쩡하면 읽기는 계속된다. */
+function fillSafe(it, p, total){
+  try{
+    it.fill(p, total);
+  }catch(err){
+    console.error('이 장을 만들지 못했습니다 —', it.step, err);
+    const m = el('rich-src');
+    m.style.margin = '8px 0 0';
+    m.textContent = '이 장을 불러오지 못했어요 — 옆으로 넘겨 다음 장을 봐주세요.';
+    p.appendChild(m);
+  }
+}
 function buildPanels(c){
   if(c._case) return buildCasePanels(c._case);   // 조별과제 케이스는 전용 렌더러로
   const th = c.db_id ? (DATA.theory||{})[c.db_id] : null;
@@ -36800,7 +36813,7 @@ function buildPanels(c){
     const p = el('sw-panel');
     cnHead(p, i+1, it.step, it.badge, accent);
     if(it.title) p.appendChild(setHeadline(el('cn-title'), it.title));
-    it.fill(p, items.length);
+    fillSafe(it, p, items.length);
     if(i===0 && items.length>1){
       const pv=el('sw-preview'); pv.appendChild(el('sw-preview-lab','옆으로 넘기면 이만큼 더 있어요 →'));
       const row=el('sw-preview-row'); items.slice(1).forEach((x,j)=>{ if(j) row.appendChild(el('sw-preview-arr','›')); row.appendChild(el('sw-preview-chip', x.step)); });
@@ -36929,7 +36942,7 @@ function buildCasePanels(c){
     const p = el('sw-panel');
     cnHead(p, i+1, it.step, it.badge, acc);
     if(it.title) p.appendChild(setHeadline(el('cn-title'), it.title));
-    it.fill(p, items.length);
+    fillSafe(it, p, items.length);
     if(i===0 && items.length>1){
       const pv=el('sw-preview'); pv.appendChild(el('sw-preview-lab','옆으로 넘기면 이만큼 더 있어요 →'));
       const row=el('sw-preview-row'); items.slice(1).forEach((x,j)=>{ if(j) row.appendChild(el('sw-preview-arr','›')); row.appendChild(el('sw-preview-chip', x.step)); });
@@ -36999,7 +37012,6 @@ let curCtx = null, curCard = null;
    여기 쌓았다가, 첫 장에서 '이전'을 누를 때 왔던 카드의 보던 장으로 돌려보낸다.
    호기심에 눌렀다가 못 돌아가면 그 자리에서 탐색이 끊긴다. */
 let sheetTrail = [];
-let swRestore = -1;   // >=0 이면 '보던 장 복원 중' — swTrack scroll 동기화를 잠근다
 function openSheet(ctx, c, opt){
   if(!c) return; // 방어: 카드 없는 손상 레코드(구버전 북마크 등)면 조용히 무시
   // 지금 보던 카드를 이력에 남긴다(건너뛰기로 들어온 경우만)
@@ -37011,6 +37023,19 @@ function openSheet(ctx, c, opt){
   } else if(!(opt && opt.keepTrail)){
     sheetTrail = [];                                  // 새 진입 = 이력 초기화
   }
+  /* 본문을 '먼저 다 만들고' 화면에 한 번에 갈아 끼운다.
+     예전엔 머리말(제목·과목·태그)을 먼저 쓰고 그다음 본문을 만들었다. 본문을 만들다
+     한 군데라도 실패하면 화면엔 새 제목 + 빈 본문(또는 직전 카드의 본문)이 남았다.
+     만들기가 실패하면 화면을 아예 건드리지 않아, 보던 카드가 그대로 유지된다. */
+  let built;
+  try{
+    built = buildPanels(c);
+  }catch(err){
+    console.error('카드를 여는 데 실패했습니다 —', (c && c.title) || '', err);
+    return;
+  }
+  if(!built || !built.length) return;
+
   if(mapWrap.classList.contains('open')) setMap(false); // 지도(전체화면) 위로 시트가 겹치지 않게 먼저 닫기
   if(!$('sheet').classList.contains('open')) lastFocus = document.activeElement;
   stopHeroAuto(); // 시트가 열려 있는 동안 히어로 자동 회전 멈춤
@@ -37021,21 +37046,21 @@ function openSheet(ctx, c, opt){
   $('shTag').className = 'tag '+(TAGCLS[c.tag]||'');
   $('shTitle').textContent = c.title;
   const star = $('sheetStar'); star.classList.toggle('on', bmHas(bmId(c)));
-  swPanels = buildPanels(c);
+  swPanels = built;
   const track=$('swTrack'); track.textContent='';
   swPanels.forEach(p=>track.appendChild(p));
   const dots=$('swDots'); dots.textContent='';
   swPanels.forEach(()=>dots.appendChild(document.createElement('i')));
-  /* 보던 장으로 복원. track.scrollLeft 를 건드리면 scroll 이벤트가 뒤늦게 날아와
-     '지금 스크롤 위치'로 swIdx 를 덮어쓴다 — 그래서 복원해 둔 장이 1장으로 되돌아갔다.
-     복원하는 동안에는 그 동기화를 잠근다. */
+  /* 보던 장으로 복원.
+     처음엔 scrollLeft 를 0 으로 뒀다가 rAF 에서 복원하고, 그 사이 scroll 동기화를 잠갔다.
+     그런데 rAF 가 안 도는 순간(전환 중·백그라운드)에 잠금이 안 풀려, 옆으로 넘겨도
+     장 번호가 안 바뀌고 빈 화면이 나왔다. 잠금을 두지 말고 '처음부터 목표 위치'로 놓는다 —
+     그러면 뒤따르는 scroll 이벤트가 계산해도 같은 값이라 서로 부딪힐 일이 없다. */
   swIdx = (opt && opt.at != null) ? Math.max(0, Math.min(swPanels.length-1, opt.at)) : 0;
-  swRestore = swIdx;
-  track.scrollLeft = 0; updateNav();
-  requestAnimationFrame(()=>{
-    track.scrollLeft = swIdx*track.clientWidth;
-    requestAnimationFrame(()=>{ swRestore = -1; });   // 이 프레임의 scroll 이벤트까지 흘려보낸 뒤 해제
-  });
+  updateNav();
+  const w = track.clientWidth;
+  if(w) track.scrollLeft = swIdx * w;
+  else requestAnimationFrame(()=>{ track.scrollLeft = swIdx * track.clientWidth; });  // 아직 레이아웃 전이면 한 프레임 뒤
   $('backdrop').classList.add('open');
   $('sheet').classList.add('open');
   $('sheetClose').focus();
@@ -37147,7 +37172,6 @@ $('swPrev').addEventListener('click', ()=>{ if(swIdx===0 && sheetTrail.length) s
 $('swNext').addEventListener('click', ()=>{ if(swIdx>=swPanels.length-1) closeSheet(); else goStep(swIdx+1); });
 // 스와이프(트랙 스크롤)로 넘겨도 인디케이터 동기화
 $('swTrack').addEventListener('scroll', ()=>{
-  if(swRestore >= 0) return;          // 보던 장 복원 중 — 스크롤로 덮어쓰지 않는다
   const track=$('swTrack'); const i=Math.round(track.scrollLeft/track.clientWidth);
   if(i!==swIdx){ swIdx=i; updateNav(); }
 });
@@ -37260,7 +37284,7 @@ if(!reduced) setInterval(()=>{                     // 예시어 교체 — 페�
    · 도장은 내용 해시라 내용이 그대로면 값도 그대로 → 헛 새로고침이 없다.
    · 갱신은 쿼리를 바꿔 이동한다. 같은 URL 로 reload 하면 그 캐시를 또 집어 온다. */
 (function autoUpdate(){
-  const BUILD = '7083ad3dea1c';
+  const BUILD = '3e3d444b7b11';
   if(!/^[0-9a-f]{12}$/.test(BUILD)) return;          // 빌드 도장이 안 찍혔으면 아무것도 안 한다
   const KEY = 'db_mag_reloaded_for';
   let busy = false;
