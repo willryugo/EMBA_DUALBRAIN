@@ -36709,7 +36709,7 @@ function buildNetGraph(neighbors, accent, hubLabel){
     }
     txt.appendChild(el('cn-net-concept', n.c));
     btn.append(badge, txt);
-    btn.addEventListener('click', ()=>{ closeSrcPop(true); openTheory(n.id); });
+    btn.addEventListener('click', ()=>{ closeSrcPop(true); openTheory(n.id, {trail:true}); });
     li.appendChild(btn); list.appendChild(li);
   });
   const frag=document.createDocumentFragment(); frag.append(netWrap, legend, list);
@@ -36784,8 +36784,22 @@ function buildPanels(c){
 function updateNav(){
   [...$('swDots').children].forEach((d,j)=>d.className = j===swIdx?'on':'');
   $('swStep').textContent = (swIdx+1)+' / '+swPanels.length;
-  $('swPrev').disabled = swIdx===0;
+  // 첫 장이라도 건너뛰어 들어왔다면 '이전'은 돌아가는 문이 된다
+  const canBack = swIdx>0 || sheetTrail.length>0;
+  $('swPrev').disabled = !canBack;
+  const back = swIdx===0 && sheetTrail.length ? sheetTrail[sheetTrail.length-1] : null;
+  $('swPrev').lastChild.textContent = back ? (back.map ? '지도로' : '돌아가기') : '이전';
   $('swNext').textContent = swIdx>=swPanels.length-1 ? '닫기 ✕' : '다음 ›';
+}
+function sheetBack(){
+  const prev = sheetTrail.pop();
+  if(!prev) return;
+  if(prev.map){                       // 지도에서 왔으면 지도로, 그 점에 초점을 맞춘 채로
+    closeSheet();
+    setTimeout(()=>{ if(!window.focusMapNode || !window.focusMapNode(prev.map)) setMap(true); }, 260);
+    return;
+  }
+  openSheet(prev.ctx, prev.card, {at: prev.idx, keepTrail: true});
 }
 function goStep(i){
   const track=$('swTrack');
@@ -36875,7 +36889,7 @@ function buildCasePanels(c){
       const b=document.createElement('button'); b.type='button'; b.className='cn-net-item';
       const dot=document.createElement('i'); dot.style.background=SUBCOL[th.k]||acc;
       const s=document.createElement('span'); s.textContent=th.concept;
-      b.append(dot,s); b.addEventListener('click',()=>openTheory(id)); row.appendChild(b); });
+      b.append(dot,s); b.addEventListener('click',()=>openTheory(id,{trail:true})); row.appendChild(b); });
     p.appendChild(row);
     // 조별과제도 지도의 한 점이다 — 같은 문을 달아 준다.
     // 지도 노드 id 는 'case:' 접두사가 붙는다(sync_graph_cases.py) — 케이스 id 그대로 주면 못 찾는다.
@@ -36923,24 +36937,39 @@ function openRoom(g){
     `원본 파일 ${room.files.length}개 · 합계 ${room.mb}MB`,
     body=>{ roomOpenBtn(body, room, g); fileRows(body, room.files); });
 }
-function openCase(c){
+function openCase(c, opt){
   const k = caseKey(c);
   openSheet({key:k, lbl:`${c.g} 조별과제 · ${NAMES[k]||c.course}`},
-            {tag:'조별', title:c.title, hook:c.subtitle, k, _case:c, db_id:null});
+            {tag:'조별', title:c.title, hook:c.subtitle, k, _case:c, db_id:null}, opt);
 }
 // 지도 노드는 이론카드(126)와 조별과제 케이스(40) 두 종류다. id 접두사로 갈라 연다.
 const CASE_BY_NODE = {};
 (DATA.cases||[]).forEach(c=>{ CASE_BY_NODE['case:'+c.id] = c; });
 function caseOfNode(id){ return CASE_BY_NODE[id] || null; }
-function openNode(id){ const c = caseOfNode(id); if(c) openCase(c); else openTheory(id); }
-function openTheory(id){
+// 지도에서 연 카드는 '지도로 돌아가기'를 달아 준다 — 호기심에 눌렀다가 갇히면 안 된다.
+function openNode(id){ const c = caseOfNode(id); if(c) openCase(c, {fromMap:id}); else openTheory(id, {fromMap:id}); }
+function openTheory(id, opt){
   const th=(DATA.theory||{})[id]; if(!th) return;
   openSheet({key:th.k, lbl:(NAMES[th.k]||'')+' · DualBrain 이론카드'},
-            {tag:'심화', title:th.concept, hook:th.hook, body:'', src:'DualBrain 이론카드 · 연결 '+th.deg, db_id:id, k:th.k});
+            {tag:'심화', title:th.concept, hook:th.hook, body:'', src:'DualBrain 이론카드 · 연결 '+th.deg, db_id:id, k:th.k},
+            opt);
 }
 let curCtx = null, curCard = null;
-function openSheet(ctx, c){
+/* 카드 사이를 옮겨 다닌 이력. 이어지는 개념이나 지도에서 다른 카드로 건너뛰면
+   여기 쌓았다가, 첫 장에서 '이전'을 누를 때 왔던 카드의 보던 장으로 돌려보낸다.
+   호기심에 눌렀다가 못 돌아가면 그 자리에서 탐색이 끊긴다. */
+let sheetTrail = [];
+function openSheet(ctx, c, opt){
   if(!c) return; // 방어: 카드 없는 손상 레코드(구버전 북마크 등)면 조용히 무시
+  // 지금 보던 카드를 이력에 남긴다(건너뛰기로 들어온 경우만)
+  if(opt && opt.fromMap){
+    sheetTrail = [{map: opt.fromMap}];                // 지도에서 들어옴 → 지도로 돌아간다
+  } else if(opt && opt.trail && curCard && $('sheet').classList.contains('open')){
+    sheetTrail.push({ctx: curCtx, card: curCard, idx: swIdx});
+    if(sheetTrail.length > 12) sheetTrail.shift();   // 무한정 쌓지 않는다
+  } else if(!(opt && opt.keepTrail)){
+    sheetTrail = [];                                  // 새 진입 = 이력 초기화
+  }
   if(mapWrap.classList.contains('open')) setMap(false); // 지도(전체화면) 위로 시트가 겹치지 않게 먼저 닫기
   if(!$('sheet').classList.contains('open')) lastFocus = document.activeElement;
   stopHeroAuto(); // 시트가 열려 있는 동안 히어로 자동 회전 멈춤
@@ -36956,7 +36985,9 @@ function openSheet(ctx, c){
   swPanels.forEach(p=>track.appendChild(p));
   const dots=$('swDots'); dots.textContent='';
   swPanels.forEach(()=>dots.appendChild(document.createElement('i')));
-  swIdx=0; track.scrollLeft=0; updateNav();
+  swIdx = (opt && opt.at != null) ? Math.max(0, Math.min(swPanels.length-1, opt.at)) : 0;
+  track.scrollLeft = 0; updateNav();
+  if(swIdx) requestAnimationFrame(()=>{ track.scrollLeft = swIdx*track.clientWidth; });  // 돌아올 땐 보던 장으로
   $('backdrop').classList.add('open');
   $('sheet').classList.add('open');
   $('sheetClose').focus();
@@ -37064,7 +37095,7 @@ function closeSrcPop(immediate){
 }
 $('srcPopX').addEventListener('click', ()=>closeSrcPop());
 $('srcPopBack').addEventListener('click', e=>{ if(e.target===$('srcPopBack')) closeSrcPop(); });
-$('swPrev').addEventListener('click', ()=>goStep(swIdx-1));
+$('swPrev').addEventListener('click', ()=>{ if(swIdx===0 && sheetTrail.length) sheetBack(); else goStep(swIdx-1); });
 $('swNext').addEventListener('click', ()=>{ if(swIdx>=swPanels.length-1) closeSheet(); else goStep(swIdx+1); });
 // 스와이프(트랙 스크롤)로 넘겨도 인디케이터 동기화
 $('swTrack').addEventListener('scroll', ()=>{
