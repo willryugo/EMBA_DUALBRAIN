@@ -384,11 +384,14 @@
   .map-info-open:active{transform:translateY(1px);filter:brightness(.98)}
   .map-info-links{margin-top:12px}
   .mi-links-lab{font-size:10px;font-weight:700;letter-spacing:.03em;color:var(--muted);margin-bottom:7px}
-  .mi-links{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+  /* 세로 목록 — 가로 칩이면 제목이 잘려 무엇인지 모른 채 골라야 했다 */
+  .mi-links{display:flex;flex-direction:column;gap:6px;max-height:32vh;overflow-y:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
   .mi-links::-webkit-scrollbar{display:none}
-  .mi-link{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--paper-2);background:rgba(255,255,255,.03);border:1px solid var(--line-strong);border-radius:var(--r-pill);padding:6px 11px;max-width:184px;transition:border-color .14s,transform .1s}
-  .mi-link i{width:6px;height:6px;border-radius:50%;flex:0 0 auto}
-  .mi-link span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .mi-link{display:flex;width:100%;align-items:flex-start;gap:9px;text-align:left;background:rgba(255,255,255,.03);border:1px solid var(--line-strong);border-radius:var(--r-md);padding:9px 12px;transition:border-color .14s,background .14s,transform .1s}
+  .mi-link i{width:7px;height:7px;border-radius:50%;flex:0 0 auto;margin-top:5px}
+  .mi-link span{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .mi-link b{font-size:12.5px;font-weight:700;line-height:1.35;color:var(--paper);word-break:keep-all}
+  .mi-link em{font-style:normal;font-size:10.5px;font-weight:600;color:var(--muted)}
   .mi-link:hover{border-color:var(--gold-line)}
   .mi-link:active{transform:scale(.96)}
   .map-info-x{position:absolute;top:9px;right:11px;width:26px;height:26px;border:1px solid var(--line-strong);border-radius:50%;color:var(--muted);line-height:0;display:flex;align-items:center;justify-content:center}
@@ -36229,11 +36232,21 @@ const G = DATA.graph;
     };
     tween = requestAnimationFrame(step);
   }
-  function centerOn(id){
+  function centerOn(id, opt){
     const nn=nById[id]; if(!nn) return; const v=liveView();
-    // 이웃으로 점프할 때 너무 멀리 떨어져 있으면 살짝 당겨서 연결이 보이게
-    const w = Math.min(v.w, baseW*0.55), h = w*vAspect();
-    animateTo({x:nn.x-w/2, y:nn.y-h/2, w, h});
+    // 이웃으로 점프할 때 너무 멀리 떨어져 있으면 살짝 당겨서 연결이 보이게.
+    // opt.tight 면(카드에서 바로 들어온 경우) 한 번에 볼 만한 배율로 확 당긴다 —
+    // 사용자가 들어오자마자 손으로 줌을 맞추게 하면 안 된다.
+    const w = opt && opt.tight ? baseW*0.30 : Math.min(v.w, baseW*0.55), h = w*vAspect();
+    // 하단 정보 패널이 화면 아래쪽을 덮는다. 뷰 정중앙에 놓으면 그 점이 패널 뒤로 내려가고
+    // 위쪽이 텅 빈다 → 패널이 가리는 만큼 위로 끌어올려 '보이는 영역'의 한가운데에 둔다.
+    let frac = 0;
+    const info = $('mapInfo'), r = svg.getBoundingClientRect();
+    if(info && info.classList.contains('on') && r.height){
+      const ir = info.getBoundingClientRect();
+      frac = Math.min(.5, Math.max(0, (r.bottom - ir.top) / r.height));
+    }
+    animateTo({x:nn.x-w/2, y:nn.y - h*(1-frac)/2, w, h});
   }
   function showInfo(id){
     const n = nById[id];
@@ -36249,14 +36262,25 @@ const G = DATA.graph;
     const links=$('mapInfoLinks'); links.textContent='';
     const neigh = adj[id] ? Array.from(adj[id]) : [];
     if(neigh.length){
+      /* 예전엔 가로로 흐르는 알약(칩)이라 제목이 '혼동행렬과 정확…'처럼 잘렸다.
+         잘린 제목으론 고를 수가 없다 → 연관 높은 5개를 세로로 쌓아 제목을 다 보여준다.
+         (지도에서 다음 갈 곳을 '읽고' 고르는 게 이 패널의 일이다) */
       neigh.sort((a,b)=>(((nById[b]||{}).deg)||0)-(((nById[a]||{}).deg)||0));
-      const lab=document.createElement('div'); lab.className='mi-links-lab'; lab.textContent='연결된 개념 '+neigh.length+'개 — 눌러서 이동';
+      const TOP = 5, show = neigh.slice(0, TOP);
+      const lab=document.createElement('div'); lab.className='mi-links-lab';
+      lab.textContent = neigh.length > TOP
+        ? '이어지는 개념 '+neigh.length+'개 중 연관 높은 '+TOP+'개 — 눌러서 이동'
+        : '이어지는 개념 '+neigh.length+'개 — 눌러서 이동';
       const row=document.createElement('div'); row.className='mi-links';
-      neigh.forEach(nid=>{ const nn=nById[nid]; if(!nn) return;
+      show.forEach(nid=>{ const nn=nById[nid]; if(!nn) return;
         const bt=document.createElement('button'); bt.className='mi-link'; bt.type='button';
         const dot=document.createElement('i'); dot.style.background=NODECOL[nid]||nn.col;
-        const sp=document.createElement('span'); sp.textContent=nn.c;
-        bt.appendChild(dot); bt.appendChild(sp);
+        const txt=document.createElement('span');
+        const s1=document.createElement('b'); s1.textContent = nn.c;              // 제목 — 안 자른다
+        const s2=document.createElement('em');                                     // 과목 + 연결 수
+        s2.textContent = (caseOfNode(nid) ? '조별과제' : (NAMES[nn.k]||'')) + ' · 연결 ' + (nn.deg||0);
+        txt.append(s1, s2);
+        bt.appendChild(dot); bt.appendChild(txt);
         bt.addEventListener('click', ev=>{ ev.stopPropagation(); setActive(nid); centerOn(nid); });
         row.appendChild(bt);
       });
@@ -36277,7 +36301,8 @@ const G = DATA.graph;
   window.focusMapNode = function(id){
     if(!nById[id]) return false;
     setMap(true);
-    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ setActive(id); centerOn(id); }); });
+    // 정보 패널이 먼저 떠야 그 높이를 재서 초점을 위로 올릴 수 있다(setActive → centerOn 순서)
+    requestAnimationFrame(()=>{ requestAnimationFrame(()=>{ setActive(id); centerOn(id, {tight:true}); }); });
     return true;
   };
 
@@ -36723,6 +36748,9 @@ function mapJumpBtn(id, label){
   b.appendChild(icon('ic-brain',15));
   b.appendChild(document.createTextNode(label || '이 개념을 두뇌지도에서 보기 →'));
   b.addEventListener('click', ()=>{
+    // 지도를 둘러보고 이 카드로 되돌아왔을 때 '보던 장'으로 오게 자리를 적어 둔다.
+    // 안 적어 두면 지도에서 같은 점을 눌러도 그 카드의 1장부터 다시 시작한다.
+    mapReturn = {id, ctx: curCtx, card: curCard, idx: swIdx};
     closeSheet();
     // 시트 닫힘 전환(.42s)이 끝난 뒤 열어야 지도가 그 위로 겹쳐 뜨지 않는다
     setTimeout(()=>{ if(!window.focusMapNode || !window.focusMapNode(id)) setMap(true); }, 260);
@@ -36947,7 +36975,19 @@ const CASE_BY_NODE = {};
 (DATA.cases||[]).forEach(c=>{ CASE_BY_NODE['case:'+c.id] = c; });
 function caseOfNode(id){ return CASE_BY_NODE[id] || null; }
 // 지도에서 연 카드는 '지도로 돌아가기'를 달아 준다 — 호기심에 눌렀다가 갇히면 안 된다.
-function openNode(id){ const c = caseOfNode(id); if(c) openCase(c, {fromMap:id}); else openTheory(id, {fromMap:id}); }
+// mapReturn = 카드 → 지도로 나갈 때 적어 둔 자리. 같은 점으로 돌아오면 보던 장에서 이어 본다.
+let mapReturn = null;
+function openNode(id){
+  if(mapReturn && mapReturn.id === id && mapReturn.card){
+    const at = mapReturn.idx; const ctx = mapReturn.ctx, card = mapReturn.card;
+    mapReturn = null;
+    openSheet(ctx, card, {fromMap:id, at});
+    return;
+  }
+  mapReturn = null;                      // 다른 점을 골랐으면 그 자리는 잊는다
+  const c = caseOfNode(id);
+  if(c) openCase(c, {fromMap:id}); else openTheory(id, {fromMap:id});
+}
 function openTheory(id, opt){
   const th=(DATA.theory||{})[id]; if(!th) return;
   openSheet({key:th.k, lbl:(NAMES[th.k]||'')+' · DualBrain 이론카드'},
@@ -36959,6 +36999,7 @@ let curCtx = null, curCard = null;
    여기 쌓았다가, 첫 장에서 '이전'을 누를 때 왔던 카드의 보던 장으로 돌려보낸다.
    호기심에 눌렀다가 못 돌아가면 그 자리에서 탐색이 끊긴다. */
 let sheetTrail = [];
+let swRestore = -1;   // >=0 이면 '보던 장 복원 중' — swTrack scroll 동기화를 잠근다
 function openSheet(ctx, c, opt){
   if(!c) return; // 방어: 카드 없는 손상 레코드(구버전 북마크 등)면 조용히 무시
   // 지금 보던 카드를 이력에 남긴다(건너뛰기로 들어온 경우만)
@@ -36985,9 +37026,16 @@ function openSheet(ctx, c, opt){
   swPanels.forEach(p=>track.appendChild(p));
   const dots=$('swDots'); dots.textContent='';
   swPanels.forEach(()=>dots.appendChild(document.createElement('i')));
+  /* 보던 장으로 복원. track.scrollLeft 를 건드리면 scroll 이벤트가 뒤늦게 날아와
+     '지금 스크롤 위치'로 swIdx 를 덮어쓴다 — 그래서 복원해 둔 장이 1장으로 되돌아갔다.
+     복원하는 동안에는 그 동기화를 잠근다. */
   swIdx = (opt && opt.at != null) ? Math.max(0, Math.min(swPanels.length-1, opt.at)) : 0;
+  swRestore = swIdx;
   track.scrollLeft = 0; updateNav();
-  if(swIdx) requestAnimationFrame(()=>{ track.scrollLeft = swIdx*track.clientWidth; });  // 돌아올 땐 보던 장으로
+  requestAnimationFrame(()=>{
+    track.scrollLeft = swIdx*track.clientWidth;
+    requestAnimationFrame(()=>{ swRestore = -1; });   // 이 프레임의 scroll 이벤트까지 흘려보낸 뒤 해제
+  });
   $('backdrop').classList.add('open');
   $('sheet').classList.add('open');
   $('sheetClose').focus();
@@ -37099,6 +37147,7 @@ $('swPrev').addEventListener('click', ()=>{ if(swIdx===0 && sheetTrail.length) s
 $('swNext').addEventListener('click', ()=>{ if(swIdx>=swPanels.length-1) closeSheet(); else goStep(swIdx+1); });
 // 스와이프(트랙 스크롤)로 넘겨도 인디케이터 동기화
 $('swTrack').addEventListener('scroll', ()=>{
+  if(swRestore >= 0) return;          // 보던 장 복원 중 — 스크롤로 덮어쓰지 않는다
   const track=$('swTrack'); const i=Math.round(track.scrollLeft/track.clientWidth);
   if(i!==swIdx){ swIdx=i; updateNav(); }
 });
@@ -37211,7 +37260,7 @@ if(!reduced) setInterval(()=>{                     // 예시어 교체 — 페�
    · 도장은 내용 해시라 내용이 그대로면 값도 그대로 → 헛 새로고침이 없다.
    · 갱신은 쿼리를 바꿔 이동한다. 같은 URL 로 reload 하면 그 캐시를 또 집어 온다. */
 (function autoUpdate(){
-  const BUILD = '26b5ea2e5b0c';
+  const BUILD = '7083ad3dea1c';
   if(!/^[0-9a-f]{12}$/.test(BUILD)) return;          // 빌드 도장이 안 찍혔으면 아무것도 안 한다
   const KEY = 'db_mag_reloaded_for';
   let busy = false;
