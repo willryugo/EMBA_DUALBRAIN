@@ -250,6 +250,8 @@
   .hero-deck:active{cursor:grabbing}
   .hd-clip{position:absolute;top:0;bottom:0;left:calc(var(--gut) * -1);right:calc(var(--gut) * -1);perspective:1250px;perspective-origin:50% 44%;overflow:hidden}
   .hd-stage{position:absolute;inset:0;transform-style:preserve-3d}
+  /* 끄는 동안엔 전환을 없애 손끝에 1:1로 붙게 하고, 놓으면 다시 켜져 부드럽게 안착한다. */
+  .hd-stage.hd-dragging .hd-card{transition:none}
   .hd-card{position:absolute;top:0;left:50%;width:var(--cw);height:100%;margin-left:calc(var(--cw) / -2);
     display:flex;flex-direction:column;text-align:left;cursor:pointer;
     border-radius:20px;padding:18px 17px;overflow:hidden;
@@ -35525,23 +35527,44 @@ function buildDeckCard(d, i){
 const hdCards = DECK.map(buildDeckCard);
 hdCards.forEach(c=>hdStage.appendChild(c));
 const hdDotEls = DECK.map((_,i)=>{ const b=document.createElement('button'); b.type='button'; b.className='hd-dot'; b.setAttribute('aria-label',(i+1)+'번 인사이트'); b.addEventListener('click',()=>{ stopHeroAuto(); setDeck(i); }); hdDots.appendChild(b); return b; });
-function layoutDeck(){
-  const N = DECK.length;
+/* 카드 한 장이 놓이는 자리를 '중심에서 몇 번째'(a)의 함수로 정의한다.
+   예전엔 a===0/1/2 를 if 로 갈라 뚝 떨어지는 값만 썼다 — 그래서 손가락을 따라올 수가 없었다.
+   이제 a 가 0.37 같은 소수여도 자리가 나오므로, 드래그 중 카드가 손끝에 붙어 움직인다. */
+const DECK_ANCHORS = {                       // a = 0, 1, 2, 3 일 때의 값
+  tx: [0, 52, 96, 128],                      // % (중심에서 밀려나는 거리)
+  sc: [1, .82, .66, .55],
+  ry: [0, -26, -30, -32],                    // deg
+  op: [1, .92, .5, 0],
+  br: [1, .62, .42, .3],                     // brightness
+  bl: [0, 0, .6, .6]                         // blur px
+};
+function lerpAnchor(arr, a){
+  if(a >= 3) return arr[3];
+  const i = Math.floor(a), t = a - i;
+  return arr[i] + (arr[i+1] - arr[i]) * t;
+}
+// drag = 카드 장수 단위의 실수 오프셋. 0.5 면 두 카드 사이 정확히 중간.
+function layoutDeck(drag){
+  const N = DECK.length, d = drag || 0;
   hdCards.forEach((el,i)=>{
-    let off = i - hi;
+    let off = i - hi - d;
     if(off >  N/2) off -= N;
     if(off < -N/2) off += N;
-    const a = Math.abs(off), sgn = off<0 ? -1 : 1;
-    let tx, sc, ry, op, z, fl, pe;
-    if(a===0){ tx=0;       sc=1;   ry=0;       op=1; z=50; fl='none';                        pe='auto'; }
-    else if(a===1){ tx=sgn*52; sc=.82; ry=sgn*-26; op=.92; z=40; fl='brightness(.62)';           pe='auto'; }
-    else if(a===2){ tx=sgn*96; sc=.66; ry=sgn*-30; op=.5;  z=30; fl='brightness(.42) blur(.6px)'; pe='auto'; }
-    else          { tx=sgn*128; sc=.55; ry=sgn*-32; op=0;   z=10; fl='brightness(.3)';            pe='none'; }
+    const a = Math.min(Math.abs(off), 3), sgn = off < 0 ? -1 : 1;
+    const tx = lerpAnchor(DECK_ANCHORS.tx, a) * sgn;
+    const sc = lerpAnchor(DECK_ANCHORS.sc, a);
+    const ry = lerpAnchor(DECK_ANCHORS.ry, a) * sgn;
+    const op = lerpAnchor(DECK_ANCHORS.op, a);
+    const br = lerpAnchor(DECK_ANCHORS.br, a);
+    const bl = lerpAnchor(DECK_ANCHORS.bl, a);
     el.style.transform = `translate3d(${tx}%,0,0) scale(${sc}) rotateY(${ry}deg)`;
-    el.style.opacity = op; el.style.zIndex = z; el.style.filter = fl; el.style.pointerEvents = pe;
-    el.classList.toggle('is-active', a===0);
+    el.style.opacity = op;
+    el.style.zIndex = Math.round(50 - a * 13);
+    el.style.filter = (br < .999 ? `brightness(${br.toFixed(3)})` : 'none') + (bl > .01 ? ` blur(${bl.toFixed(2)}px)` : '');
+    el.style.pointerEvents = a > 2.6 ? 'none' : 'auto';
+    el.classList.toggle('is-active', a < .5);
   });
-  hdDotEls.forEach((d,i)=>d.classList.toggle('on', i===hi));
+  hdDotEls.forEach((el,i)=>el.classList.toggle('on', i===hi));
 }
 function setDeck(i){ const N=DECK.length; hi=((i%N)+N)%N; layoutDeck(); }
 function deckNav(dir){ setDeck(hi+dir); }
@@ -35558,28 +35581,70 @@ $('heroNext').addEventListener('click', ()=>{ stopHeroAuto(); deckNav(1); });
    ② 반응이 한 박자 늦음: 손을 뗀 뒤(pointerup)에야 넘겼다.
       → 손가락이 붙어 있는 동안 문턱을 넘으면 즉시 넘긴다. */
 (function setupDeckSwipe(){
-  const zone = $('heroDeck');
-  let sx=0, sy=0, dragging=false, swiped=false;
-  // 한 장 넘기는 데 필요한 이동거리. 너무 작으면(30px) 한 번 쓸었을 뿐인데 예닐곱 장이
-  // 후루룩 지나가 어디로 갔는지 놓친다. 엄지 한 번(≈120px)에 한두 장이 적당하다.
-  const STEP = 64;
+  const zone = $('heroDeck'), stage = hdStage;
+  let sx=0, sy=0, lastX=0, lastT=0, vel=0, drag=0;
+  let down=false, axis='';                    // axis: '' 미정 · 'x' 가로 확정 · 'y' 세로(브라우저에 양보)
+
+  const LOCK   = 7;    // 이만큼 움직이면 방향을 결정한다 — 일찍 잡아야 브라우저에 안 뺏긴다
+  // |dy| < |dx| * SLOPE 이면 가로. SLOPE = tan(허용각) 이다 — 1.43 ≈ 55°.
+  // 예전엔 |dx| > |dy| (45°)라 쓸어넘기다 조금만 아래로 흘러도 세로로 뺏겼다.
+  const SLOPE  = 1.43;
+  const SNAP   = 0.24; // 카드 폭의 이 비율만큼 끌면 다음 장으로 넘어간다
+  const FLICK  = 0.45; // px/ms — 짧고 빠르게 튕기면 거리가 짧아도 넘어간다
+
+  const cardW = ()=> (hdCards[0] ? hdCards[0].getBoundingClientRect().width : 252) || 252;
+
+  function render(){ layoutDeck(drag); }
 
   zone.addEventListener('pointerdown', e=>{
-    sx=e.clientX; sy=e.clientY; dragging=true; swiped=false;
-    deckSuppress=false;                       // ← ①의 핵심
+    down=true; axis=''; drag=0; vel=0;
+    sx=lastX=e.clientX; sy=e.clientY; lastT=e.timeStamp;
+    deckSuppress=false;                        // 플래그 수명 = 이 제스처 하나
+    stage.classList.add('hd-dragging');        // 전환 끄기 — 손끝에 즉각 붙는다
   });
+
   zone.addEventListener('pointermove', e=>{
-    if(!dragging) return;
-    const dx=e.clientX-sx, dy=e.clientY-sy;
-    if(Math.abs(dx) > STEP && Math.abs(dx) > Math.abs(dy)){
-      swiped=true; deckSuppress=true;         // 이 제스처의 끝에 붙는 click 은 무시
-      stopHeroAuto(); deckNav(dx<0 ? 1 : -1);
-      sx=e.clientX; sy=e.clientY;             // 기준점 재설정 — 계속 끌면 연속으로 넘어간다
+    if(!down) return;
+    const dx = e.clientX - sx, dy = e.clientY - sy;
+
+    if(!axis){
+      if(Math.abs(dx) < LOCK && Math.abs(dy) < LOCK) return;
+      // 각도로 결정하고, 한 번 정하면 제스처가 끝날 때까지 바꾸지 않는다(축 고정).
+      axis = Math.abs(dx) * SLOPE > Math.abs(dy) ? 'x' : 'y';
+      if(axis === 'y'){ stage.classList.remove('hd-dragging'); return; }  // 세로는 페이지 스크롤에 양보
+      stopHeroAuto();
     }
-  });
-  const finish = ()=>{ dragging=false; };
-  zone.addEventListener('pointerup', finish);
-  zone.addEventListener('pointercancel', finish);
+    if(axis !== 'x') return;
+
+    // 축이 가로로 고정된 뒤엔 dy 를 아예 보지 않는다 — 손가락이 아래로 흘러도 계속 넘어간다.
+    if(Math.abs(dx) > 4) deckSuppress = true;  // 끌었으면 뒤따르는 click 은 무시(탭이 아님)
+    const dt = Math.max(1, e.timeStamp - lastT);
+    vel = (e.clientX - lastX) / dt;
+    lastX = e.clientX; lastT = e.timeStamp;
+
+    drag = -dx / cardW();
+    // 양끝이 없는 무한 캐러셀이라 고무줄 저항은 두지 않는다. 대신 과도한 점프만 제한.
+    drag = Math.max(-3, Math.min(3, drag));
+    render();
+    if(e.cancelable) e.preventDefault();       // 축을 잡은 뒤엔 브라우저가 스크롤로 가져가지 못하게
+  }, {passive:false});
+
+  function release(){
+    if(!down) return;
+    down = false;
+    stage.classList.remove('hd-dragging');     // 전환 복구 → 놓으면 부드럽게 안착
+    if(axis !== 'x'){ drag = 0; render(); return; }
+    // 끈 거리와 튕긴 속도를 함께 본다. 살짝이라도 빠르게 튕기면 넘어간다.
+    let step = 0;
+    if(Math.abs(vel) > FLICK)      step = vel < 0 ? 1 : -1;
+    else if(Math.abs(drag) > SNAP) step = drag > 0 ? Math.ceil(drag - SNAP) : Math.floor(drag + SNAP);
+    step = Math.max(-2, Math.min(2, step));    // 한 번에 두 장까지만
+    drag = 0;
+    if(step) setDeck(hi + step); else render();
+  }
+  zone.addEventListener('pointerup', release);
+  zone.addEventListener('pointercancel', release);
+  zone.addEventListener('lostpointercapture', release);
 })();
 layoutDeck(); startHeroAuto(); // 가운데=첫 카드, 이후 자동 회전
 
