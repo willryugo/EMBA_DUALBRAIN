@@ -37201,6 +37201,42 @@ if(!reduced) setInterval(()=>{                     // 예시어 교체 — 페�
   e.classList.add('out');
   setTimeout(()=>{ hsI=(hsI+1)%HS_EG.length; e.textContent=HS_EG[hsI]; e.classList.remove('out'); }, 280);
 }, 3200);
+
+/* ── 자동 갱신 ────────────────────────────────────────────────────────────────
+   iOS 홈화면 앱(standalone)은 HTML을 자체 캐시로 붙들어, 서버에 새 버전을 올려도
+   옛 화면을 계속 보여준다. 앱을 완전히 종료해야 겨우 바뀌는데 그걸 동기들에게
+   안내할 수는 없다. 페이지가 스스로 확인해서 조용히 새로 받게 한다.
+
+   · magazine-version.txt(도장 12자)만 no-store 로 받아 비교 — 본문 전체가 아니라 50바이트.
+   · 도장은 내용 해시라 내용이 그대로면 값도 그대로 → 헛 새로고침이 없다.
+   · 갱신은 쿼리를 바꿔 이동한다. 같은 URL 로 reload 하면 그 캐시를 또 집어 온다. */
+(function autoUpdate(){
+  const BUILD = '26b5ea2e5b0c';
+  if(!/^[0-9a-f]{12}$/.test(BUILD)) return;          // 빌드 도장이 안 찍혔으면 아무것도 안 한다
+  const KEY = 'db_mag_reloaded_for';
+  let busy = false;
+
+  async function check(){
+    if(busy || !navigator.onLine) return;
+    busy = true;
+    try{
+      const r = await fetch('/magazine-version.txt', {cache:'no-store'});
+      if(!r.ok) return;
+      const latest = (await r.text()).trim();
+      if(!/^[0-9a-f]{12}$/.test(latest) || latest === BUILD) return;
+      // 같은 버전으로 두 번 새로고침하지 않는다 — 무한 새로고침 방어
+      let done = null; try{ done = sessionStorage.getItem(KEY); }catch(e){}
+      if(done === latest) return;
+      try{ sessionStorage.setItem(KEY, latest); }catch(e){}
+      location.replace(location.pathname + '?v=' + latest);
+    }catch(e){ /* 오프라인·차단 — 그냥 지금 화면을 쓴다 */ }
+    finally{ busy = false; }
+  }
+
+  // 열 때 한 번, 그리고 앱으로 돌아올 때마다(홈화면 앱이 며칠씩 살아 있으므로)
+  setTimeout(check, 1500);
+  document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) check(); });
+})();
 </script>
 
 </body>
