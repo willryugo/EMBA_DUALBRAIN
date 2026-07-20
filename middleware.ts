@@ -26,6 +26,8 @@ export const config = {
     // ※ magazine.webmanifest 도 제외 — 매거진을 게이트에 넣으면서 같이 막혀 307이 났다.
     //    매니페스트가 안 열리면 '홈 화면에 추가'가 앱 이름·아이콘·standalone 을 못 읽어
     //    그냥 북마크로 떨어진다. 매니페스트엔 비밀이 없으니 열어 둔다.
-    "/((?!welcome|api/auth|_next/static|_next/image|favicon.ico|manifest.webmanifest|magazine.webmanifest|sw.js|icon.png|icon.svg|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$).*)",
+    // ※ magazine-version.txt 도 제외 — 매거진이 '내가 최신인가'를 확인하는 12자 도장이다.
+    //    게이트에 걸려 307 이 나면 확인이 실패해 옛 화면에 그대로 갇힌다(비밀은 없다).
+    "/((?!welcome|api/auth|_next/static|_next/image|favicon.ico|manifest.webmanifest|magazine.webmanifest|magazine-version.txt|sw.js|icon.png|icon.svg|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$).*)",
   ],
 };
