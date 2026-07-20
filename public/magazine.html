@@ -731,7 +731,9 @@
   .rich-case-b{font-size:13px;line-height:1.62;color:var(--paper);opacity:.92}
   .rich-src{font-family:var(--font);font-weight:500;font-size:10.5px;color:var(--muted);line-height:1.6}
   /* 이어지는 개념 — 브레인 지도망 미니 그래프 */
-  .cn-net{width:100%;max-width:280px;min-height:min(78vw,280px);margin:0 auto 18px;position:relative;background:radial-gradient(120% 95% at 50% 40%,#132a4c,#070F1C 75%);border:1px solid var(--line-strong);border-radius:var(--r-xl)}
+  /* 그림이 한 화면을 다 먹으면 바로 아래 '무엇인지 적힌 목록'이 접혀 안 보인다.
+     그림과 목록 첫 줄이 같이 눈에 들어오도록 조금 줄였다. */
+  .cn-net{width:100%;max-width:232px;min-height:min(62vw,232px);margin:0 auto 12px;position:relative;background:radial-gradient(120% 95% at 50% 40%,#132a4c,#070F1C 75%);border:1px solid var(--line-strong);border-radius:var(--r-xl)}
   @supports(aspect-ratio:1/1){.cn-net{aspect-ratio:1/1;min-height:0}}
   .cn-net-svg{width:100%;height:100%;display:block;overflow:visible}
   .cn-net-legend{font-size:10.5px;color:var(--muted);text-align:center;line-height:1.5;margin:0 0 14px}
@@ -740,7 +742,11 @@
   .cn-net-item:hover{border-color:var(--blue-line);background:rgba(255,255,255,.04)}
   .cn-net-item:active{transform:scale(.99)}
   .cn-net-num{flex:0 0 auto;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;font-variant-numeric:tabular-nums;color:#0C1420}
-  .cn-net-item-txt{font-size:13px;line-height:1.45}
+  .cn-net-item-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .cn-net-subj{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+  .cn-net-subj svg{flex:0 0 auto}
+  .cn-net-concept{font-size:13px;line-height:1.4;color:var(--paper);word-break:keep-all}
+  .cn-net-num{align-self:flex-start;margin-top:1px}
 
   /* ───────────────── 데스크톱·태블릿 (≥820px) ─────────────────
      매거진은 430px 모바일 컬럼으로 설계됐다. PC로 열면 화면 한가운데 좁은 띠만 남는다.
@@ -36599,6 +36605,28 @@ function buildNetGraph(neighbors, accent, hubLabel){
     t.setAttribute('font-size', Math.max(8,pt.nodeR*.8)); t.setAttribute('font-weight','800'); t.setAttribute('fill','#0C1420'); t.style.pointerEvents='none';
     t.textContent=(i+1); svg.appendChild(t);
   });
+  /* 유성우 — 두뇌지도와 같은 언어를 쓴다. 허브에서 각 개념으로 빛이 흘러가며
+     '이 카드에서 저 개념으로 이어진다'를 말 없이 보여준다.
+     Web Animations 라 컴포지터가 굴린다(rAF 루프 없음 → 시트 스크롤을 방해하지 않음). */
+  const meteors=document.createElementNS(SVGNS,'g'); meteors.style.pointerEvents='none'; svg.appendChild(meteors);
+  pts.forEach((pt,i)=>{
+    const L=Math.hypot(pt.x-CX, pt.y-CY), dash=Math.max(L*0.28, 14);
+    const ln=document.createElementNS(SVGNS,'line');
+    ln.setAttribute('x1',CX); ln.setAttribute('y1',CY); ln.setAttribute('x2',pt.x); ln.setAttribute('y2',pt.y);
+    ln.setAttribute('stroke',NODECOL[pt.n.id]||pt.n.col);
+    ln.setAttribute('stroke-width','2.4'); ln.setAttribute('stroke-linecap','round');
+    ln.setAttribute('vector-effect','non-scaling-stroke');
+    ln.setAttribute('stroke-dasharray', dash+' '+(L+dash));
+    meteors.appendChild(ln);
+    if(reduced) { ln.setAttribute('stroke-opacity','0'); return; }   // 모션 최소화 설정 존중
+    ln.animate([
+      {strokeDashoffset:dash, opacity:0},
+      {opacity:.95, offset:.18},
+      {opacity:.95, offset:.7},
+      {strokeDashoffset:-L, opacity:0}
+    ], {duration:1500+ (hashStr(pt.n.id)%700), delay:i*260, iterations:Infinity,
+        easing:'cubic-bezier(.36,0,.5,1)'});
+  });
   const netWrap=el('cn-net'); netWrap.appendChild(svg);
   const legend=el('cn-net-legend','원 크기 = 두뇌지도 전체 연결 수 · 허브와 거리 = 이 카드와의 연관도');
   const list=document.createElement('ol'); list.className='cn-net-list';
@@ -36606,7 +36634,16 @@ function buildNetGraph(neighbors, accent, hubLabel){
     const li=document.createElement('li');
     const btn=document.createElement('button'); btn.type='button'; btn.className='cn-net-item';
     const badge=document.createElement('span'); badge.className='cn-net-num'; badge.style.background=NODECOL[n.id]||n.col; badge.textContent=(i+1);
-    const txt=document.createElement('span'); txt.className='cn-net-item-txt'; txt.textContent=n.c;
+    // 번호만 있으면 그림의 1~5가 뭔지 알 길이 없다 — 과목과 개념을 같이 적는다.
+    const txt=el('cn-net-item-txt');
+    const sub=DATA.subjects.find(s=>s.key===n.k);
+    if(sub){
+      const sl=el('cn-net-subj'); sl.style.color=MAPCOL[n.k]||n.col;
+      sl.appendChild(subjIcon(n.k,12));
+      sl.appendChild(document.createTextNode(sub.name));
+      txt.appendChild(sl);
+    }
+    txt.appendChild(el('cn-net-concept', n.c));
     btn.append(badge, txt);
     btn.addEventListener('click', ()=>{ closeSrcPop(true); openTheory(n.id); });
     li.appendChild(btn); list.appendChild(li);
@@ -36615,7 +36652,7 @@ function buildNetGraph(neighbors, accent, hubLabel){
   return frag;
 }
 function fillConnect(p, th, accent){
-  const hint=el('rich-src'); hint.style.margin='0 0 14px'; hint.textContent='탭하면 그 개념의 카드뉴스로 이어져요 (원에 마우스를 올리면 제목이 보여요)'; p.appendChild(hint);
+  const hint=el('rich-src'); hint.style.margin='0 0 14px'; hint.textContent='빛이 흐르는 쪽이 이어지는 개념이에요 — 아래 목록에서 번호를 눌러 바로 가보세요'; p.appendChild(hint);
   p.appendChild(buildNetGraph(th.neighbors, accent, th.concept));
 }
 function fillRelated(p, c, accent){
