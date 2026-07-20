@@ -733,8 +733,10 @@
   /* 이어지는 개념 — 브레인 지도망 미니 그래프 */
   /* 그림이 한 화면을 다 먹으면 바로 아래 '무엇인지 적힌 목록'이 접혀 안 보인다.
      그림과 목록 첫 줄이 같이 눈에 들어오도록 조금 줄였다. */
-  .cn-net{width:100%;max-width:232px;min-height:min(62vw,232px);margin:0 auto 12px;position:relative;background:radial-gradient(120% 95% at 50% 40%,#132a4c,#070F1C 75%);border:1px solid var(--line-strong);border-radius:var(--r-xl)}
-  @supports(aspect-ratio:1/1){.cn-net{aspect-ratio:1/1;min-height:0}}
+  /* 이름표를 그래프 위에 직접 그리므로(폰엔 마우스가 없다) 글자가 읽힐 만큼 넓어야 한다.
+     컬럼 폭을 다 쓰고, 가로로 조금 납작하게 잡아 이름표 자리를 좌우로 번다. */
+  .cn-net{width:100%;min-height:min(74vw,300px);margin:0 auto 12px;position:relative;background:radial-gradient(120% 95% at 50% 40%,#132a4c,#070F1C 75%);border:1px solid var(--line-strong);border-radius:var(--r-xl)}
+  @supports(aspect-ratio:1/1){.cn-net{aspect-ratio:1.12/1;min-height:0}}
   .cn-net-svg{width:100%;height:100%;display:block;overflow:visible}
   .cn-net-legend{font-size:10.5px;color:var(--muted);text-align:center;line-height:1.5;margin:0 0 14px}
   .cn-net-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
@@ -36537,6 +36539,8 @@ function fillSlide(p, sl, accent){
 const GRAPH_DEG = {};
 if(DATA.graph && DATA.graph.nodes) DATA.graph.nodes.forEach(n=>{ GRAPH_DEG[n.id] = n.deg; });
 function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return Math.abs(h); }
+// 이름표용 — 긴 개념명은 줄여 쓴다(전체 이름은 아래 목록에 그대로 있다)
+function clip(s, n){ s = String(s||'').replace(/\s*\([^)]*\)\s*$/,'').trim(); return s.length > n ? s.slice(0,n)+'…' : s; }
 function buildNetGraph(neighbors, accent, hubLabel){
   const N = neighbors.length;
   const CX=100, CY=100;
@@ -36544,16 +36548,20 @@ function buildNetGraph(neighbors, accent, hubLabel){
   const maxDeg = Math.max(1, ...degs), minDeg = Math.min(...degs);
   const pts = neighbors.map((n,i)=>{
     const baseAngle = -90 + i*(360/N);
-    const jitter = (hashStr(n.id) % 17) - 8; // 완전 대칭이 아니라 살짝 유기적으로
+    // 완전 대칭이 아니라 살짝 유기적으로. 다만 ±8°는 두 노드를 44°까지 붙여
+    // 이름표가 겹쳤다(126장 중 6장) — 이름을 항상 띄우게 된 뒤로는 좁혀야 한다.
+    const jitter = (hashStr(n.id) % 9) - 4;
     const a = (baseAngle + jitter) * Math.PI/180;
     const rank = N>1 ? i/(N-1) : 0; // 0=가장 먼저 꼽힌(연관 높은) 개념 → 허브에 가깝게
-    const R = 50 + rank*36;
+    // 반경을 줄여 바깥에 이름표가 들어갈 자리를 만든다(폰엔 마우스가 없어 이름이 늘 보여야 한다).
+    const R = 42 + rank*22;
     const deg = degs[i];
     const spread = maxDeg>minDeg ? (deg-minDeg)/(maxDeg-minDeg) : .5;
     const nodeR = 8 + spread*7; // 두뇌지도 전체 연결이 많은 개념일수록 원이 큼
     return {x: CX+R*Math.cos(a), y: CY+R*Math.sin(a), n, nodeR};
   });
-  const svg = document.createElementNS(SVGNS,'svg'); svg.setAttribute('viewBox','0 0 200 200'); svg.setAttribute('class','cn-net-svg');
+  // 노드 좌표는 0~200 그대로 두고 상자만 넓혀, 바깥 여백에 이름표가 들어가게 한다.
+  const svg = document.createElementNS(SVGNS,'svg'); svg.setAttribute('viewBox','-56 -14 312 232'); svg.setAttribute('class','cn-net-svg');
   // 배경 음영 — 실제 두뇌지도가 이보다 훨씬 크다는 걸 암시하는 흐릿한 점·실선
   const bg = document.createElementNS(SVGNS,'g'); bg.setAttribute('opacity','.5');
   const bgSeed = hashStr(neighbors.map(n=>n.id).join('|')) || 1;
@@ -36604,6 +36612,49 @@ function buildNetGraph(neighbors, accent, hubLabel){
     const t=document.createElementNS(SVGNS,'text'); t.setAttribute('x',pt.x); t.setAttribute('y',pt.y+pt.nodeR*.33); t.setAttribute('text-anchor','middle');
     t.setAttribute('font-size', Math.max(8,pt.nodeR*.8)); t.setAttribute('font-weight','800'); t.setAttribute('fill','#0C1420'); t.style.pointerEvents='none';
     t.textContent=(i+1); svg.appendChild(t);
+
+  });
+
+  /* 이름표 — 폰엔 마우스가 없으니 <title> 툴팁은 무용지물이다. 항상 보이게 그린다.
+     한 개씩 그리면서 상자 안으로 물리면 서로 밀려 겹친다(실측 8건). 그래서
+     ① 좌·우 두 무리로 나눠 ② 세로로 정렬한 뒤 ③ 최소 간격을 강제하는 순으로
+     자리를 먼저 다 정하고, 그 다음에 그린다. 난수 없이 결정적이다. */
+  const GAP = 21, TOP = 2, BOT = 198;
+  const labels = pts.map(pt=>{
+    const ux=(pt.x-CX), uy=(pt.y-CY), ul=Math.hypot(ux,uy)||1;
+    const right = ux >= 0;
+    return { pt, right,
+      x: Math.max(-46, Math.min(246, pt.x + (ux/ul)*(pt.nodeR+5) + (right?2:-2))),
+      y: pt.y + (uy/ul)*(pt.nodeR+5) };
+  });
+  [true,false].forEach(side=>{
+    const g = labels.filter(l=>l.right===side).sort((a,b)=>a.y-b.y);
+    for(let i=1;i<g.length;i++) if(g[i].y - g[i-1].y < GAP) g[i].y = g[i-1].y + GAP;   // 아래로 밀기
+    const over = g.length ? g[g.length-1].y - BOT : 0;
+    if(over > 0) g.forEach(l=>{ l.y -= over; });                                        // 넘치면 통째로 올리기
+    for(let i=g.length-2;i>=0;i--) if(g[i+1].y - g[i].y < GAP) g[i].y = g[i+1].y - GAP; // 다시 위로 밀기
+    g.forEach(l=>{ l.y = Math.max(TOP, Math.min(BOT, l.y)); });
+  });
+  labels.forEach(l=>{
+    const sub = DATA.subjects.find(s=>s.key===l.pt.n.k);
+    const lab=document.createElementNS(SVGNS,'text');
+    lab.setAttribute('x',l.x); lab.setAttribute('y',l.y);
+    lab.setAttribute('text-anchor', l.right?'start':'end');
+    lab.style.pointerEvents='none';
+    // 어두운 배경 위 가독성 — 얇은 외곽선을 깔고 그 위에 글자를 얹는다
+    lab.setAttribute('paint-order','stroke'); lab.setAttribute('stroke','#070F1C');
+    lab.setAttribute('stroke-width','3'); lab.setAttribute('stroke-linejoin','round');
+    const l1=document.createElementNS(SVGNS,'tspan');
+    l1.setAttribute('x',l.x); l1.setAttribute('dy','0');
+    l1.setAttribute('font-size','8.2'); l1.setAttribute('font-weight','700');
+    l1.setAttribute('fill', MAPCOL[l.pt.n.k] || l.pt.n.col);
+    l1.textContent = sub ? sub.name : '';
+    const l2=document.createElementNS(SVGNS,'tspan');
+    l2.setAttribute('x',l.x); l2.setAttribute('dy','10.2');
+    l2.setAttribute('font-size','9.2'); l2.setAttribute('font-weight','700');
+    l2.setAttribute('fill','#E8EDF5');
+    l2.textContent = clip(l.pt.n.c, 11);
+    lab.append(l1,l2); svg.appendChild(lab);
   });
   /* 유성우 — 두뇌지도와 같은 언어를 쓴다. 허브에서 각 개념으로 빛이 흘러가며
      '이 카드에서 저 개념으로 이어진다'를 말 없이 보여준다.
