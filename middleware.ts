@@ -21,6 +21,8 @@ export async function middleware(req: NextRequest) {
 //    매거진에 조별과제 드라이브 링크(링크가 있는 모든 사용자 = 인터넷 전체)가 실려 있어,
 //    페이지가 공개면 링크를 아는 누구나 51개 과제 파일에 닿는다. 게이트가 그 링크를 가려 준다.
 //    /magazine 과 rewrite 대상인 /magazine.html 둘 다 막아야 우회가 안 된다.
+// ※ api/hakbot 도 제외 — 학술운영보드(github.io, 다른 도메인)가 부르는 공개 질문 API다. 쿠키가 없으므로
+//    관문 대신 라우트 안에서 보드 주소만 받고 IP당 시간 제한을 건다(app/api/hakbot/route.ts).
 export const config = {
   matcher: [
     // ※ magazine.webmanifest 도 제외 — 매거진을 게이트에 넣으면서 같이 막혀 307이 났다.
@@ -28,6 +30,6 @@ export const config = {
     //    그냥 북마크로 떨어진다. 매니페스트엔 비밀이 없으니 열어 둔다.
     // ※ magazine-version.txt 도 제외 — 매거진이 '내가 최신인가'를 확인하는 12자 도장이다.
     //    게이트에 걸려 307 이 나면 확인이 실패해 옛 화면에 그대로 갇힌다(비밀은 없다).
-    "/((?!welcome|api/auth|_next/static|_next/image|favicon.ico|manifest.webmanifest|magazine.webmanifest|magazine-version.txt|sw.js|icon.png|icon.svg|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$).*)",
+    "/((?!welcome|api/auth|api/hakbot|_next/static|_next/image|favicon.ico|manifest.webmanifest|magazine.webmanifest|magazine-version.txt|sw.js|icon.png|icon.svg|apple-icon.png|robots.txt|sitemap.xml|.*\\.(?:png|jpg|jpeg|gif|svg|webp|ico|woff2?|ttf)$).*)",
   ],
 };
