@@ -59,7 +59,17 @@ const Source = z.object({
 const Answer = z.object({
   resolved: z.boolean().describe("자료 안에서 답을 찾았으면 true. 자료에 없거나 추측해야 하면 false"),
   course: z.string().nullable().describe("관련 과목 한글명. 여러 과목이거나 없으면 null"),
-  answer: z.string().describe("원우에게 보여 줄 답 2~5문장. ~합니다 체"),
+  cards: z
+    .array(
+      z.object({
+        big: z.string().describe("크게 보일 숫자·날짜 하나 — 예: 11/28(토), 50%, 없음, 3회. 12자 이내"),
+        label: z.string().describe("그 숫자가 무엇인지 — 예: 종합시험, 11장 과제 마감. 14자 이내"),
+        note: z.string().describe("덧붙일 한 줄 — 예: 3교시 15:55 · 오픈북. 없으면 빈 문자열"),
+        tone: z.enum(["시험", "마감", "정보", "주의"]),
+      }),
+    )
+    .describe("답의 핵심 숫자 카드 1~4개. 날짜·비율·횟수처럼 한눈에 봐야 할 것만. 숫자가 없는 답이면 빈 배열"),
+  answer: z.string().describe("원우에게 보여 줄 답 1~3문장. 카드·표에 이미 있는 숫자를 문장으로 되풀이하지 말 것. ~합니다 체"),
   table: z
     .object({ headers: z.array(z.string()), rows: z.array(z.array(z.string())) })
     .nullable()
@@ -80,7 +90,9 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 원우 실명은 쓰지 않는다(교수님·조교 이름은 된다). 조는 「7조」처럼 번호로.
 - 공지·러너스가 바뀌면 그쪽이 우선이라는 점은 따로 말하지 않아도 된다(보드에 이미 적혀 있다).
 - 1학기 내용은 [1학기 이론카드]·[1학기 조별 케이스] 자료에서만 답하고, kind 는 「1학기 카드」.
-- 담백한 ~합니다 체. 인사·사족 없이 바로 답.`;
+- 담백한 ~합니다 체. 인사·사족 없이 바로 답.
+- 보여 주는 순서는 카드(cards) → 짧은 답(answer) → 표(table). 원우는 숫자를 먼저 본다: 날짜·비중·횟수는 카드에 크게, 문장은 그 숫자의 뜻만 짧게. 일정이 셋 이상이면 표로.
+- HTML 태그(<br> 등)를 쓰지 않는다. 줄바꿈이 필요하면 문장을 나눈다.`;
 
 function seoulIso(d = new Date()) {
   return new Date(d.getTime() + 9 * 3600_000).toISOString().replace("Z", "+09:00");
@@ -147,7 +159,7 @@ export async function POST(req: Request) {
       output_config: { effort: "low", format: zodOutputFormat(Answer) },
     });
     if (res.stop_reason === "refusal") {
-      out = { resolved: false, course: null, answer: "이 질문은 학술봇이 답하지 않습니다.", table: null, sources: [], unsure: null };
+      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", table: null, sources: [], unsure: null };
     } else {
       out = res.parsed_output ?? null;
     }
