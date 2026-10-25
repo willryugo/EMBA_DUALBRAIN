@@ -80,7 +80,7 @@ const Answer = z.object({
   points: z
     .array(
       z.object({
-        emoji: z.string().describe("📅 📝 ✍️ ⚠️ 📌 📚 ✅ ❌ ⏰ 👥 💡 중 하나"),
+        emoji: z.string().describe("📅 📝 ✍️ ⚠️ 📌 📚 ✅ ❌ ⏰ 👥 💡 ⭐ 중 하나 — ⭐ 는 교수님이 강하게 강조하신 것"),
         text: z.string().describe("핵심 한 줄 — 35자 이내, 명사형·짧은 문장. 예: 마감 11/6(금) 23:59 · 러너스"),
         check: z.boolean().describe("기록끼리 엇갈리거나 추정·미확정인 줄이면 true — 보드가 「확인 필요」를 붙인다"),
       }),
@@ -119,8 +119,25 @@ const Answer = z.object({
 });
 type AnswerT = z.infer<typeof Answer>;
 
+const squash = (s: string) => s.toLowerCase().replace(/\s+/g, "");
+const NUM = /\d{1,2}\/\d{1,2}|\d{1,2}:\d{2}|\d+(?:-\d+)+|\d+(?:\.\d+)?(?:%|쪽|장|문제|문항|점|회차|교시)/g;
+/** 답에 나온 숫자 중 자료(일정표·조각·과목별 한 장)에 없는 것 — 있으면 그 카드·줄에 「확인 필요」를 붙인다. */
+function factCheck(o: AnswerT, ctx: string): string[] {
+  const hay = squash(ctx);
+  const bad = new Set<string>();
+  const miss = (t: string) => {
+    let hit = false;
+    for (const m of String(t || "").matchAll(NUM)) if (!hay.includes(squash(m[0]))) { bad.add(m[0]); hit = true; }
+    return hit;
+  };
+  for (const c of o.cards) if (miss(`${c.big} ${c.note}`)) c.check = true;
+  for (const pt of o.points) if (miss(pt.text)) pt.check = true;
+  miss(o.answer);
+  return [...bad];
+}
+
 const TONES = ["시험", "마감", "정보", "주의"];
-const EMOJIS = ["📅", "📝", "✍️", "⚠️", "📌", "📚", "✅", "❌", "⏰", "👥", "💡"];
+const EMOJIS = ["📅", "📝", "✍️", "⚠️", "📌", "📚", "✅", "❌", "⏰", "👥", "💡", "⭐"];
 const KINDS = ["수업 중 말씀", "수정·변경", "교재", "강의안", "강조하심", "실라버스", "러너스 공지", "교수님 메일", "1학기 카드", "기타"];
 /** 목록 밖 값을 가장 가까운 것으로 바로잡는다 — 화면이 아는 값만 보드로 보낸다. */
 function tidy(o: AnswerT) {
@@ -158,6 +175,7 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 과목별 한 장(정리본)과 조각이 어긋나면 한 장이 더 최근 정리다. 어긋남은 unsure 에 적는다.
 - 자료(강의안·케이스·과제 파일)를 달라는 질문: 근거 조각의 파일명·쪽과 위치를 알려 주고 「보드의 근거 보기에서 열 수 있다」고 안내한다. 파일 주소를 지어내지 않는다.
 - 1학기 질문은 <과목표>의 1학기 줄과 1학기 이론카드로 짧게 답한다(교수님·과목·주로 다룬 개념 두세 개).
+- [수업 중 강조·강/중/약] 조각은 수업 받아쓰기에서 강조 표현이 나온 대목이다. 강 = 시험 출제 언급·「가장/제일 중요한 건」·「꼭 기억」, 중 = 「중요합니다」·「포인트」·「기억하세요」, 약 = 「시험에 안 나온다·중요한 게 아니다·넘어가도 된다」. 자동 기록이라 낱말이 틀리고 말한 사람(교수님·원우)을 가리지 못한다 — 학술국 수업 기록·과목별 한 장과 같은 방향일 때만 쓰고, 혼자 동떨어진 말은 버린다. 쓸 때 sources.kind 「강조하심」, when 「10/23 수업 중」, what 앞에 (강)·(중)·(약). 시험·「뭐가 중요해」 질문엔 그 과목의 (강)을 ⭐ 줄로 먼저, (약)은 「덜 봐도 되는 곳」으로. 같은 내용을 여러 회차에 강조하셨으면 「n회 강조」라고 적는다. 받아쓰기 문장을 길게 옮기지 말고 뜻만.
 - unsure 는 「무엇과 무엇이 어긋나는가」만 두 문장 이내. 참고 설명·요약·덧말을 unsure 에 쌓지 않는다 — 꼭 필요한 덧말은 points 한 줄로.`;
 
 // 「이번 주 마감」 같은 질문을 풀려면 모델이 오늘(서울)을 알아야 한다.
@@ -212,6 +230,11 @@ export async function POST(req: Request) {
     (term2?.faq?.length ? `<FAQ>\n${JSON.stringify(term2.faq)}\n</FAQ>\n` : "") +
     `</자료>`;
 
+  const userContent =
+    (rag ? rag.context + "\n\n" : "") +
+    (term1 ? `<1학기_관련_카드>\n${term1}\n</1학기_관련_카드>\n\n` : "") +
+    `오늘: ${todayKo()}${rag?.team ? ` · 질문한 원우: ${rag.team}` : ""}
+질문: ${q}`;
   const client = new Anthropic({ apiKey: key });
   let out: AnswerT | null = null;
   let mode: "ai" | "error" = "ai";
@@ -224,16 +247,7 @@ export async function POST(req: Request) {
         { type: "text", text: RULES },
         { type: "text", text: kbText, cache_control: { type: "ephemeral" } },
       ],
-      messages: [
-        {
-          role: "user",
-          content:
-            (rag ? rag.context + "\n\n" : "") +
-            (term1 ? `<1학기_관련_카드>\n${term1}\n</1학기_관련_카드>\n\n` : "") +
-            `오늘: ${todayKo()}${rag?.team ? ` · 질문한 원우: ${rag.team}` : ""}
-질문: ${q}`,
-        },
-      ],
+      messages: [{ role: "user", content: userContent }],
       output_config: { effort: "low", format: zodOutputFormat(Answer) },
     });
     if (res.stop_reason === "refusal") {
@@ -261,8 +275,15 @@ export async function POST(req: Request) {
     const ss = out.unsure.split(/(?<=[.다요])\s+/);
     out.unsure = ss.slice(0, 2).join(" ").slice(0, 240);
   }
+  // 숫자 근거 대조는 줄인 뒤에 붙인다 — 이 경고는 잘리면 안 된다.
+  const unverified = factCheck(out, kbText + "\n" + userContent);
+  if (unverified.length) {
+    const note = `근거 자료에서 확인되지 않은 숫자: ${unverified.slice(0, 5).join(", ")}`;
+    out.unsure = out.unsure ? `${out.unsure} ${note}` : note;
+    console.log("[hakbot] 근거 없는 숫자:", unverified.join(", "));
+  }
   const refs: Ref[] = rag ? resolveRefs(rag, out.refs) : [];
-  const ragStat = rag ? { ...rag.stat, codes: rag.codes, team: rag.team, chunks: rag.chunks.length, refs: refs.map((r) => r.id) } : null;
+  const ragStat = rag ? { ...rag.stat, codes: rag.codes, team: rag.team, chunks: rag.chunks.length, refs: refs.map((r) => r.id), unverified } : null;
 
   const logged = await appendLog({
     ts: seoulIso(), anon, q, resolved: out.resolved, course: out.course, answer: out.answer,
