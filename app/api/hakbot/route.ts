@@ -23,7 +23,8 @@ export const fetchCache = "force-no-store";
 // 수달님 결정(2026-10-24): Sonnet 5.5. 단순 조회는 effort low 로 충분하다.
 const MODEL = "claude-sonnet-5-5";
 
-const ALLOWED = ["https://willryugo.github.io"];
+// 보드 주소: 새 비공개 저장소의 Vercel 주소(10/25부터) + 옛 GitHub Pages(이동 안내만 남지만 혹시 열린 탭용)
+const ALLOWED = ["https://emba17-board.vercel.app", "https://willryugo.github.io"];
 function allowOrigin(origin: string | null): string | null {
   if (!origin) return null;
   if (ALLOWED.includes(origin)) return origin;
