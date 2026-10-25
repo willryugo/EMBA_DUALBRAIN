@@ -94,6 +94,12 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 보여 주는 순서는 카드(cards) → 짧은 답(answer) → 표(table). 원우는 숫자를 먼저 본다: 날짜·비중·횟수는 카드에 크게, 문장은 그 숫자의 뜻만 짧게. 일정이 셋 이상이면 표로.
 - HTML 태그(<br> 등)를 쓰지 않는다. 줄바꿈이 필요하면 문장을 나눈다.`;
 
+// 「이번 주 마감」 같은 질문을 풀려면 모델이 오늘(서울)을 알아야 한다.
+function todayKo(d = new Date()) {
+  const k = new Date(d.getTime() + 9 * 3600_000);
+  return `${k.getUTCFullYear()}-${String(k.getUTCMonth() + 1).padStart(2, "0")}-${String(k.getUTCDate()).padStart(2, "0")}(${"일월화수목금토"[k.getUTCDay()]})`;
+}
+
 function seoulIso(d = new Date()) {
   return new Date(d.getTime() + 9 * 3600_000).toISOString().replace("Z", "+09:00");
 }
@@ -153,7 +159,8 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "user",
-          content: (term1 ? `<1학기_관련_카드>\n${term1}\n</1학기_관련_카드>\n\n` : "") + `질문: ${q}`,
+          content: (term1 ? `<1학기_관련_카드>\n${term1}\n</1학기_관련_카드>\n\n` : "") + `오늘: ${todayKo()}
+질문: ${q}`,
         },
       ],
       output_config: { effort: "low", format: zodOutputFormat(Answer) },
