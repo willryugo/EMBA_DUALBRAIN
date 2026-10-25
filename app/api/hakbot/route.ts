@@ -55,7 +55,9 @@ function limited(ip: string): boolean {
 }
 
 const Source = z.object({
-  kind: z.enum(["수업 중 말씀", "수정·변경", "교재", "강의안", "강조하심", "실라버스", "러너스 공지", "교수님 메일", "1학기 카드", "기타"]),
+  // 선택지를 enum 으로 묶으면 모델이 목록 밖 값을 한 번만 써도 답 전체가 버려진다(10/25 「조별 발표 일정」 ai_error).
+  // 그래서 글자로 받고 아래 tidy() 가 목록 밖 값을 바로잡는다.
+  kind: z.string().describe("수업 중 말씀 · 수정·변경 · 교재 · 강의안 · 강조하심 · 실라버스 · 러너스 공지 · 교수님 메일 · 1학기 카드 · 기타 중 하나"),
   when: z.string().describe("언제 — 예: 10/24 수업 중(10:03경), 10/16 → 10/23 변경. 모르면 빈 문자열"),
   where: z.string().describe("어디 — 예: 주교재 『경영사례와 개인과제』 25쪽, Module 3 강의안 64~96쪽. 모르면 빈 문자열"),
   what: z.string().describe("그 근거가 말하는 내용 한 줄"),
@@ -69,7 +71,7 @@ const Answer = z.object({
         big: z.string().describe("크게 보일 숫자·날짜 하나 — 예: 11/28(토), 50%, 없음, 3회. 12자 이내"),
         label: z.string().describe("그 숫자가 무엇인지 — 예: 종합시험, 11장 과제 마감. 14자 이내. D-n 은 쓰지 않는다(보드가 날짜로 붙인다)"),
         note: z.string().describe("덧붙일 한 줄 — 예: 3교시 15:55 · 오픈북. 없으면 빈 문자열"),
-        tone: z.enum(["시험", "마감", "정보", "주의"]),
+        tone: z.string().describe("시험 · 마감 · 정보 · 주의 중 하나(발표·행사는 「정보」)"),
         check: z.boolean().describe("기록끼리 엇갈리거나 아직 확정 안 된 값이면 true — 보드가 「확인 필요」를 붙인다"),
       }),
     )
@@ -78,7 +80,7 @@ const Answer = z.object({
   points: z
     .array(
       z.object({
-        emoji: z.enum(["📅", "📝", "✍️", "⚠️", "📌", "📚", "✅", "❌", "⏰", "👥", "💡"]),
+        emoji: z.string().describe("📅 📝 ✍️ ⚠️ 📌 📚 ✅ ❌ ⏰ 👥 💡 중 하나"),
         text: z.string().describe("핵심 한 줄 — 35자 이내, 명사형·짧은 문장. 예: 마감 11/6(금) 23:59 · 러너스"),
         check: z.boolean().describe("기록끼리 엇갈리거나 추정·미확정인 줄이면 true — 보드가 「확인 필요」를 붙인다"),
       }),
@@ -86,7 +88,7 @@ const Answer = z.object({
     .describe("카톡 공지처럼 이모지 한 개 + 핵심 한 줄, 2~5줄. 📅 일정 📝 시험 ✍️ 과제·제출방식 ⚠️ 주의·감점·F ⏰ 시간 📚 범위·교재 ✅ 허용 ❌ 금지 👥 조·팀 💡 팁 📌 그 밖의 핵심"),
   chart: z
     .object({
-      kind: z.enum(["비중", "일정"]),
+      kind: z.string().describe("비중 · 일정 중 하나"),
       title: z.string().describe("도표 제목 — 예: 성적 비중, 남은 마감"),
       items: z
         .array(
@@ -116,6 +118,17 @@ const Answer = z.object({
   unsure: z.string().nullable().describe("기록끼리 어긋나거나 아직 공지 안 된 부분만, 두 문장 120자 이내. 덧붙일 설명·요약은 여기 쓰지 않는다. 없으면 null"),
 });
 type AnswerT = z.infer<typeof Answer>;
+
+const TONES = ["시험", "마감", "정보", "주의"];
+const EMOJIS = ["📅", "📝", "✍️", "⚠️", "📌", "📚", "✅", "❌", "⏰", "👥", "💡"];
+const KINDS = ["수업 중 말씀", "수정·변경", "교재", "강의안", "강조하심", "실라버스", "러너스 공지", "교수님 메일", "1학기 카드", "기타"];
+/** 목록 밖 값을 가장 가까운 것으로 바로잡는다 — 화면이 아는 값만 보드로 보낸다. */
+function tidy(o: AnswerT) {
+  for (const c of o.cards) if (!TONES.includes(c.tone)) c.tone = /시험|기말|퀴즈/.test(c.tone + c.label) ? "시험" : /마감|제출/.test(c.tone + c.label) ? "마감" : "정보";
+  for (const p of o.points) if (!EMOJIS.includes(p.emoji)) p.emoji = EMOJIS.find((e) => p.emoji.startsWith(e.slice(0, 2))) ?? "📌";
+  for (const s of o.sources) if (!KINDS.includes(s.kind)) s.kind = "기타";
+  if (o.chart && o.chart.kind !== "비중" && o.chart.kind !== "일정") o.chart.kind = o.chart.items.some((i) => typeof i.value === "number") ? "비중" : "일정";
+}
 
 const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 운영하는 학술운영보드의 질문 답변 도우미다.
 원우가 수업·시험·과제·일정·교수님 말씀을 물으면, 아래 <자료> 안에 있는 내용만으로 답한다.
@@ -242,6 +255,7 @@ export async function POST(req: Request) {
   }
   // 근거 없는 「해결」은 해결로 치지 않는다.
   if (out.resolved && out.sources.length === 0 && out.refs.length === 0) out.resolved = false;
+  tidy(out);
   // 「확인 필요」 칸이 덧말 창고가 되지 않게 — 규칙을 어기고 길게 오면 앞 두 문장만 남긴다.
   if (out.unsure && out.unsure.length > 200) {
     const ss = out.unsure.split(/(?<=[.다요])\s+/);
