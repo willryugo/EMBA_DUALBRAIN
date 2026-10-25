@@ -1,7 +1,9 @@
 // 학술봇 — EMBA 17기 학술운영보드(공개 GitHub Pages)에서 부르는 질문 답변 API.
 //
-// 흐름(RAG): 질문 → ① 2학기 과목별 한 장 전체 + ② 1학기 카드 중 가까운 몇 장 → Claude Sonnet 5.5 가
-// 그 자료 안에서만 답하고 근거(언제 말씀·언제 바뀜·교재/강의안 쪽수·강조)를 표로 붙인다.
+// 흐름(RAG): 질문 → ① 2학기 과목별 한 장 전체(정리본) + ② 지식 꾸러미 검색(lib/hakbot/rag.ts —
+// 강의안·수업 기록 쪽 단위 조각을 낱말+의미 검색으로 10개) + ③ 질문 시점 기준 일정표(D-n·다음 수업일·내 조)
+// → Claude Sonnet 5.5 가 그 자료 안에서만 답하고, 쓴 조각의 id 와 원문 문구(refs)를 돌려준다.
+// 서버가 그 id 를 파일명·쪽·위치로 바꾸고 문구가 원문에 정말 있는지 확인해 보드에 보낸다.
 // 자료에 없으면 resolved=false → 보드는 「학술국장·부국장에게 전달했습니다」를 띄우고, 기록이 남는다.
 //
 // 키가 없으면(ANTHROPIC_API_KEY 미설정) { ok:false, reason:"no_key" } — 보드는 페이지 안 자료로 찾아 보여 준다.
@@ -14,6 +16,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod/v4";
 import { loadTerm2, retrieveTerm1 } from "@/lib/hakbot/kb";
+import { retrieve, resolveRefs, type Ref } from "@/lib/hakbot/rag";
 import { appendLog } from "@/lib/hakbot/log";
 
 export const runtime = "nodejs";
@@ -102,6 +105,14 @@ const Answer = z.object({
     .nullable()
     .describe("일정·범위·배점처럼 표가 나은 경우만. 아니면 null"),
   sources: z.array(Source).describe("답의 근거. resolved=true 이면 1개 이상"),
+  refs: z
+    .array(
+      z.object({
+        id: z.string().describe("답에 쓴 근거 조각 id — 검색된_근거의 c123 이나 일정표의 i45 (대괄호 없이)"),
+        quote: z.string().describe("그 조각 원문에서 그대로 옮긴 핵심 문구 30자 이내 — 바꿔 쓰지 말 것"),
+      }),
+    )
+    .describe("답에 실제로 쓴 조각 1~4개. 강의안·수업 기록 쪽을 썼으면 반드시 넣는다. 과목별 한 장만으로 답했으면 빈 배열"),
   unsure: z.string().nullable().describe("기록끼리 어긋나거나 확인 중인 부분. 없으면 null"),
 });
 type AnswerT = z.infer<typeof Answer>;
@@ -122,7 +133,18 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 날짜·비중·횟수는 카드에 크게. points 는 한 줄에 한 사실, 「~입니다」로 늘이지 말고 「마감 11/6(금) 23:59」처럼 짧게. 카드·points 에 같은 문장을 되풀이하지 않는다.
 - 애매한 것은 단정하지 않는다: 자료의 unsure 에 걸리거나 추정·미확정인 카드·줄은 check=true(보드가 「확인 필요」 표시), 확정된 것은 false. 무엇이 왜 애매한지는 unsure 에 한두 문장으로.
 - 표는 행이 셋 이상일 때만. 도표로 충분하면 표는 null.
-- HTML 태그(<br> 등)를 쓰지 않는다. 줄바꿈이 필요하면 문장을 나눈다.`;
+- HTML 태그(<br> 등)를 쓰지 않는다. 줄바꿈이 필요하면 문장을 나눈다.
+
+시점·조·근거(질문마다 붙는 <일정표>·<검색된_근거>):
+- <일정표> 는 오늘(서울) 기준으로 이미 계산돼 있다. D-n·「n일 지남」을 그대로 쓰고 날짜를 새로 계산하지 않는다. 「이번 주」「다음 수업」은 일정표의 구간·다음 수업일을 쓴다.
+- 다가오는 것은 가까운 날짜부터. 이미 지난 일정은 질문이 지난 일을 물을 때만 말한다(지난 마감을 「남은 마감」에 넣지 않는다).
+- 「준비물·뭐 해 가야 하나」: 다음 수업일 전에 끝낼 것(제출·읽기·케이스 질문·지참물)을 날짜순으로, 마감 시각·제출 위치와 함께.
+- 조: 내조가 정해져 있으면 그 조 + 전 조 일정만 말한다. 내조가 「모름」인데 조마다 다르면 조별로 나눠 표(조·날짜·내용)로 보여 주고 points 끝에 💡 「보드에서 내 조를 고르면 내 조 것만 보여 드립니다」.
+- <검색된_근거> 의 [c…] 는 강의안·실라버스·과제·수업 기록의 실제 쪽이다. 답에 쓴 조각은 refs 에 id 와 원문 문구를 넣는다. 일정표 줄 [i…] 를 근거로 썼으면 그것도 refs 에. 강의안 쪽을 근거로 쓰면 sources.where 에 「파일명 n쪽」.
+- 「수업 기록(학술국 정리)」 조각은 학술국이 수업 내용을 정리한 노트다. 그 안의 교수님 말씀은 kind 「수업 중 말씀」, when 에 수업 날짜(시각이 적혀 있으면 시각까지).
+- 과목별 한 장(정리본)과 조각이 어긋나면 한 장이 더 최근 정리다. 어긋남은 unsure 에 적는다.
+- 자료(강의안·케이스·과제 파일)를 달라는 질문: 근거 조각의 파일명·쪽과 위치를 알려 주고 「보드의 근거 보기에서 열 수 있다」고 안내한다. 파일 주소를 지어내지 않는다.
+- 1학기 질문은 <과목표>의 1학기 줄과 1학기 이론카드로 짧게 답한다(교수님·과목·주로 다룬 개념 두세 개).`;
 
 // 「이번 주 마감」 같은 질문을 풀려면 모델이 오늘(서울)을 알아야 한다.
 function todayKo(d = new Date()) {
@@ -146,7 +168,7 @@ export async function POST(req: Request) {
   if (!o) return Response.json({ ok: false, reason: "origin" }, { status: 403 });
   const H = cors(o);
 
-  let body: { q?: string; anon?: string };
+  let body: { q?: string; anon?: string; team?: string };
   try {
     body = await req.json();
   } catch {
@@ -154,6 +176,7 @@ export async function POST(req: Request) {
   }
   const q = String(body.q || "").replace(/\s+/g, " ").trim().slice(0, 300);
   const anon = String(body.anon || "").replace(/[^a-z0-9]/gi, "").slice(0, 16) || "anon";
+  const teamIn = /^[1-7]조$/.test(String(body.team || "")) ? String(body.team) : null;
   if (q.length < 2) return Response.json({ ok: false, reason: "empty" }, { headers: H });
 
   const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || "0";
@@ -166,8 +189,9 @@ export async function POST(req: Request) {
     return Response.json({ ok: false, reason: "no_key" }, { headers: H });
   }
 
-  const term2 = await loadTerm2();
-  const term1 = retrieveTerm1(q);
+  const [term2, rag] = await Promise.all([loadTerm2(), retrieve(q, { team: teamIn }).catch((e) => { console.log("[hakbot] 검색 실패:", String(e).slice(0, 200)); return null; })]);
+  // 1학기 조별 케이스(42장)는 꾸러미에 없어서 예전 낱말 검색으로 붙인다. 꾸러미가 안 열려도 예전처럼 돈다.
+  const term1 = !rag || rag.term1 ? retrieveTerm1(q) : "";
   const kbText =
     `<자료 기준="${term2?.updated ?? "?"}">\n` +
     `<2학기_과목별_한장>\n${JSON.stringify(term2?.courses ?? [])}\n</2학기_과목별_한장>\n` +
@@ -180,7 +204,7 @@ export async function POST(req: Request) {
   try {
     const res = await client.messages.parse({
       model: MODEL,
-      max_tokens: 2000,
+      max_tokens: 2600,
       // 규칙 + 2학기 자료는 모든 질문에 똑같이 들어가므로 캐시한다(두 번째 질문부터 입력비 약 1/10).
       system: [
         { type: "text", text: RULES },
@@ -189,14 +213,17 @@ export async function POST(req: Request) {
       messages: [
         {
           role: "user",
-          content: (term1 ? `<1학기_관련_카드>\n${term1}\n</1학기_관련_카드>\n\n` : "") + `오늘: ${todayKo()}
+          content:
+            (rag ? rag.context + "\n\n" : "") +
+            (term1 ? `<1학기_관련_카드>\n${term1}\n</1학기_관련_카드>\n\n` : "") +
+            `오늘: ${todayKo()}${rag?.team ? ` · 질문한 원우: ${rag.team}` : ""}
 질문: ${q}`,
         },
       ],
       output_config: { effort: "low", format: zodOutputFormat(Answer) },
     });
     if (res.stop_reason === "refusal") {
-      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", points: [], chart: null, table: null, sources: [], unsure: null };
+      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", points: [], chart: null, table: null, sources: [], refs: [], unsure: null };
     } else {
       out = res.parsed_output ?? null;
     }
@@ -213,11 +240,16 @@ export async function POST(req: Request) {
     return Response.json({ ok: false, reason: "ai_error" }, { headers: H });
   }
   // 근거 없는 「해결」은 해결로 치지 않는다.
-  if (out.resolved && out.sources.length === 0) out.resolved = false;
+  if (out.resolved && out.sources.length === 0 && out.refs.length === 0) out.resolved = false;
+  const refs: Ref[] = rag ? resolveRefs(rag, out.refs) : [];
+  const ragStat = rag ? { ...rag.stat, codes: rag.codes, team: rag.team, chunks: rag.chunks.length, refs: refs.map((r) => r.id) } : null;
 
   const logged = await appendLog({
     ts: seoulIso(), anon, q, resolved: out.resolved, course: out.course, answer: out.answer,
-    sources: out.sources, mode, ms: Date.now() - t0, points: out.points, unsure: out.unsure,
+    sources: out.sources, mode, ms: Date.now() - t0, points: out.points, unsure: out.unsure, rag: ragStat,
   });
-  return Response.json({ ok: true, ...out, logged, kbUpdated: term2?.updated ?? null }, { headers: H });
+  return Response.json(
+    { ok: true, ...out, refs, team: rag?.team ?? null, logged, kbUpdated: term2?.updated ?? null, packBuilt: rag?.pack.built ?? null },
+    { headers: H },
+  );
 }
