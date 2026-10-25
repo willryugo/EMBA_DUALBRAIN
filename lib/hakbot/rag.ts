@@ -20,7 +20,7 @@ export interface Session { course: string; no: number; date: string | null; topi
 export interface Item { id: number; course: string | null; kind: string; date: string | null; title: string; detail: string; due: string; team: string | null; source: string }
 export interface Doc { course: string; name: string; ext: string; kind: string; date: string | null; session: number | null; where: string }
 export interface Chunk {
-  id: number; kind: "page" | "item" | "card"; course: string | null; date: string | null;
+  id: number; kind: "page" | "item" | "card" | "emph"; course: string | null; date: string | null;
   title: string; text: string; src: string; item: number | null; doc: number | null; page: number | null;
   flat: string; // 낱말 검색용: 소문자 + 공백 제거
 }
@@ -114,6 +114,8 @@ const STOP = new Set([
   "해줘", "말씀", "이번", "다음", "에서", "으로", "하는", "해야", "되나", "는지", "을까", "까요", "는데", "건가", "거야",
   "뭐였", "였지", "누구", "구였", "주세", "세요", "있어", "어요", "나와", "봐줘", "가요", "인지",
 ]);
+
+const EMPH_Q = /시험|중요|강조|범위|핵심|포인트|출제|나와|나올|준비|공부|외워|외울|뭐가|어디까지/;
 
 export function queryTerms(q: string): string[] {
   const out = new Set<string>();
@@ -359,6 +361,7 @@ export interface Retrieved {
 
 function docLabel(p: Pack, c: Chunk) {
   if (c.kind === "card") return "1학기 이론카드";
+  if (c.kind === "emph") return `수업 중 강조(${(c.title.match(/\((강|중|약)\)/) || [, "중"])[1]})`;
   if (c.kind === "item") return "보드 일정·공지";
   const d = c.doc != null ? p.docs[String(c.doc)] : undefined;
   if (!d) return "자료";
@@ -380,6 +383,7 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
   const team = detectTeam(q, opts.team ?? null);
   const terms = queryTerms(q);
 
+  const emphQ = EMPH_Q.test(q);
   const rb = ranks(bm25(p, terms), 80);
   const rv = qv ? ranks(cosine(p, qv), 80, 0.75) : new Map<number, number>();
   const fused = new Map<number, number>();
@@ -392,6 +396,8 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
     if (codes.length && c.course && codes.includes(c.course)) w *= 1.8;
     if (codes.length && c.course && !codes.includes(c.course) && c.course !== "t1") w *= 0.7;
     if (c.kind === "card") w *= term1 ? 1.6 : 0.4;
+    // 수업 중 강조는 받아쓰기에서 뽑은 신호라 잡음이 있다 — 「뭐가 중요해·시험」류 질문에서만 앞세운다
+    if (c.kind === "emph") w *= emphQ ? 1.8 : 0.5;
     if (c.kind === "item" && c.item != null) { const it = p.itemById.get(c.item); if (it && !teamOk(it, team)) w *= 0.3; }
     fused.set(i, s * w);
   }
@@ -410,6 +416,16 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
     }
     picked.push(c);
     if (picked.length >= 10) break;
+  }
+  // 「시험·중요·강조」를 물으면 그 과목의 수업 중 강조를 강 → 약 → 중, 최근 순으로 몇 개 더 붙인다(검색 순위와 별개로)
+  if (emphQ && codes.length) {
+    const have = new Set(picked.map((c) => c.id));
+    const ord = (c: Chunk) => (c.title.includes("(강)") ? 0 : c.title.includes("(약)") ? 1 : 2);
+    const more = p.chunks
+      .filter((c) => c.kind === "emph" && c.course && codes.includes(c.course) && !have.has(c.id))
+      .sort((a, b) => ord(a) - ord(b) || String(b.date).localeCompare(String(a.date)))
+      .slice(0, 4);
+    picked.push(...more);
   }
 
   const cname = (c: string | null) => (c ? (c === "t1" ? "1학기" : p.courseBy.get(c)?.ko ?? c) : "공통");
@@ -436,7 +452,7 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
 
 export interface Ref {
   id: string;
-  type: "page" | "item" | "card";
+  type: "page" | "item" | "card" | "emph";
   course: string | null;
   courseKo: string;
   label: string;          // 강의안 · 과제 · 수업 기록 · 보드 일정 · 1학기 이론카드
