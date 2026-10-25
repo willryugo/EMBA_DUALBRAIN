@@ -140,7 +140,14 @@ const TONES = ["시험", "마감", "정보", "주의"];
 const EMOJIS = ["📅", "📝", "✍️", "⚠️", "📌", "📚", "✅", "❌", "⏰", "👥", "💡", "⭐"];
 const KINDS = ["수업 중 말씀", "수정·변경", "교재", "강의안", "강조하심", "실라버스", "러너스 공지", "교수님 메일", "1학기 카드", "기타"];
 /** 목록 밖 값을 가장 가까운 것으로 바로잡는다 — 화면이 아는 값만 보드로 보낸다. */
+// 한글 답에 섞여 나오는 가나·한자 낱자(10/25 실측: unsure 끝에 「機会」) — 원우에게 보이는 칸에서 걷어 낸다
+const STRAY = /[぀-ヿ一-鿿]+/g;
+const unstray = (t: string) => t.replace(STRAY, "").replace(/\s{2,}/g, " ").trim();
 function tidy(o: AnswerT) {
+  o.answer = unstray(o.answer);
+  if (o.unsure) o.unsure = unstray(o.unsure);
+  for (const c of o.cards) { c.big = unstray(c.big); c.label = unstray(c.label); c.note = unstray(c.note); }
+  for (const p of o.points) p.text = unstray(p.text);
   for (const c of o.cards) if (!TONES.includes(c.tone)) c.tone = /시험|기말|퀴즈/.test(c.tone + c.label) ? "시험" : /마감|제출/.test(c.tone + c.label) ? "마감" : "정보";
   for (const p of o.points) if (!EMOJIS.includes(p.emoji)) p.emoji = EMOJIS.find((e) => p.emoji.startsWith(e.slice(0, 2))) ?? "📌";
   for (const s of o.sources) if (!KINDS.includes(s.kind)) s.kind = "기타";
