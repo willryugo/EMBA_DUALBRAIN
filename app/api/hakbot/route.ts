@@ -216,7 +216,7 @@ export async function POST(req: Request) {
 
   const logged = await appendLog({
     ts: seoulIso(), anon, q, resolved: out.resolved, course: out.course, answer: out.answer,
-    sources: out.sources, mode, ms: Date.now() - t0,
+    sources: out.sources, mode, ms: Date.now() - t0, points: out.points, unsure: out.unsure,
   });
   return Response.json({ ok: true, ...out, logged, kbUpdated: term2?.updated ?? null }, { headers: H });
 }

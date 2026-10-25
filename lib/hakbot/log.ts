@@ -1,4 +1,6 @@
-// 학술봇 질문 기록 — 깃허브 비공개 저장소(HAKBOT_LOG_REPO)에 날짜별 JSONL 로 한 줄씩 쌓는다.
+// 학술봇 질문 기록 — 두 곳에 남긴다.
+//  ① 깃허브 비공개 저장소(HAKBOT_LOG_REPO)에 날짜별 JSONL 한 줄씩 (점검 작업이 읽는 원본)
+//  ② 구글 폼 「학술봇 질문 기록」(HAKBOT_FORM_URL = …/formResponse) — 수달님이 폼·시트에서 바로 본다
 // 학술국(메인 세션)이 매일 아침 이 파일을 읽어 「해결 안 됨」을 점검하고 수달님께 보고한다.
 //
 // 환경변수(수달님이 Vercel 에 직접 입력):
@@ -18,6 +20,40 @@ export interface LogEntry {
   sources: unknown[];
   mode: "ai" | "local" | "error";
   ms: number;
+  points?: { emoji: string; text: string; check?: boolean }[];
+  unsure?: string | null;
+}
+
+// 구글 폼 문항 번호(폼 「학술봇 질문 기록」의 장문형 두 칸). 주소는 공개 저장소에 두지 않고 환경변수로.
+const FORM_Q = "entry.92941697";
+const FORM_A = "entry.1912347370";
+
+function formText(e: LogEntry): string {
+  const state = e.mode === "error" ? "오류" : e.mode === "local" ? "AI 꺼짐(보드 자료로 안내)" : e.resolved ? (e.unsure ? "해결 · 확인 필요 포함" : "해결") : "학술국 전달";
+  const lines = [`[${state}]${e.course ? " " + e.course : ""}`];
+  if (e.answer) lines.push(e.answer);
+  for (const p of e.points ?? []) lines.push(`${p.emoji} ${p.text}${p.check ? " (확인 필요)" : ""}`);
+  for (const raw of e.sources as { kind?: string; when?: string; where?: string; what?: string }[]) {
+    lines.push(`근거 · ${[raw.kind, raw.when, raw.where].filter(Boolean).join(" · ")} — ${raw.what ?? ""}`);
+  }
+  if (e.unsure) lines.push(`확인 필요 · ${e.unsure}`);
+  lines.push(`— 익명 ${e.anon} · ${e.ts.slice(5, 16).replace("T", " ")} · ${(e.ms / 1000).toFixed(1)}초`);
+  return lines.join("\n");
+}
+
+async function appendForm(e: LogEntry): Promise<"ok" | "skip" | "fail"> {
+  const url = process.env.HAKBOT_FORM_URL;
+  if (!url) return "skip";
+  try {
+    const body = new URLSearchParams({ [FORM_Q]: e.q, [FORM_A]: formText(e) });
+    const r = await fetch(url, { method: "POST", body, redirect: "manual", cache: "no-store" });
+    if (r.status >= 200 && r.status < 400) return "ok";
+    console.log("[hakbot] 폼 기록 실패:", r.status);
+    return "fail";
+  } catch (err) {
+    console.log("[hakbot] 폼 기록 실패:", String(err));
+    return "fail";
+  }
 }
 
 function seoulDate(d = new Date()): string {
@@ -25,6 +61,11 @@ function seoulDate(d = new Date()): string {
 }
 
 export async function appendLog(e: LogEntry): Promise<"ok" | "skip" | "fail"> {
+  const [gh, form] = await Promise.all([appendGithub(e), appendForm(e)]);
+  return gh === "ok" || form === "ok" ? "ok" : gh === "skip" && form === "skip" ? "skip" : "fail";
+}
+
+async function appendGithub(e: LogEntry): Promise<"ok" | "skip" | "fail"> {
   const token = process.env.HAKBOT_GH_TOKEN;
   const repo = process.env.HAKBOT_LOG_REPO;
   if (!token || !repo) return "skip";
