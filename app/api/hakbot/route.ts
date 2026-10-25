@@ -67,7 +67,7 @@ const Answer = z.object({
     .array(
       z.object({
         big: z.string().describe("크게 보일 숫자·날짜 하나 — 예: 11/28(토), 50%, 없음, 3회. 12자 이내"),
-        label: z.string().describe("그 숫자가 무엇인지 — 예: 종합시험, 11장 과제 마감. 14자 이내"),
+        label: z.string().describe("그 숫자가 무엇인지 — 예: 종합시험, 11장 과제 마감. 14자 이내. D-n 은 쓰지 않는다(보드가 날짜로 붙인다)"),
         note: z.string().describe("덧붙일 한 줄 — 예: 3교시 15:55 · 오픈북. 없으면 빈 문자열"),
         tone: z.enum(["시험", "마감", "정보", "주의"]),
         check: z.boolean().describe("기록끼리 엇갈리거나 아직 확정 안 된 값이면 true — 보드가 「확인 필요」를 붙인다"),
@@ -113,7 +113,7 @@ const Answer = z.object({
       }),
     )
     .describe("답에 실제로 쓴 조각 1~4개. 강의안·수업 기록 쪽을 썼으면 반드시 넣는다. 과목별 한 장만으로 답했으면 빈 배열"),
-  unsure: z.string().nullable().describe("기록끼리 어긋나거나 확인 중인 부분. 없으면 null"),
+  unsure: z.string().nullable().describe("기록끼리 어긋나거나 아직 공지 안 된 부분만, 두 문장 120자 이내. 덧붙일 설명·요약은 여기 쓰지 않는다. 없으면 null"),
 });
 type AnswerT = z.infer<typeof Answer>;
 
@@ -144,7 +144,8 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 「수업 기록(학술국 정리)」 조각은 학술국이 수업 내용을 정리한 노트다. 그 안의 교수님 말씀은 kind 「수업 중 말씀」, when 에 수업 날짜(시각이 적혀 있으면 시각까지).
 - 과목별 한 장(정리본)과 조각이 어긋나면 한 장이 더 최근 정리다. 어긋남은 unsure 에 적는다.
 - 자료(강의안·케이스·과제 파일)를 달라는 질문: 근거 조각의 파일명·쪽과 위치를 알려 주고 「보드의 근거 보기에서 열 수 있다」고 안내한다. 파일 주소를 지어내지 않는다.
-- 1학기 질문은 <과목표>의 1학기 줄과 1학기 이론카드로 짧게 답한다(교수님·과목·주로 다룬 개념 두세 개).`;
+- 1학기 질문은 <과목표>의 1학기 줄과 1학기 이론카드로 짧게 답한다(교수님·과목·주로 다룬 개념 두세 개).
+- unsure 는 「무엇과 무엇이 어긋나는가」만 두 문장 이내. 참고 설명·요약·덧말을 unsure 에 쌓지 않는다 — 꼭 필요한 덧말은 points 한 줄로.`;
 
 // 「이번 주 마감」 같은 질문을 풀려면 모델이 오늘(서울)을 알아야 한다.
 function todayKo(d = new Date()) {
@@ -241,6 +242,11 @@ export async function POST(req: Request) {
   }
   // 근거 없는 「해결」은 해결로 치지 않는다.
   if (out.resolved && out.sources.length === 0 && out.refs.length === 0) out.resolved = false;
+  // 「확인 필요」 칸이 덧말 창고가 되지 않게 — 규칙을 어기고 길게 오면 앞 두 문장만 남긴다.
+  if (out.unsure && out.unsure.length > 200) {
+    const ss = out.unsure.split(/(?<=[.다요])\s+/);
+    out.unsure = ss.slice(0, 2).join(" ").slice(0, 240);
+  }
   const refs: Ref[] = rag ? resolveRefs(rag, out.refs) : [];
   const ragStat = rag ? { ...rag.stat, codes: rag.codes, team: rag.team, chunks: rag.chunks.length, refs: refs.map((r) => r.id) } : null;
 
