@@ -277,7 +277,7 @@ const clip = (s: unknown, n: number) => {
   const t = String(s ?? "").replace(/\s+/g, " ").trim();
   return t.length > n ? t.slice(0, n) + "…" : t;
 };
-const DATED_KINDS = new Set(["시험", "과제", "발표", "공지", "행사", "다음수업", "확인필요", "진도"]);
+const DATED_KINDS = new Set(["시험", "과제", "발표", "공지", "행사", "다음수업", "확인필요", "진도", "예습"]); // 예습 = 과제는 아니지만 수업 전 꼭 할 준비(읽어 오기·준비물)
 const ALWAYS_KINDS = new Set(["시험", "발표"]); // 구간 밖이어도 남은 학기 것은 다 보인다
 
 function teamOk(it: Item, team: string | null) {
