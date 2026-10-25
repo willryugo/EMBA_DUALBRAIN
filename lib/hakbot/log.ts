@@ -22,6 +22,7 @@ export interface LogEntry {
   ms: number;
   points?: { emoji: string; text: string; check?: boolean }[];
   unsure?: string | null;
+  rag?: unknown;       // 검색 통계 — 낱말 수·의미 검색 성공·찾은 과목·조·쓴 조각 id
 }
 
 // 구글 폼 문항 번호(폼 「학술봇 질문 기록」의 장문형 두 칸). 주소는 공개 저장소에 두지 않고 환경변수로.
