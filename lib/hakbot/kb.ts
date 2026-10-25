@@ -10,7 +10,8 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
-export const KB_URL = "https://willryugo.github.io/EMBA17/hakbot_kb.json";
+// 10/25 보드 이전: 공개 GitHub Pages → 비공개 저장소 + Vercel. 옛 주소는 이동 안내만 남아 자료가 없다.
+export const KB_URL = "https://emba17-board.vercel.app/hakbot_kb.json";
 
 export interface Term2Kb {
   updated: string;
