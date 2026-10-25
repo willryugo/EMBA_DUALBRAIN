@@ -69,7 +69,31 @@ const Answer = z.object({
       }),
     )
     .describe("답의 핵심 숫자 카드 1~4개. 날짜·비율·횟수처럼 한눈에 봐야 할 것만. 숫자가 없는 답이면 빈 배열"),
-  answer: z.string().describe("원우에게 보여 줄 답 1~3문장. 카드·표에 이미 있는 숫자를 문장으로 되풀이하지 말 것. ~합니다 체"),
+  answer: z.string().describe("한 줄 결론 — 40자 이내, 카톡 공지 첫 줄처럼. 예: 11장 과제는 11/6(금) 밤까지, 손풀이로 냅니다"),
+  points: z
+    .array(
+      z.object({
+        emoji: z.enum(["📅", "📝", "✍️", "⚠️", "📌", "📚", "✅", "❌", "⏰", "👥", "💡"]),
+        text: z.string().describe("핵심 한 줄 — 35자 이내, 명사형·짧은 문장. 예: 마감 11/6(금) 23:59 · 러너스"),
+      }),
+    )
+    .describe("카톡 공지처럼 이모지 한 개 + 핵심 한 줄, 2~5줄. 📅 일정 📝 시험 ✍️ 과제·제출방식 ⚠️ 주의·감점·F ⏰ 시간 📚 범위·교재 ✅ 허용 ❌ 금지 👥 조·팀 💡 팁 📌 그 밖의 핵심"),
+  chart: z
+    .object({
+      kind: z.enum(["비중", "일정"]),
+      title: z.string().describe("도표 제목 — 예: 성적 비중, 남은 마감"),
+      items: z
+        .array(
+          z.object({
+            label: z.string().describe("항목 — 예: 종합시험, 11장 과제. 10자 이내"),
+            value: z.number().nullable().describe("비중일 때 % 숫자. 일정이면 null"),
+            date: z.string().describe("일정일 때 M/D(요일) — 예: 11/6(금). 비중이면 빈 문자열"),
+          }),
+        )
+        .describe("2~6개"),
+    })
+    .nullable()
+    .describe("도표가 도움이 될 때만: 평가 비중이 답에 있으면 「비중」(합 100), 날짜가 2개 이상이면 「일정」. 아니면 null"),
   table: z
     .object({ headers: z.array(z.string()), rows: z.array(z.array(z.string())) })
     .nullable()
@@ -91,7 +115,9 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 공지·러너스가 바뀌면 그쪽이 우선이라는 점은 따로 말하지 않아도 된다(보드에 이미 적혀 있다).
 - 1학기 내용은 [1학기 이론카드]·[1학기 조별 케이스] 자료에서만 답하고, kind 는 「1학기 카드」.
 - 담백한 ~합니다 체. 인사·사족 없이 바로 답.
-- 보여 주는 순서는 카드(cards) → 짧은 답(answer) → 표(table). 원우는 숫자를 먼저 본다: 날짜·비중·횟수는 카드에 크게, 문장은 그 숫자의 뜻만 짧게. 일정이 셋 이상이면 표로.
+- 원우는 휴대폰으로 카톡 공지처럼 훑어본다. 산문 문단 금지. 보여 주는 순서는 카드(cards) → 한 줄 결론(answer) → 이모지 줄(points) → 도표(chart) → 표(table).
+- 날짜·비중·횟수는 카드에 크게. points 는 한 줄에 한 사실, 「~입니다」로 늘이지 말고 「마감 11/6(금) 23:59」처럼 짧게. 카드·points 에 같은 문장을 되풀이하지 않는다.
+- 표는 행이 셋 이상일 때만. 도표로 충분하면 표는 null.
 - HTML 태그(<br> 등)를 쓰지 않는다. 줄바꿈이 필요하면 문장을 나눈다.`;
 
 // 「이번 주 마감」 같은 질문을 풀려면 모델이 오늘(서울)을 알아야 한다.
@@ -166,7 +192,7 @@ export async function POST(req: Request) {
       output_config: { effort: "low", format: zodOutputFormat(Answer) },
     });
     if (res.stop_reason === "refusal") {
-      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", table: null, sources: [], unsure: null };
+      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", points: [], chart: null, table: null, sources: [], unsure: null };
     } else {
       out = res.parsed_output ?? null;
     }
