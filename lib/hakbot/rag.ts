@@ -20,7 +20,7 @@ export interface Session { course: string; no: number; date: string | null; topi
 export interface Item { id: number; course: string | null; kind: string; date: string | null; title: string; detail: string; due: string; team: string | null; source: string }
 export interface Doc { course: string; name: string; ext: string; kind: string; date: string | null; session: number | null; where: string }
 export interface Chunk {
-  id: number; kind: "page" | "item" | "card" | "emph"; course: string | null; date: string | null;
+  id: number; kind: "page" | "item" | "card" | "emph" | "easy"; course: string | null; date: string | null;
   title: string; text: string; src: string; item: number | null; doc: number | null; page: number | null;
   flat: string; // 낱말 검색용: 소문자 + 공백 제거
 }
@@ -116,6 +116,8 @@ const STOP = new Set([
 ]);
 
 const EMPH_Q = /시험|중요|강조|범위|핵심|포인트|출제|나와|나올|준비|공부|외워|외울|뭐가|어디까지/;
+// 「어렵다·쉽게·풀이·이해」류 — 학술국 쉬운 풀이(kind easy)를 앞세운다
+const EASY_Q = /어려|어렵|쉽게|쉬운|쉽|이해|풀이|풀어|설명|모르겠|헷갈|개념|요약|무슨 뜻|뜻이|뭔지|뭐야|감이|공식|예제|계산/;
 
 export function queryTerms(q: string): string[] {
   const out = new Set<string>();
@@ -367,6 +369,7 @@ function docLabel(p: Pack, c: Chunk) {
   if (c.kind === "card") return "1학기 이론카드";
   if (c.kind === "emph") return `수업 중 강조(${(c.title.match(/\((강|중|약)\)/) || [, "중"])[1]})`;
   if (c.kind === "item") return "보드 일정·공지";
+  if (c.kind === "easy") return "학술국 쉬운 풀이";
   const d = c.doc != null ? p.docs[String(c.doc)] : undefined;
   if (!d) return "자료";
   if (/수업기록|수업요약|노션리캡/.test(d.name)) return "수업 기록(학술국 정리)";
@@ -388,6 +391,7 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
   const terms = queryTerms(q);
 
   const emphQ = EMPH_Q.test(q);
+  const easyQ = EASY_Q.test(q);
   const rb = ranks(bm25(p, terms), 80);
   const rv = qv ? ranks(cosine(p, qv), 80, 0.75) : new Map<number, number>();
   const fused = new Map<number, number>();
@@ -402,6 +406,8 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
     if (c.kind === "card") w *= term1 ? 1.6 : 0.4;
     // 수업 중 강조는 받아쓰기에서 뽑은 신호라 잡음이 있다 — 「뭐가 중요해·시험」류 질문에서만 앞세운다
     if (c.kind === "emph") w *= emphQ ? 1.8 : 0.5;
+    // 학술국 쉬운 풀이는 교수님 자료를 풀어 쓴 해설 — 「어렵다·쉽게·풀이」 질문에서 앞세우고, 그 밖엔 원자료보다 살짝 뒤에
+    if (c.kind === "easy") w *= easyQ ? 2.0 : 0.85;
     if (c.kind === "item" && c.item != null) { const it = p.itemById.get(c.item); if (it && !teamOk(it, team)) w *= 0.3; }
     fused.set(i, s * w);
   }
@@ -414,9 +420,10 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
     const c = p.chunks[i];
     if (c.kind === "item" && c.item != null && inTimeline.has(c.item)) continue; // 일정표에 이미 있다
     if (c.doc != null) {
-      const n = perDoc.get(c.doc) ?? 0;
+      const k = c.kind === "easy" ? -1 - c.doc : c.doc; // 쉬운 풀이는 원본 쪽과 따로 센다
+      const n = perDoc.get(k) ?? 0;
       if (n >= 3) continue;
-      perDoc.set(c.doc, n + 1);
+      perDoc.set(k, n + 1);
     }
     picked.push(c);
     if (picked.length >= 10) break;
@@ -432,11 +439,21 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
     picked.push(...more);
   }
 
+  // 「어렵다·쉽게·요약」을 물으면 그 과목의 「과목 한눈에」(학술국 쉬운 풀이)부터, 이어 검색 점수 높은 쉬운 풀이를 붙인다
+  if (easyQ && codes.length) {
+    const have = new Set(picked.map((c) => c.id));
+    const pool = p.chunks.filter((c) => c.kind === "easy" && c.course && codes.includes(c.course) && !have.has(c.id));
+    const head = pool.filter((c) => c.title.includes("과목 한눈에")).slice(0, 2);
+    const rest = pool.filter((c) => !head.includes(c)).map((c) => ({ c, s: fused.get(p.chunks.indexOf(c)) ?? 0 }))
+      .sort((a, b) => b.s - a.s).slice(0, 3).filter((x) => x.s > 0).map((x) => x.c);
+    picked.push(...head, ...rest);
+  }
+
   const cname = (c: string | null) => (c ? (c === "t1" ? "1학기" : p.courseBy.get(c)?.ko ?? c) : "공통");
   const ev = picked.map((c) => {
     const d = c.doc != null ? p.docs[String(c.doc)] : undefined;
     const when = c.date ? ` · ${md(c.date)}` : d?.session ? ` · ${d.session}주차` : "";
-    return `[c${c.id}] ${cname(c.course)} · ${docLabel(p, c)} · ${clip(c.title, 80)}${when}\n${clip(c.text, 700)}`;
+    return `[c${c.id}] ${cname(c.course)} · ${docLabel(p, c)} · ${clip(c.title, 80)}${when}\n${clip(c.text, c.kind === "easy" ? 1000 : 700)}`;
   });
 
   const hint = codes.length ? codes.map((c) => p.courseBy.get(c)?.ko ?? c).join(", ") : "특정 안 됨";
@@ -456,7 +473,7 @@ export async function retrieve(q: string, opts: { team?: string | null; now?: Da
 
 export interface Ref {
   id: string;
-  type: "page" | "item" | "card" | "emph";
+  type: "page" | "item" | "card" | "emph" | "easy";
   course: string | null;
   courseKo: string;
   label: string;          // 강의안 · 과제 · 수업 기록 · 보드 일정 · 1학기 이론카드
