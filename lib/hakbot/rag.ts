@@ -290,7 +290,11 @@ export interface Timeline { text: string; itemIds: number[]; win: Win; team: str
 export function buildTimeline(p: Pack, q: string, today: string, codes: string[], team: string | null): Timeline {
   const win = timeWindow(q, today);
   const want = (c: string | null) => !codes.length || (c != null && codes.includes(c)) || c == null;
-  const cname = (c: string | null) => (c ? p.courseBy.get(c)?.short ?? c : "학사·행사");
+  // 원우는 과목보다 교수님 성함으로 기억하는 경우가 많아 일정표 줄마다 둘 다 싣는다(답·도표가 그대로 옮겨 쓴다).
+  const cname = (c: string | null) => {
+    const k = c ? p.courseBy.get(c) : undefined;
+    return k ? `${k.short}(${k.prof} 교수님)` : c ?? "학사·행사";
+  };
   const ids: number[] = [];
   let otherTeamsHidden = 0;
   const line = (it: Item) => {
