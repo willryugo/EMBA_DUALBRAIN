@@ -69,7 +69,7 @@ const Answer = z.object({
     .array(
       z.object({
         big: z.string().describe("크게 보일 숫자·날짜 하나 — 예: 11/28(토), 50%, 없음, 3회. 12자 이내"),
-        label: z.string().describe("그 숫자가 무엇인지 — 예: 종합시험, 11장 과제 마감. 14자 이내. D-n 은 쓰지 않는다(보드가 날짜로 붙인다)"),
+        label: z.string().describe("그 숫자가 무엇인지 — 과제·시험·발표·예습이면 교수님 성함을 앞에: 예: 문두철 11장 과제, 김보경 M&A 보고서, 임일 AI 발표. 14자 이내. 카드 하나에 일 하나(「가장 가까운 마감」처럼 둘을 묶지 않는다). D-n 은 쓰지 않는다(보드가 날짜로 붙인다)"),
         note: z.string().describe("덧붙일 한 줄 — 예: 3교시 15:55 · 오픈북. 없으면 빈 문자열"),
         tone: z.string().describe("시험 · 마감 · 정보 · 주의 중 하나(발표·행사는 「정보」)"),
         check: z.boolean().describe("기록끼리 엇갈리거나 아직 확정 안 된 값이면 true — 보드가 「확인 필요」를 붙인다"),
@@ -102,7 +102,7 @@ const Answer = z.object({
         .describe("2~6개"),
     })
     .nullable()
-    .describe("도표가 도움이 될 때만: 평가 비중이 답에 있으면 「비중」(합 100), 날짜가 2개 이상이면 「일정」. 아니면 null"),
+    .describe("평가 비중이 답에 있으면 「비중」(합 100). 다가오는·남은·마감·준비 질문에서 날짜 있는 과제·시험·발표·예습이 2개 이상이면 「일정」을 반드시 넣는다(null 금지) — 항목마다 who 에 교수님 · 과목. 그 밖엔 null"),
   table: z
     .object({ headers: z.array(z.string()), rows: z.array(z.array(z.string())) })
     .nullable()
