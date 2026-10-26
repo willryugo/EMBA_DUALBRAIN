@@ -116,6 +116,9 @@ const Answer = z.object({
       }),
     )
     .describe("답에 실제로 쓴 조각 1~4개. 강의안·수업 기록 쪽을 썼으면 반드시 넣는다. 과목별 한 장만으로 답했으면 빈 배열"),
+  follow: z
+    .array(z.string())
+    .describe("이어서 물어볼 질문 2~3개 — 원우가 단추로 그대로 누를 짧은 질문(25자 안팎, 「~해줘」「~뭐야?」). 방금 답의 과목·개념에서 한 걸음 더: 쉬운 풀이·헷갈리는 점·시험 포인트·연습(O/X)·관련 장표. 일정 답이면 준비물·다음 마감. 교수님 성함을 앞에(예: 「문두철 교수님 손익분기점 O/X 3문제 내줘」). 자료로 답할 수 없는 질문은 넣지 않는다"),
   unsure: z.string().nullable().describe("기록끼리 어긋나거나 아직 공지 안 된 부분만, 두 문장 120자 이내. 덧붙일 설명·요약은 여기 쓰지 않는다. 없으면 null"),
 });
 type AnswerT = z.infer<typeof Answer>;
@@ -143,7 +146,7 @@ const KINDS = ["수업 중 말씀", "수정·변경", "교재", "강의안", "�
 /** 목록 밖 값을 가장 가까운 것으로 바로잡는다 — 화면이 아는 값만 보드로 보낸다. */
 // 한글 답에 섞여 나오는 가나·한자 낱자(10/25 실측: unsure 끝에 「機会」) — 원우에게 보이는 칸에서 걷어 낸다
 const STRAY = /[぀-ヿ一-鿿]+/g;
-const unstray = (t: string) => t.replace(STRAY, "").replace(/\s{2,}/g, " ").trim();
+const unstray = (t: string) => t.replace(STRAY, "").replace(/\s{2,}/g, " ").trim().replace(/\s*[}\]]+$/, "");
 function tidy(o: AnswerT) {
   o.answer = unstray(o.answer);
   if (o.unsure) o.unsure = unstray(o.unsure);
@@ -152,6 +155,7 @@ function tidy(o: AnswerT) {
   for (const c of o.cards) if (!TONES.includes(c.tone)) c.tone = /시험|기말|퀴즈/.test(c.tone + c.label) ? "시험" : /마감|제출/.test(c.tone + c.label) ? "마감" : "정보";
   for (const p of o.points) if (!EMOJIS.includes(p.emoji)) p.emoji = EMOJIS.find((e) => p.emoji.startsWith(e.slice(0, 2))) ?? "📌";
   for (const s of o.sources) if (!KINDS.includes(s.kind)) s.kind = "기타";
+  o.follow = (o.follow ?? []).map((f) => unstray(f).replace(/^[-·•\d.)\s]+/, "")).filter((f) => f.length >= 4 && f.length <= 40).slice(0, 3);
   if (o.chart && o.chart.kind !== "비중" && o.chart.kind !== "일정") o.chart.kind = o.chart.items.some((i) => typeof i.value === "number") ? "비중" : "일정";
 }
 
@@ -182,6 +186,7 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 조: 내조가 정해져 있으면 그 조 + 전 조 일정만 말한다. 내조가 「모름」인데 조마다 다르면 조별로 나눠 표(조·날짜·내용)로 보여 주고 points 끝에 💡 「보드에서 내 조를 고르면 내 조 것만 보여 드립니다」.
 - <검색된_근거> 의 [c…] 는 강의안·실라버스·과제·수업 기록의 실제 쪽이다. 답에 쓴 조각은 refs 에 id 와 원문 문구를 넣는다. 일정표 줄 [i…] 를 근거로 썼으면 그것도 refs 에. 강의안 쪽을 근거로 쓰면 sources.where 에 「파일명 n쪽」.
 - 「학술국 쉬운 풀이」 조각은 학술국이 강의안·판서를 한 장씩 쉽게 풀어 쓴 해설이다(교수님 말씀이 아니다). 「어렵다·쉽게·이해·풀이·요약·무슨 뜻」 질문엔 이것을 뼈대로 짧고 쉽게 설명하되, 그 설명이 기대는 강의안 쪽([c…] 의 원본 쪽)이 있으면 같이 refs 에 넣는다. sources kind 는 「학술국 풀이」. 「교수님이 ~라고 하셨다」로 바꿔 말하지 않는다. 풀이 안 「확인 필요」 표시는 check=true 로 옮긴다. 마감 전 과제 문제의 답·풀이 과정은 쉬운 풀이에 있어도 말하지 않는다.
+- 「O/X·문제 내줘·퀴즈·연습」 요청: 근거 조각(특히 학술국 쉬운 풀이의 헷갈림·쉽게·풀이 칸, 강의안 쪽)에 그대로 있는 사실만으로 O/X·4지선다 문제를 3~5개 만든다. 표(table)로 headers 「문제 · 정답 · 근거」, 근거 칸에 「파일명 n쪽」. 숫자는 근거에 있는 숫자만(장표 예제 숫자 그대로) — 새 숫자로 바꾼 계산 문제는 만들지 않고 「장표 예제 숫자로 연습해 보기」를 권한다. 시험 제외 장표로는 내지 않는다. 마감 전 과제 문제와 같은 문제는 내지 않는다. 학술국이 만든 연습 문제임을 answer 에 밝힌다(교수님 출제 아님). 이 경우 resolved=true.
 - 「수업 기록(학술국 정리)」 조각은 학술국이 수업 내용을 정리한 노트다. 그 안의 교수님 말씀은 kind 「수업 중 말씀」, when 에 수업 날짜(시각이 적혀 있으면 시각까지).
 - 과목별 한 장(정리본)과 조각이 어긋나면 한 장이 더 최근 정리다. 어긋남은 unsure 에 적는다.
 - 자료(강의안·케이스·과제 파일)를 달라는 질문: 근거 조각의 파일명·쪽과 위치를 알려 주고 「보드의 근거 보기에서 열 수 있다」고 안내한다. 파일 주소를 지어내지 않는다.
@@ -263,7 +268,7 @@ export async function POST(req: Request) {
       output_config: { effort: "low", format: zodOutputFormat(Answer) },
     });
     if (res.stop_reason === "refusal") {
-      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", points: [], chart: null, table: null, sources: [], refs: [], unsure: null };
+      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", points: [], chart: null, table: null, sources: [], refs: [], follow: [], unsure: null };
     } else {
       out = res.parsed_output ?? null;
     }
