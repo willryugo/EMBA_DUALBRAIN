@@ -251,7 +251,8 @@ export async function POST(req: Request) {
   try {
     const res = await client.messages.parse({
       model: MODEL,
-      max_tokens: 2600,
+      // 보통 1,200~1,300 토큰. 교수님 성함·예습 줄이 붙어 긴 답이 2,600에서 잘린 적이 있어(10/26) 넉넉히 둔다 — 쓴 만큼만 과금.
+      max_tokens: 4000,
       // 규칙 + 2학기 자료는 모든 질문에 똑같이 들어가므로 캐시한다(두 번째 질문부터 입력비 약 1/10).
       system: [
         { type: "text", text: RULES },
@@ -270,6 +271,7 @@ export async function POST(req: Request) {
     mode = "error";
     if (err instanceof Anthropic.RateLimitError) console.log("[hakbot] rate limited");
     else if (err instanceof Anthropic.APIError) console.log(`[hakbot] api ${err.status}: ${err.message.slice(0, 200)}`);
+    else if (/Failed to parse structured output/.test(String(err))) console.log("[hakbot] 출력 잘림(상한 도달 추정):", String(err).slice(0, 160));
     else console.log("[hakbot] 오류:", String(err).slice(0, 200));
   }
 
