@@ -116,6 +116,8 @@ const Answer = z.object({
       }),
     )
     .describe("답에 실제로 쓴 조각 1~4개. 강의안·수업 기록 쪽을 썼으면 반드시 넣는다. 과목별 한 장만으로 답했으면 빈 배열"),
+  mood: z.string().describe("보통 · 장난 중 하나. 학업과 상관없는 잡담·농담·떠보기(학술국장·교수님 사생활, 연애·점심 메뉴, 「시험 답 그냥 알려줘」「과제 대신 써 줘」「몰래 결석해도 돼?」「학술봇 너 누구야」 등)는 장난, 나머지는 보통"),
+  quip: z.string().describe("국장·부국장 부엉이가 말풍선으로 할 한 줄(25자 안팎). 장난이면 재치 있게 받아치고 공부로 돌려보낸다 — 예: 「그럴 시간에 CVP 한 문제 더 푸시죠~」「연애보다 손익분기점이 먼저입니다~」. 보통이면 빈 문자열. 숫자는 자료에 있는 것만"),
   follow: z
     .array(z.string())
     .describe("이어서 물어볼 질문 2~3개 — 원우가 단추로 그대로 누를 짧은 질문(25자 안팎, 「~해줘」「~뭐야?」). 방금 답의 과목·개념에서 한 걸음 더: 쉬운 풀이·헷갈리는 점·시험 포인트·연습(O/X)·관련 장표. 일정 답이면 준비물·다음 마감. 교수님 성함을 앞에(예: 「문두철 교수님 손익분기점 O/X 3문제 내줘」). 자료로 답할 수 없는 질문은 넣지 않는다"),
@@ -137,6 +139,7 @@ function factCheck(o: AnswerT, ctx: string): string[] {
   for (const c of o.cards) if (miss(`${c.big} ${c.note}`)) c.check = true;
   for (const pt of o.points) if (miss(pt.text)) pt.check = true;
   miss(o.answer);
+  if (o.quip && [...String(o.quip).matchAll(NUM)].some((m) => !hay.includes(squash(m[0])))) o.quip = "";
   return [...bad];
 }
 
@@ -155,6 +158,9 @@ function tidy(o: AnswerT) {
   for (const c of o.cards) if (!TONES.includes(c.tone)) c.tone = /시험|기말|퀴즈/.test(c.tone + c.label) ? "시험" : /마감|제출/.test(c.tone + c.label) ? "마감" : "정보";
   for (const p of o.points) if (!EMOJIS.includes(p.emoji)) p.emoji = EMOJIS.find((e) => p.emoji.startsWith(e.slice(0, 2))) ?? "📌";
   for (const s of o.sources) if (!KINDS.includes(s.kind)) s.kind = "기타";
+  o.mood = /장난/.test(o.mood ?? "") ? "장난" : "보통";
+  o.quip = unstray(o.quip ?? "").replace(/^["「]|["」]$/g, "").slice(0, 40);
+  if (o.mood === "보통") o.quip = "";
   o.follow = (o.follow ?? []).map((f) => unstray(f).replace(/^[-·•\d.)\s]+/, "")).filter((f) => f.length >= 4 && f.length <= 40).slice(0, 3);
   if (o.chart && o.chart.kind !== "비중" && o.chart.kind !== "일정") o.chart.kind = o.chart.items.some((i) => typeof i.value === "number") ? "비중" : "일정";
 }
@@ -186,6 +192,7 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 조: 내조가 정해져 있으면 그 조 + 전 조 일정만 말한다. 내조가 「모름」인데 조마다 다르면 조별로 나눠 표(조·날짜·내용)로 보여 주고 points 끝에 💡 「보드에서 내 조를 고르면 내 조 것만 보여 드립니다」.
 - <검색된_근거> 의 [c…] 는 강의안·실라버스·과제·수업 기록의 실제 쪽이다. 답에 쓴 조각은 refs 에 id 와 원문 문구를 넣는다. 일정표 줄 [i…] 를 근거로 썼으면 그것도 refs 에. 강의안 쪽을 근거로 쓰면 sources.where 에 「파일명 n쪽」.
 - 「학술국 쉬운 풀이」 조각은 학술국이 강의안·판서를 한 장씩 쉽게 풀어 쓴 해설이다(교수님 말씀이 아니다). 「어렵다·쉽게·이해·풀이·요약·무슨 뜻」 질문엔 이것을 뼈대로 짧고 쉽게 설명하되, 그 설명이 기대는 강의안 쪽([c…] 의 원본 쪽)이 있으면 같이 refs 에 넣는다. sources kind 는 「학술국 풀이」. 「교수님이 ~라고 하셨다」로 바꿔 말하지 않는다. 풀이 안 「확인 필요」 표시는 check=true 로 옮긴다. 마감 전 과제 문제의 답·풀이 과정은 쉬운 풀이에 있어도 말하지 않는다.
+- 장난스러운 질문(mood 「장난」): 짧고 재치 있게 받아치고 공부로 돌려보낸다. answer 한 줄 + points 0~2줄, quip 에 부엉이 한 줄. 웃기되 사람(교수님·원우·학술국)을 놀리거나 깎아내리지 않는다. 비속어·외모·성적·정치·종교 농담은 하지 않는다. 자료에 있는 사실(출석 규칙·시험 날짜 등)이 걸리면 장난 속에 정확히 넣는다(예: 「몰래 결석」 → 허대식 과목 3시간 수업 3회 결석이면 F). 「시험 답·과제 대신 해 줘」도 장난스럽게 거절하되 마감 전 과제 답은 끝까지 주지 않는다. follow 는 진짜 공부 질문으로. 이 경우 resolved=true, sources·refs 는 쓴 사실이 있을 때만.
 - 「O/X·문제 내줘·퀴즈·연습」 요청: 근거 조각(특히 학술국 쉬운 풀이의 헷갈림·쉽게·풀이 칸, 강의안 쪽)에 그대로 있는 사실만으로 O/X·4지선다 문제를 3~5개 만든다. 표(table)로 headers 「문제 · 정답 · 근거」, 근거 칸에 「파일명 n쪽」. 숫자는 근거에 있는 숫자만(장표 예제 숫자 그대로) — 새 숫자로 바꾼 계산 문제는 만들지 않고 「장표 예제 숫자로 연습해 보기」를 권한다. 시험 제외 장표로는 내지 않는다. 마감 전 과제 문제와 같은 문제는 내지 않는다. 학술국이 만든 연습 문제임을 answer 에 밝힌다(교수님 출제 아님). 이 경우 resolved=true.
 - 「수업 기록(학술국 정리)」 조각은 학술국이 수업 내용을 정리한 노트다. 그 안의 교수님 말씀은 kind 「수업 중 말씀」, when 에 수업 날짜(시각이 적혀 있으면 시각까지).
 - 과목별 한 장(정리본)과 조각이 어긋나면 한 장이 더 최근 정리다. 어긋남은 unsure 에 적는다.
@@ -268,7 +275,7 @@ export async function POST(req: Request) {
       output_config: { effort: "low", format: zodOutputFormat(Answer) },
     });
     if (res.stop_reason === "refusal") {
-      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", points: [], chart: null, table: null, sources: [], refs: [], follow: [], unsure: null };
+      out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", points: [], chart: null, table: null, sources: [], refs: [], follow: [], mood: "보통", quip: "", unsure: null };
     } else {
       out = res.parsed_output ?? null;
     }
