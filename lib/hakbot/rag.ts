@@ -221,9 +221,14 @@ export function detectCourses(q: string): { codes: string[]; term1: boolean } {
   return { codes: [...new Set(found)], term1: cue1 || found.some((c) => c.startsWith("t1")) };
 }
 
+// 글 속 조 번호: 「7조」「7 조」「칠조」「7조원」 — 화면에서 조를 안 골라도 글에 있으면 그 조로(11/2 「7조 번주 …」).
+// 한글 숫자는 낱말 첫머리일 때만(「구조」「일조량」 같은 말에 걸리지 않게), 「17조」「1조원」은 조 번호가 아니다.
+const KO_TEAM: Record<string, string> = { 일: "1", 이: "2", 삼: "3", 사: "4", 오: "5", 육: "6", 륙: "6", 칠: "7" };
 export function detectTeam(q: string, given?: string | null): string | null {
-  const m = q.match(/([1-7])\s*조/);
+  const m = q.match(/(?<![0-9.,])([1-7])\s*조(?!원(?!들|우)|[0-9])/); // 「1조원·1.7조」(돈)은 뺀다, 「7조원들·7조 원우」는 조
   if (m) return `${m[1]}조`;
+  const k = q.match(/(?:^|[\s,.(「"'])(일|이|삼|사|오|육|륙|칠)\s*조(?=$|[\s?!.,)」"']|원|는|은|가|의|에|도|만|랑|와|과|꺼|것|이)/);
+  if (k) return `${KO_TEAM[k[1]]}조`;
   return given && /^[1-7]조$/.test(given) ? given : null;
 }
 
@@ -255,8 +260,10 @@ export function timeWindow(q: string, today: string): Win {
   const past = /지난|저번|했던|지났|어제|끝난|전에|그동안|이제까지|지금까지/.test(s) ? 45 : 10;
   if (/오늘/.test(s)) return { from: today, to: today, label: "오늘", past };
   if (/내일/.test(s)) return { from: addDays(today, 1), to: addDays(today, 1), label: "내일", past };
-  if (/다음주|담주|차주/.test(s)) return { from: addDays(sunday, 1), to: addDays(sunday, 7), label: "다음 주", past };
-  if (/이번주|금주|이번주말|주말/.test(s)) return { from: today, to: sunday, label: "이번 주", past };
+  if (/다음번?주|다음쭈|담주|차주/.test(s)) return { from: addDays(sunday, 1), to: addDays(sunday, 7), label: "다음 주", past };
+  if (/저번주|지난주|전주에/.test(s)) return { from: addDays(sunday, -13), to: addDays(sunday, -7), label: "지난 주", past: 10 };
+  // 오타·준말 허용(11/2 「7조 번주 과제」가 3주 구간으로 떨어짐): 이번주·이번쭈·이번주말·번주·금주·이주(「이주일·이주간」은 2주라 뺌)
+  if (/이번주|이번쭈|이벉주|번주|금주|주말|이주(?!일|간|동안|째)/.test(s)) return { from: today, to: sunday, label: "이번 주", past };
   const m = s.match(/(1[0-2]|[1-9])월/);
   if (m) {
     const mm = String(Number(m[1])).padStart(2, "0");
