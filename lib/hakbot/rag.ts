@@ -282,6 +282,11 @@ export function timeWindow(q: string, today: string): Win {
 
 // ───────────────────────── 일정표 ─────────────────────────
 
+// 수업 중 시각 「(13:02경)」「19:21~19:22경」「(0:01:20)」은 녹취처럼 보여 원우에게 보이는 칸에서 걷어 낸다(수달님 11/6). 시험·마감 시각(13:00·23:59)은 「경」이 없어 남는다.
+const CLOCK_P = /\s*\(\s*(?:\d{1,2}:\d{2}(?::\d{2})?(?:\s*[~–-]\s*\d{1,2}:\d{2}(?::\d{2})?)?\s*경|\d:\d{2}:\d{2}(?:\s*[~–-]\s*\d:\d{2}:\d{2})?)\s*\)/g;
+const CLOCK = /\s*\d{1,2}:\d{2}(?::\d{2})?(?:\s*[~–-]\s*\d{1,2}:\d{2}(?::\d{2})?)?\s*경/g;
+export const noClock = (t: string) => String(t ?? "").replace(CLOCK_P, "").replace(CLOCK, "").replace(/\(\s*\)/g, "").replace(/\s{2,}/g, " ").trim();
+
 const clip = (s: unknown, n: number) => {
   const t = String(s ?? "").replace(/\s+/g, " ").trim();
   return t.length > n ? t.slice(0, n) + "…" : t;
@@ -513,7 +518,7 @@ export function resolveRefs(r: Retrieved, refs: { id: string; quote: string }[])
       out.push({
         id, type: "item", course: it.course, courseKo: it.course ? p.courseBy.get(it.course)?.ko ?? it.course : "공통",
         label: "보드 일정·공지", title: it.title, page: null, doc: null, ext: null, where: it.source, date: it.date,
-        quote, quoteOk: !!quote && squash(hay).includes(squash(quote)), excerpt: clip(it.detail || it.title, 240),
+        quote, quoteOk: !!quote && squash(hay).includes(squash(quote)), excerpt: noClock(clip(it.detail || it.title, 240)),
       });
       continue;
     }
@@ -537,7 +542,7 @@ export function resolveRefs(r: Retrieved, refs: { id: string; quote: string }[])
     out.push({
       id, type: c.kind, course: c.course, courseKo: c.course === "t1" ? "1학기" : c.course ? p.courseBy.get(c.course)?.ko ?? c.course : "공통",
       label: docLabel(p, c), title: d ? d.name : c.title, page: c.page, doc: c.doc, ext: d?.ext ?? null,
-      where: d?.where ?? c.src, date: c.date ?? d?.date ?? null, quote, quoteOk: ok, excerpt,
+      where: noClock(d?.where ?? c.src), date: c.date ?? d?.date ?? null, quote, quoteOk: ok, excerpt: noClock(excerpt),
     });
   }
   return out.slice(0, 5);

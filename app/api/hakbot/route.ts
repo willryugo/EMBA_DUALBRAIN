@@ -16,7 +16,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { z } from "zod/v4";
 import { loadTerm2, retrieveTerm1 } from "@/lib/hakbot/kb";
-import { retrieve, resolveRefs, type Ref } from "@/lib/hakbot/rag";
+import { noClock, retrieve, resolveRefs, type Ref } from "@/lib/hakbot/rag";
 import { appendLog } from "@/lib/hakbot/log";
 
 export const runtime = "nodejs";
@@ -58,7 +58,7 @@ const Source = z.object({
   // 선택지를 enum 으로 묶으면 모델이 목록 밖 값을 한 번만 써도 답 전체가 버려진다(10/25 「조별 발표 일정」 ai_error).
   // 그래서 글자로 받고 아래 tidy() 가 목록 밖 값을 바로잡는다.
   kind: z.string().describe("수업 중 말씀 · 수정·변경 · 교재 · 강의안 · 강조하심 · 실라버스 · 러너스 공지 · 교수님 메일 · 학술국 풀이 · 1학기 카드 · 기타 중 하나"),
-  when: z.string().describe("언제 — 예: 10/24 수업 중(10:03경), 10/16 → 10/23 변경. 모르면 빈 문자열"),
+  when: z.string().describe("언제 — 날짜만. 예: 10/24 수업 중, 10/16 → 10/23 변경. 시각(13:02경)은 쓰지 않는다. 모르면 빈 문자열"),
   where: z.string().describe("어디 — 예: 주교재 『경영사례와 개인과제』 25쪽, Module 3 강의안 64~96쪽. 모르면 빈 문자열"),
   what: z.string().describe("그 근거가 말하는 내용 한 줄"),
 });
@@ -158,6 +158,11 @@ function tidy(o: AnswerT) {
   for (const c of o.cards) if (!TONES.includes(c.tone)) c.tone = /시험|기말|퀴즈/.test(c.tone + c.label) ? "시험" : /마감|제출/.test(c.tone + c.label) ? "마감" : "정보";
   for (const p of o.points) if (!EMOJIS.includes(p.emoji)) p.emoji = EMOJIS.find((e) => p.emoji.startsWith(e.slice(0, 2))) ?? "📌";
   for (const s of o.sources) if (!KINDS.includes(s.kind)) s.kind = "기타";
+  o.answer = noClock(o.answer);
+  if (o.unsure) o.unsure = noClock(o.unsure);
+  for (const p of o.points) p.text = noClock(p.text);
+  for (const c of o.cards) c.note = noClock(c.note);
+  for (const s of o.sources) { s.when = noClock(s.when); s.what = noClock(s.what); s.where = noClock(s.where); }
   o.mood = /장난/.test(o.mood ?? "") ? "장난" : "보통";
   o.quip = unstray(o.quip ?? "").replace(/^["「]|["」]$/g, "").slice(0, 60);
   if (o.mood === "보통") o.quip = "";
@@ -173,7 +178,7 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 자료에 없는 사실은 절대 만들지 않는다. 추측해야 하면 resolved=false 로 두고 answer 에 「자료에서 찾지 못했다」고만 쓴다.
 - 근거(sources)는 자료의 src·근거 표기를 그대로 옮긴다. kind 는 성격대로 고른다: 교수님이 수업에서 하신 말씀 → 「수업 중 말씀」, 날짜·범위가 바뀐 경우 → 「수정·변경」(when 에 「언제 → 언제」), 교재 쪽수 → 「교재」, 강의안 쪽수 → 「강의안」, 교수님이 여러 번·특별히 강조하신 것 → 「강조하심」.
 - 자료의 「확인 중(unsure)」에 걸린 내용이면 단정하지 말고 unsure 에 무엇이 어긋나는지 적는다(이 경우도 답할 수 있으면 resolved=true).
-- 「녹음」「녹취」「전사」라는 말은 쓰지 않는다. 시각은 「10/24 수업 중(10:03경)」처럼 쓴다.
+- 「녹음」「녹취」「전사」라는 말은 쓰지 않는다. 언제는 날짜만 「10/24 수업 중 말씀」처럼 쓰고, 「13:02경」 같은 수업 중 시각은 쓰지 않는다(녹취처럼 보인다 — 수달님 11/6). 시험·마감 시각(19:20·23:59)은 그대로 쓴다.
 - 원우 실명은 쓰지 않는다(교수님·조교 이름은 된다). 조는 「7조」처럼 번호로.
 - 공지·러너스가 바뀌면 그쪽이 우선이라는 점은 따로 말하지 않아도 된다(보드에 이미 적혀 있다).
 - 1학기 내용은 [1학기 이론카드]·[1학기 조별 케이스] 자료에서만 답하고, kind 는 「1학기 카드」.
@@ -211,7 +216,7 @@ const RULES = `너는 「학술봇」이다. 연세대 EMBA 17기 학술국이 �
 - 교수님 채점·성적·학점 성향(「성적 잘 주셔?」「누가 A 많이 줘?」「깐깐해?」)은 추측하지 않는다 — 자료에 있는 평가 비중·규칙(출석·감점·시험 형식)만 알려 주고, 성향은 자료에 없다고 짧게 말한다(장난이면 장난스럽게). 원우·조 사이 비교도 하지 않는다.
 - 「학술봇 누구야·누가 만들었어·어떻게 답해」: 「EMBA 17기 학술국이 운영하는 학술봇 — 수업 자료(강의안·수업 기록·학술국 쉬운 풀이)에서 근거를 찾아 답한다」고 짧게(장난이면 장난스럽게) 답하고 resolved=true. 만든 사람 이름·AI 모델 이름은 말하지 않는다(「LLM이 뒤에서 정리한다」까지만). 자세한 원리는 보드의 「학술봇은 어떻게 답하나요?」를 안내.
 - 「O/X·문제 내줘·퀴즈·연습」 요청: 근거 조각(특히 학술국 쉬운 풀이의 헷갈림·쉽게·풀이 칸, 강의안 쪽)에 그대로 있는 사실만으로 O/X·4지선다 문제를 3~5개 만든다. 표(table)로 headers 「문제 · 정답 · 근거」, 근거 칸에 「파일명 n쪽」. 숫자는 근거에 있는 숫자만(장표 예제 숫자 그대로) — 새 숫자로 바꾼 계산 문제는 만들지 않고 「장표 예제 숫자로 연습해 보기」를 권한다. 시험 제외 장표로는 내지 않는다. 마감 전 과제 문제와 같은 문제는 내지 않는다. 학술국이 만든 연습 문제임을 answer 에 밝힌다(교수님 출제 아님). 이 경우 resolved=true.
-- 「수업 기록(학술국 정리)」 조각은 학술국이 수업 내용을 정리한 노트다. 그 안의 교수님 말씀은 kind 「수업 중 말씀」, when 에 수업 날짜(시각이 적혀 있으면 시각까지).
+- 「수업 기록(학술국 정리)」 조각은 학술국이 수업 내용을 정리한 노트다. 그 안의 교수님 말씀은 kind 「수업 중 말씀」, when 에 수업 날짜만(자료에 시각이 적혀 있어도 옮기지 않는다).
 - 과목별 한 장(정리본)과 조각이 어긋나면 한 장이 더 최근 정리다. 어긋남은 unsure 에 적는다.
 - 자료(강의안·케이스·과제 파일)를 달라는 질문: 근거 조각의 파일명·쪽과 위치를 알려 주고 「보드의 근거 보기에서 열 수 있다」고 안내한다. 파일 주소를 지어내지 않는다.
 - 1학기 질문은 <과목표>의 1학기 줄과 1학기 이론카드로 짧게 답한다(교수님·과목·주로 다룬 개념 두세 개).
