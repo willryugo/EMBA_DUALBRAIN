@@ -517,7 +517,7 @@ export function resolveRefs(r: Retrieved, refs: { id: string; quote: string }[])
       const hay = `${it.title} ${it.detail} ${it.due}`;
       out.push({
         id, type: "item", course: it.course, courseKo: it.course ? p.courseBy.get(it.course)?.ko ?? it.course : "공통",
-        label: "보드 일정·공지", title: it.title, page: null, doc: null, ext: null, where: it.source, date: it.date,
+        label: "보드 일정·공지", title: noClock(it.title), page: null, doc: null, ext: null, where: noClock(it.source), date: it.date,
         quote, quoteOk: !!quote && squash(hay).includes(squash(quote)), excerpt: noClock(clip(it.detail || it.title, 240)),
       });
       continue;
