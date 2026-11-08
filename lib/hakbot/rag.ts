@@ -7,7 +7,7 @@
 //
 // 찾는 길 셋을 합친다(임일 교수님 Module 3 의 RAG 그대로):
 //   ① 낱말 검색 BM25 — 한글은 두 글자 조각으로 센다(강의안 PDF 는 띄어쓰기가 사라져 있다)
-//   ② 의미 검색 — 질문을 같은 모델로 벡터로 바꿔 코사인 유사도(보드 /api/embed · 4.5초 안에 안 오면 ①만)
+//   ② 의미 검색 — 질문을 같은 모델로 벡터로 바꿔 코사인 유사도(보드 /api/embed · 8초 안에 안 오면 ①만)
 //   ③ 순위 합치기 RRF — 1/(60+순위) 를 더한다. 두 점수의 눈금이 달라도 합칠 수 있다.
 // 그리고 질문 시점(서울 오늘) 기준 일정표 — 다가오는 것(D-n)·지난 것·다음 수업일 — 를 따로 계산해 붙인다.
 // 원우 질문의 대부분이 「언제·무엇을 준비·어디에 내나」라서, 그 계산을 모델에 맡기지 않는다.
@@ -95,7 +95,7 @@ async function embed(q: string): Promise<Float32Array | null> {
       headers: { "x-hakbot-token": token, "Content-Type": "application/json" },
       body: JSON.stringify({ q }),
       cache: "no-store",
-      signal: AbortSignal.timeout(4_500),
+      signal: AbortSignal.timeout(8_000), // 4.5초 → 8초(11/8): 콜드 스타트로 의미검색이 빠진 답이 한 주 45%
     });
     if (!r.ok) return null;
     const j = (await r.json()) as { ok?: boolean; vec?: number[] };
