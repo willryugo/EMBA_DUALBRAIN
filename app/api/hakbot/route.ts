@@ -284,6 +284,8 @@ export async function POST(req: Request) {
   let out: AnswerT | null = null;
   let mode: "ai" | "error" = "ai";
   try {
+    // 빈 답(답·줄·카드 모두 비고 해결 안 됨)이 가끔 온다 — 원우 화면엔 「학술국 전달」로 보인다(11/7 실제 1건). 한 번만 다시 묻는다.
+    for (let attempt = 0; attempt < 2; attempt++) {
     const res = await client.messages.parse({
       model: MODEL,
       // 보통 1,200~1,300 토큰. 교수님 성함·예습 줄이 붙어 긴 답이 2,600에서 잘린 적이 있어(10/26) 넉넉히 둔다 — 쓴 만큼만 과금.
@@ -302,6 +304,10 @@ export async function POST(req: Request) {
       out = res.parsed_output ?? null;
     }
     console.log(`[hakbot] usage in=${res.usage.input_tokens} cache_read=${res.usage.cache_read_input_tokens ?? 0} out=${res.usage.output_tokens}`);
+    const empty = !!out && !out.resolved && !String(out.answer ?? "").trim() && !(out.points?.length) && !(out.cards?.length);
+    if (!empty || res.stop_reason === "refusal") break;
+    console.log(`[hakbot] 빈 답 — 다시 묻기(${attempt + 1})`);
+    }
   } catch (err) {
     mode = "error";
     if (err instanceof Anthropic.RateLimitError) console.log("[hakbot] rate limited");
