@@ -305,7 +305,8 @@ export async function POST(req: Request) {
       out = res.parsed_output ?? null;
     }
     console.log(`[hakbot] usage in=${res.usage.input_tokens} cache_read=${res.usage.cache_read_input_tokens ?? 0} out=${res.usage.output_tokens}`);
-    const empty = !!out && !out.resolved && !String(out.answer ?? "").trim() && !(out.points?.length) && !(out.cards?.length);
+    // 카드만 채우고 한 줄 결론·이모지 줄을 비운 채 끝나는 경우가 대부분이다(11/12 「다음 주 수업 뭐 있어?」 4번 중 3번) — 카드는 답으로 치지 않는다.
+    const empty = !!out && !out.resolved && !String(out.answer ?? "").trim() && !(out.points?.length);
     if (!empty || res.stop_reason === "refusal") break;
     console.log(`[hakbot] 빈 답 — 다시 묻기(${attempt + 1})`);
     }
@@ -322,7 +323,7 @@ export async function POST(req: Request) {
     return Response.json({ ok: false, reason: "ai_error" }, { headers: H });
   }
   // 두 번 다 빈 답이면 「학술국 전달」이 아니라 보드의 「다시 물어보기」로 보낸다 — 자료가 없는 게 아니라 답 만들기가 실패한 것.
-  if (!out.resolved && !String(out.answer ?? "").trim() && !(out.points?.length) && !(out.cards?.length)) {
+  if (!out.resolved && !String(out.answer ?? "").trim() && !(out.points?.length)) {
     console.log("[hakbot] 빈 답 두 번 — 다시 물어보기로 보냄");
     await appendLog({ ts: seoulIso(), anon, q, resolved: false, course: out.course, answer: "", sources: [], mode: "error", ms: Date.now() - t0 });
     return Response.json({ ok: false, reason: "empty_answer" }, { headers: H });
