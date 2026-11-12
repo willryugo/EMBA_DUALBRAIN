@@ -295,8 +295,9 @@ export async function POST(req: Request) {
         { type: "text", text: RULES },
         { type: "text", text: kbText, cache_control: { type: "ephemeral" } },
       ],
-      messages: [{ role: "user", content: userContent }],
-      output_config: { effort: "low", format: zodOutputFormat(Answer) },
+      // 같은 조건으로 다시 물으면 또 빈 답이 온다(11/12 실제: 두 번 다 빔) — 두 번째는 생각을 더 시키고 빈 답이었다고 알린다.
+      messages: [{ role: "user", content: attempt === 0 ? userContent : userContent + "\n\n(앞선 답이 비어 있었다. 자료에 있는 것만으로 answer·points를 반드시 채운다. 자료에 정말 없을 때만 resolved=false.)" }],
+      output_config: { effort: attempt === 0 ? "low" : "medium", format: zodOutputFormat(Answer) },
     });
     if (res.stop_reason === "refusal") {
       out = { resolved: false, course: null, cards: [], answer: "이 질문은 학술봇이 답하지 않습니다.", points: [], chart: null, table: null, sources: [], refs: [], follow: [], mood: "보통", quip: "", unsure: null };
@@ -319,6 +320,12 @@ export async function POST(req: Request) {
   if (!out) {
     await appendLog({ ts: seoulIso(), anon, q, resolved: false, course: null, answer: "", sources: [], mode: "error", ms: Date.now() - t0 });
     return Response.json({ ok: false, reason: "ai_error" }, { headers: H });
+  }
+  // 두 번 다 빈 답이면 「학술국 전달」이 아니라 보드의 「다시 물어보기」로 보낸다 — 자료가 없는 게 아니라 답 만들기가 실패한 것.
+  if (!out.resolved && !String(out.answer ?? "").trim() && !(out.points?.length) && !(out.cards?.length)) {
+    console.log("[hakbot] 빈 답 두 번 — 다시 물어보기로 보냄");
+    await appendLog({ ts: seoulIso(), anon, q, resolved: false, course: out.course, answer: "", sources: [], mode: "error", ms: Date.now() - t0 });
+    return Response.json({ ok: false, reason: "empty_answer" }, { headers: H });
   }
   // 근거 없는 「해결」은 해결로 치지 않는다.
   if (out.resolved && out.sources.length === 0 && out.refs.length === 0) out.resolved = false;
