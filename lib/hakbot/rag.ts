@@ -345,7 +345,8 @@ export function buildTimeline(p: Pack, q: string, today: string, codes: string[]
       const read = mine.map((s) => s.readings).filter(Boolean).join(" / ");
       return `${cname(c)} ${slotOf(c)} ${mine.map((s) => s.no + "회차").join("·")}${topic ? " — " + clip(topic, 70) : ""}${read ? " · 읽기: " + clip(read, 70) : ""}`;
     });
-    return `${md(d)} ${dday(today, d)}: ${parts.join(" ‖ ") || "(이 과목 수업 없음)"}`;
+    // 과목 수를 모델이 세게 두면 같은 날을 3·4·5·7과목으로 다르게 답한다(11/12 「다음 주 수업 뭐 있어?」) — 세어서 적어 준다.
+    return `${md(d)} ${dday(today, d)}: ${parts.length ? `수업 ${parts.length}과목 — ${parts.join(" ‖ ")}` : "(이 과목 수업 없음)"}`;
   });
 
   const text = [
