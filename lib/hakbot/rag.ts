@@ -40,6 +40,11 @@ export async function loadPack(): Promise<Pack | null> {
   return loading;
 }
 
+// 꾸러미를 다시 만들기 전에도 원우 화면에 나가면 안 되는 것을 여기서 걷는다(11/13 점검).
+// 내부 호칭 「수달님」(씽크패드 시기 수업기록 「수달님 현장 메모」「수달님 촬영」) → 「학술국」, 교수님 개인 면담 기록은 통째로 뺀다.
+const HIDE_SRC = /_면담기록/;
+const scrub = (t: string) => t.replace(/수달님/g, "학술국").replace(/수달/g, "학술국");
+
 async function fetchPack(): Promise<Pack | null> {
   const token = process.env.HAKBOT_KB_TOKEN;
   if (!token) return packCache?.p ?? null;
@@ -56,12 +61,17 @@ async function fetchPack(): Promise<Pack | null> {
     };
     const vb = (await b.json()) as { b64: string };
     const buf = Buffer.from(vb.b64, "base64");
-    const vec = new Int8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+    const vecAll = new Int8Array(buf.buffer, buf.byteOffset, buf.byteLength);
     const col = (name: string) => raw.chunk_cols.indexOf(name);
     const ci = { id: col("id"), kind: col("kind"), course: col("course"), date: col("date"), title: col("title"), text: col("text"), src: col("src"), item: col("item_id"), doc: col("doc_id"), page: col("page") };
-    const chunks: Chunk[] = raw.chunks.map((r) => {
-      const title = String(r[ci.title] ?? "");
-      const text = String(r[ci.text] ?? "");
+    if (vecAll.length !== raw.chunks.length * DIM) throw new Error(`vec ${vecAll.length} ≠ ${raw.chunks.length}×${DIM}`);
+    const keep = raw.chunks.map((r, i) => (HIDE_SRC.test(String(r[ci.src] ?? "").normalize("NFC")) ? -1 : i)).filter((i) => i >= 0);
+    const vec = new Int8Array(keep.length * DIM);
+    keep.forEach((i, k) => vec.set(vecAll.subarray(i * DIM, (i + 1) * DIM), k * DIM));
+    raw.items = JSON.parse(scrub(JSON.stringify(raw.items)));
+    const chunks: Chunk[] = keep.map((i) => raw.chunks[i]).map((r) => {
+      const title = scrub(String(r[ci.title] ?? ""));
+      const text = scrub(String(r[ci.text] ?? ""));
       return {
         id: Number(r[ci.id]), kind: r[ci.kind] as Chunk["kind"], course: (r[ci.course] as string) ?? null,
         date: (r[ci.date] as string) ?? null, title, text, src: String(r[ci.src] ?? ""),
